@@ -47,5 +47,12 @@ namespace Stock_Scouter
                 App.ViewModel.LoadData();
             }
         }
+        //app bar add to watchlist
+        private void add_Click(object sender, EventArgs e)
+        {
+            NavigationService.Navigate(new Uri("/Addlist.xaml", UriKind.Relative));
+           
+        }
+
     }
 }
