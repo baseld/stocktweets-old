@@ -23,12 +23,23 @@
         <!--TitlePanel contains the name of the application and page title-->
         <StackPanel Grid.Row="0" Margin="12,17,0,28">
             <TextBlock Text="MY APPLICATION" Style="{StaticResource PhoneTextNormalStyle}"/>
-            <TextBlock Text="add" Margin="9,-7,0,0" Style="{StaticResource PhoneTextTitle1Style}"/>
+            <TextBlock Margin="9,-7,0,0" Style="{StaticResource PhoneTextTitle1Style}">
+            	<Run Text="Add"/>
+            	<Run Text=" Stock"/>
+            </TextBlock>
         </StackPanel>
 
         <!--ContentPanel - place additional content here-->
-        <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
-
+        <Grid x:Name="ContentPanel" Grid.Row="1" Margin="10,10,14,-10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <TextBox Grid.Column="0" Name="AddBox" FontSize="{StaticResource PhoneFontSizeExtraLarge}" Margin="20,20,10,520" TextWrapping="Wrap"/>
+            <Button Grid.Column="1" Name="Clicksearch" Content="Search" HorizontalAlignment="Right" Padding="4" Margin="0,20,10,520" Width="147" />
         </Grid>
     </Grid>
 
