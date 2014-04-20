@@ -23,18 +23,19 @@ namespace Stock_Scouter
 
         public static Stock[] getPortfolio()
         {
-            if (!IsolatedStorageSettings.ApplicationSettings.Contains("stocks")) return new Stock[0];
             var settings = IsolatedStorageSettings.ApplicationSettings;
+            if (!settings.Contains("stocks")) return new Stock[0];
             return (Stock[])settings["stocks"];
         }
 
         public static void savePortfolio(Stock[] stocks)
         {
-            var settings = IsolatedStorageSettings.ApplicationSettings;
             Stock[] oldPortfolio = getPortfolio();
             Stock[] newPortfolio = new Stock[oldPortfolio.Length + stocks.Length];
             oldPortfolio.CopyTo(newPortfolio, 0);
             stocks.CopyTo(newPortfolio, oldPortfolio.Length);
+            var settings = IsolatedStorageSettings.ApplicationSettings;
+            settings.Remove("stocks");
             settings.Add("stocks", newPortfolio);
         }
 

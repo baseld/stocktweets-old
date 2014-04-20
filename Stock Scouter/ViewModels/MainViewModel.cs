@@ -61,13 +61,13 @@ namespace Stock_Scouter
         /// </summary>
         public void LoadData()
         {
-            // Sample data; replace with real data
             Stock[] myPortfolio = Stock_Scouter.EventHandler.getPortfolio();
             foreach (Stock s in myPortfolio)
             {
                 this.Items.Add(new ItemViewModel() { LineOne = s.Symbol, LineTwo = s.Name, LineThree = s.LastTradePrice.ToString() });
             }
-            this.IsDataLoaded = true;
+            System.Diagnostics.Debug.WriteLine("There are " + myPortfolio.Length.ToString() + " stocks in array.");
+            //this.IsDataLoaded = true;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
