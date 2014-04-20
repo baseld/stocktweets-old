@@ -111,24 +111,14 @@ namespace Stock_Scouter.Models
             set { this._peRatio = value; }
         }
 
-        public Stock(string csv) {
-            //"XOM","Exxon Mobil Corpo","4/17/2014",100.42,99.69,100.97,99.69,15439810,"84.79 - 101.74",2.52,2.52,13.56
-            string[] items = csv.Split(',');
-            this.Symbol = items[0];
-            this.Name = items[1];
-            this.LastTradeDate = items[2];
-            this.LastTradePrice = Convert.ToDouble(items[3]);
-            this.OpenPrice = Convert.ToDouble(items[4]);
-            this.DayHighPrice = Convert.ToDouble(items[5]);
-            this.DayLowPrice = Convert.ToDouble(items[6]);
-            this.Volume = Convert.ToInt32(items[7]);
-            this.DayRange = items[8];
-            this.Dividend = items[9];
-            this.DividendYield = items[10];
-            this.PERatio = items[11];
+        public Stock()
+        {
         }
 
-
+        public static bool IsEqual(Stock s1, Stock s2)
+        {
+            return false;
+        }
 
     }
 }
