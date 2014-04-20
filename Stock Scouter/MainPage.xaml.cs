@@ -33,7 +33,7 @@ namespace Stock_Scouter
                 return;
 
             // Navigate to the new page
-            NavigationService.Navigate(new Uri("/DetailsPage.xaml?selectedItem=" + MainListBox.SelectedIndex, UriKind.Relative));
+            NavigationService.Navigate(new Uri("/DetailPage.xaml?selectedItem=" + MainListBox.SelectedIndex, UriKind.Relative));
 
             // Reset selected index to -1 (no selection)
             MainListBox.SelectedIndex = -1;
@@ -50,7 +50,7 @@ namespace Stock_Scouter
         //app bar add to watchlist
         private void add_Click(object sender, EventArgs e)
         {
-            NavigationService.Navigate(new Uri("/Addlist.xaml", UriKind.Relative));
+            NavigationService.Navigate(new Uri("/AddStock.xaml", UriKind.Relative));
            
         }
 
