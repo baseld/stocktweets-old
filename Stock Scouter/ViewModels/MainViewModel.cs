@@ -62,7 +62,7 @@ namespace Stock_Scouter
         public void LoadData()
         {
             // Sample data; replace with real data
-            Stock[] myPortfolio = EventHandler.getPortfolio();
+            Stock[] myPortfolio = Stock_Scouter.EventHandler.getPortfolio();
             foreach (Stock s in myPortfolio)
             {
                 this.Items.Add(new ItemViewModel() { LineOne = s.Symbol, LineTwo = s.Name, LineThree = s.LastTradePrice.ToString() });

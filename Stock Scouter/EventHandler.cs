@@ -6,7 +6,6 @@ using Stock_Scouter.Models;
 using System.IO;
 using System.IO.IsolatedStorage;
 
-
 namespace Stock_Scouter
 {
     class EventHandler
