@@ -23,7 +23,7 @@ namespace Stock_Scouter
 
         public static Stock[] getPortfolio()
         {
-            if (IsolatedStorageSettings.ApplicationSettings.Contains("stocks")) return new Stock[0];
+            if (!IsolatedStorageSettings.ApplicationSettings.Contains("stocks")) return new Stock[0];
             var settings = IsolatedStorageSettings.ApplicationSettings;
             return (Stock[])settings["stocks"];
         }
