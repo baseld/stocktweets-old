@@ -21,31 +21,28 @@ namespace Stock_Scouter
     {
         public MainViewModel()
         {
-            this.Items = new ObservableCollection<ItemViewModel>();
+            this.Stocks = new ObservableCollection<StockBriefViewModel>();
         }
+        
+        public ObservableCollection<StockBriefViewModel> Stocks { get; private set; }
 
-        /// <summary>
-        /// A collection for ItemViewModel objects.
-        /// </summary>
-        public ObservableCollection<ItemViewModel> Items { get; private set; }
-
-        private string _sampleProperty = "Sample Runtime Property Value";
+        private int _numOfStocks = 0;
         /// <summary>
         /// Sample ViewModel property; this property is used in the view to display its value using a Binding
         /// </summary>
         /// <returns></returns>
-        public string SampleProperty
+        public int NumOfStocks
         {
             get
             {
-                return _sampleProperty;
+                return _numOfStocks;
             }
             set
             {
-                if (value != _sampleProperty)
+                if (value != _numOfStocks)
                 {
-                    _sampleProperty = value;
-                    NotifyPropertyChanged("SampleProperty");
+                    _numOfStocks = value;
+                    NotifyPropertyChanged("NumOfStocks");
                 }
             }
         }
@@ -61,13 +58,18 @@ namespace Stock_Scouter
         /// </summary>
         public void LoadData()
         {
-            Stock[] myPortfolio = Stock_Scouter.EventHandler.getPortfolio();
-            foreach (Stock s in myPortfolio)
+            // clear previously rendered list
+            // but this is not ideal
+            this.Stocks.Clear();
+
+            Portfolio p = new Portfolio();
+            foreach (KeyValuePair<string, Stock> entry in p.getStockList())
             {
-                this.Items.Add(new ItemViewModel() { LineOne = s.Symbol, LineTwo = s.Name, LineThree = s.LastTradePrice.ToString() });
+                this.Stocks.Add(new StockBriefViewModel() { Symbol = entry.Value.Symbol, Name = entry.Value.Name, PriceDescription = "Ask: " + entry.Value.AskPrice.ToString() + " | Bid: " + entry.Value.BidPrice.ToString() + " | Day Range: " + entry.Value.DayRange + "" });
+                System.Diagnostics.Debug.WriteLine("Added stock " + entry.Key + " to list.");
             }
-            System.Diagnostics.Debug.WriteLine("There are " + myPortfolio.Length.ToString() + " stocks in array.");
-            //this.IsDataLoaded = true;
+            // disable this so far
+            // this.IsDataLoaded = true;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
