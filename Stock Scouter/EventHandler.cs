@@ -31,7 +31,11 @@ namespace Stock_Scouter
         public static void savePortfolio(Stock[] stocks)
         {
             var settings = IsolatedStorageSettings.ApplicationSettings;
-            settings.Add("stocks", stocks);
+            Stock[] oldPortfolio = getPortfolio();
+            Stock[] newPortfolio = new Stock[oldPortfolio.Length + stocks.Length];
+            oldPortfolio.CopyTo(newPortfolio, 0);
+            stocks.CopyTo(newPortfolio, oldPortfolio.Length);
+            settings.Add("stocks", newPortfolio);
         }
 
     }
