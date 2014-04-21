@@ -54,5 +54,10 @@ namespace Stock_Scouter
            
         }
 
+        private void ContextMenuItem_OnClick(object sender, RoutedEventArgs e)
+        {
+
+        }
+
     }
 }
