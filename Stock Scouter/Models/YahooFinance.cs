@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Net;
 
 namespace Stock_Scouter.Models
 {
@@ -16,10 +17,23 @@ namespace Stock_Scouter.Models
 
     class YahooFinance
     {
-        public static string GetQuoteUrl(string[] symbols)
+
+        public static string GetQuotes(string[] symbols)
         {
             string symbolStr = String.Join("+", symbols);
-            return "http://download.finance.yahoo.com/d/quotes.csv?s=" + symbolStr + "&f=snd1l1ohgvwdyr";
+            string result = "";
+            Uri u = new Uri("http://download.finance.yahoo.com/d/quotes.csv?s=" + symbolStr + "&f=snd1l1ohgvwdyr");
+
+            // not compatible with WinRT
+            var client = new WebClient();
+            client.DownloadStringCompleted += (sender, e) =>
+            {
+                System.Diagnostics.Debug.WriteLine("YahooFinance: I got " + e.Result);
+                result = e.Result;
+            };
+
+            client.DownloadStringAsync(u);
+            return result;
         }
 
         public static Stock[] CsvToStock(string csv)
