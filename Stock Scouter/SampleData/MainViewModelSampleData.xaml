@@ -1,13 +1,27 @@
 ﻿<local:MainViewModel 
-    xmlns:local="clr-namespace:Stock_Scouter" 
-    NumOfStocks="5">
+    xmlns:local="clr-namespace:Stock_Scouter">
 
-    <local:MainViewModel.Stocks>
-        <local:StockBriefViewModel Symbol="XOM" Name="Exxon Mobil" PriceDescription="Maecenas praesent accumsan bibendum"/>
-        <local:StockBriefViewModel Symbol="MSFT" Name="Microsoft" PriceDescription="Maecenas praesent accumsan bibendum"/>
-        <local:StockBriefViewModel Symbol="INTC" Name="Intel" PriceDescription="Maecenas praesent accumsan bibendum"/>
-        <local:StockBriefViewModel Symbol="AAPL" Name="Apple" PriceDescription="Maecenas praesent accumsan bibendum"/>
-        <local:StockBriefViewModel Symbol="C" Name="Citigroup" PriceDescription="Maecenas praesent accumsan bibendum"/>
-    </local:MainViewModel.Stocks>
+    <local:MainViewModel.PageCollection>
+        <local:PortfolioViewModel Title="Default" />
+        <local:PortfolioViewModel Title="Watchlist">
+            <local:PortfolioViewModel.StockViews>
+                <local:StockBriefViewModel Symbol="XOM" Name="Exxon Mobil" PriceDescription="Maecenas praesent accumsan bibendum"/>
+                <local:StockBriefViewModel Symbol="MSFT" Name="Microsoft" PriceDescription="Maecenas praesent accumsan bibendum"/>
+                <local:StockBriefViewModel Symbol="INTC" Name="Intel" PriceDescription="Maecenas praesent accumsan bibendum"/>
+                <local:StockBriefViewModel Symbol="AAPL" Name="Apple" PriceDescription="Maecenas praesent accumsan bibendum"/>
+                <local:StockBriefViewModel Symbol="C" Name="Citigroup" PriceDescription="Maecenas praesent accumsan bibendum"/>
+            </local:PortfolioViewModel.StockViews>
+        </local:PortfolioViewModel>
+        <local:PortfolioViewModel Title="Bought">
+            <local:PortfolioViewModel.StockViews>
+                <local:StockBriefViewModel Symbol="ANIK" Name="Anika Pharmaceutical" PriceDescription="Maecenas praesent accumsan bibendum"/>
+            </local:PortfolioViewModel.StockViews>
+        </local:PortfolioViewModel>
+        <local:PortfolioViewModel Title="Indexes">
+            <local:PortfolioViewModel.StockViews>
+                <local:StockBriefViewModel Symbol="SPX" Name="SP500" PriceDescription="Maecenas praesent accumsan bibendum"/>
+            </local:PortfolioViewModel.StockViews>
+        </local:PortfolioViewModel>
+    </local:MainViewModel.PageCollection>
     
 </local:MainViewModel>

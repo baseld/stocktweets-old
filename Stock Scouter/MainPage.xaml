@@ -19,53 +19,70 @@
     <!--LayoutRoot is the root grid where all page content is placed-->
     <Grid x:Name="LayoutRoot" Background="Transparent">
         <!--Pivot Control-->
-        <phone:Pivot Title="STOCK SCOUTER">
-            <!--Pivot item one-->
-            <phone:PivotItem Header="Portfolio">
-                <Grid x:Name="WatchlistLayout" Background="Transparent">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-
-                    <!--ContentPanel contains ListBox and ListBox ItemTemplate. Place additional content here-->
-                    <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
-                        <ListBox x:Name="MainListBox" Margin="0,0,-12,0" ItemsSource="{Binding Stocks}" SelectionChanged="MainListBox_SelectionChanged">
-                            <ListBox.ItemTemplate>
-                                <DataTemplate>
-                                    <StackPanel Margin="0,0,0,17" Width="432" Height="128">
-                                        <toolkit:ContextMenuService.ContextMenu>
-                                            <toolkit:ContextMenu>
-                                                <toolkit:MenuItem Header="Add Color" Click="ContextMenuItem_OnClick"/>
-                                                <toolkit:MenuItem Header="Remove Color" Click="ContextMenuItem_OnClick"/>
-                                            </toolkit:ContextMenu>
-                                        </toolkit:ContextMenuService.ContextMenu>
-                                        <TextBlock Text="{Binding Symbol}" TextWrapping="Wrap" Style="{StaticResource PhoneTextExtraLargeStyle}"/>
-                                        <TextBlock Text="{Binding Name}" TextWrapping="Wrap" Style="{StaticResource PhoneTextLargeStyle}"/>
-                                        <TextBlock Text="{Binding PriceDescription}" TextWrapping="Wrap" Margin="12,-6,12,0" Style="{StaticResource PhoneTextSubtleStyle}"/>
-                                    </StackPanel>
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-                        </ListBox>
+        <phone:Pivot ItemsSource="{Binding PageCollection}" 
+                        Title="STOCK SCOUTER" 
+                        HorizontalContentAlignment="Stretch" 
+                        VerticalContentAlignment="Stretch" Loaded="Pivot_Loaded">
+            <phone:Pivot.HeaderTemplate>
+                <DataTemplate>
+                    <Grid x:Name="grid">
+                        <TextBlock TextWrapping="Wrap" Text="{Binding Title}" d:LayoutOverrides="Width, Height" />
                     </Grid>
-                </Grid>
-            </phone:PivotItem>
-
-            <!--Pivot item two-->
-            <phone:PivotItem Header="Account">
-                <Grid/>
-            </phone:PivotItem>
+                </DataTemplate>
+            </phone:Pivot.HeaderTemplate>
+            <phone:Pivot.ItemTemplate>
+                <DataTemplate>
+                    <Grid x:Name="grid" Background="Transparent">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                       
+                        <Grid x:Name="SearchPanel" Grid.Row="1" Background="Transparent" Margin="12,0,12,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="300" />
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <TextBox Grid.Column="0" Grid.Row="0" x:Name="KeywordStr" TextWrapping="Wrap"></TextBox>
+                            <Button Grid.Column="1" Grid.Row="0" Name="SearchButton" Content="Search" HorizontalAlignment="Right" Click="SearchButton_onClick" />
+                        </Grid>
+                        
+                        <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,75,12,0">
+                            <ListBox x:Name="MainListBox" Margin="0,0,-12,0" ItemsSource="{Binding StockViews}">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Margin="0,0,0,17" Width="432" Height="128">
+                                            <toolkit:ContextMenuService.ContextMenu>
+                                                <toolkit:ContextMenu FontFamily="Portable User Interface">
+                                                    <toolkit:MenuItem Header="Add Color" Click="ContextMenuItem_OnClick"/>
+                                                    <toolkit:MenuItem Header="Remove Color" Click="ContextMenuItem_OnClick"/>
+                                                </toolkit:ContextMenu>
+                                            </toolkit:ContextMenuService.ContextMenu>
+                                            <TextBlock Text="{Binding Symbol}" TextWrapping="Wrap" Style="{StaticResource PhoneTextExtraLargeStyle}" FontFamily="Portable User Interface"/>
+                                            <TextBlock Text="{Binding Name}" TextWrapping="Wrap" Style="{StaticResource PhoneTextLargeStyle}"/>
+                                            <TextBlock Text="{Binding PriceDescription}" TextWrapping="Wrap" Margin="12,-6,12,0" Style="{StaticResource PhoneTextSubtleStyle}"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </Grid>
+                    </Grid>
+                </DataTemplate>
+            </phone:Pivot.ItemTemplate>
         </phone:Pivot>
     </Grid>
     
     <phone:PhoneApplicationPage.ApplicationBar>
         <shell:ApplicationBar IsVisible="True" IsMenuEnabled="True">
-            <shell:ApplicationBarIconButton Click="add_Click" IconUri="/Assets/Icons/plus2_math-48.png" Text="Add"/>
-            <shell:ApplicationBarIconButton IconUri="/Images/appbar_button2.png" Text="Button 2"/>
-            <shell:ApplicationBarIconButton IconUri="/Images/appbar_button3.png" Text="Button 3"/>
+            <shell:ApplicationBarIconButton Click="addList_Click" IconUri="/Toolkit.Content/ApplicationBar.Add.png" Text="new list"/>
+            <shell:ApplicationBarIconButton IconUri="/Toolkit.Content/ApplicationBar.Delete.png" Text="delete list"/>
+            <shell:ApplicationBarIconButton IconUri="/Toolkit.Content/ApplicationBar.Select.png" Text="filter"/>
             <shell:ApplicationBar.MenuItems>
-                <shell:ApplicationBarMenuItem Text="MenuItem 1"/>
-                <shell:ApplicationBarMenuItem Text="MenuItem 2"/>
+                <shell:ApplicationBarMenuItem Text="Refresh"/>
+                <shell:ApplicationBarMenuItem Text="Settings"/>
             </shell:ApplicationBar.MenuItems>
         </shell:ApplicationBar>
     </phone:PhoneApplicationPage.ApplicationBar>

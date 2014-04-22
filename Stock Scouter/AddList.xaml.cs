@@ -11,18 +11,19 @@ using Stock_Scouter.Models;
 
 namespace Stock_Scouter
 {
-    public partial class AddStock : PhoneApplicationPage
+    public partial class AddList : PhoneApplicationPage
     {
-        public AddStock()
+        public AddList()
         {
             InitializeComponent();
         }
 
-        private void searchQuote(object sender, RoutedEventArgs e)
+        private void CreateNewList(object sender, RoutedEventArgs e)
         {
             //YahooFinance.GetQuotes(new string[] {});
-            System.Diagnostics.Debug.WriteLine(Symbol.Text);
-            
+            //System.Diagnostics.Debug.WriteLine(Symbol.Text);
+            Portfolio p = AppSettings.GetPortfolio(Name.Text);
+            AppSettings.addPortfolio(p);
         }
 
         private void AddToPortfolio(object sender, System.Windows.Input.GestureEventArgs e)

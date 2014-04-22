@@ -19,30 +19,22 @@ namespace Stock_Scouter
 {
     public class MainViewModel : INotifyPropertyChanged
     {
+        private ObservableCollection<PortfolioViewModel> _pageCollection;
+        
         public MainViewModel()
         {
-            this.Stocks = new ObservableCollection<StockBriefViewModel>();
+            this._pageCollection = new ObservableCollection<PortfolioViewModel>();
         }
-        
-        public ObservableCollection<StockBriefViewModel> Stocks { get; private set; }
 
-        private int _numOfStocks = 0;
-        /// <summary>
-        /// Sample ViewModel property; this property is used in the view to display its value using a Binding
-        /// </summary>
-        /// <returns></returns>
-        public int NumOfStocks
+        public ObservableCollection<PortfolioViewModel> PageCollection
         {
-            get
-            {
-                return _numOfStocks;
-            }
+            get { return _pageCollection; }
             set
             {
-                if (value != _numOfStocks)
+                if (_pageCollection != value)
                 {
-                    _numOfStocks = value;
-                    NotifyPropertyChanged("NumOfStocks");
+                    _pageCollection = value;
+                    NotifyPropertyChanged("PageCollection");
                 }
             }
         }
@@ -60,13 +52,14 @@ namespace Stock_Scouter
         {
             // clear previously rendered list
             // but this is not ideal
-            this.Stocks.Clear();
 
-            Portfolio p = new Portfolio();
-            foreach (KeyValuePair<string, Stock> entry in p.getStockList())
+            this.PageCollection.Clear();
+
+            List<string> portfolios = AppSettings.GetPortfolioList();
+            foreach (string entry in portfolios)
             {
-                this.Stocks.Add(new StockBriefViewModel() { Symbol = entry.Value.Symbol, Name = entry.Value.Name, PriceDescription = "Ask: " + entry.Value.AskPrice.ToString() + " | Bid: " + entry.Value.BidPrice.ToString() + " | Day Range: " + entry.Value.DayRange + "" });
-                System.Diagnostics.Debug.WriteLine("Added stock " + entry.Key + " to list.");
+                this.PageCollection.Add(new PortfolioViewModel() {Title = entry});
+                System.Diagnostics.Debug.WriteLine("Added portfolio view " + entry + " to main page.");
             }
             // disable this so far
             // this.IsDataLoaded = true;
