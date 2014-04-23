@@ -71,12 +71,13 @@ namespace Stock_Scouter
             // but this is not ideal
             this.StockViews.Clear();
 
-            Portfolio p = AppSettings.GetPortfolio(this.Title);
-            
-            foreach (string entry in p.GetStockList())
+            Portfolio _portfolio = AppSettings.GetPortfolio(this.Title);
+
+            System.Diagnostics.Debug.WriteLine("Start to add stocks to the Portfolio view.");
+            foreach (string entry in _portfolio.GetStockList())
             {
                 Stock s = AppSettings.GetStock(entry);
-                this.StockViews.Add(new StockBriefViewModel() { Symbol = s.Symbol, Name = s.Name, PriceDescription = "Ask: " + s.AskPrice.ToString() + " | Bid: " + s.BidPrice.ToString() + " | Day Range: " + s.DayRange + "" });
+                this.StockViews.Add(new StockBriefViewModel() { Symbol = s.Symbol, Name = s.Name, LastTradePrice = s.LastTradePrice.ToString(), DayRange = s.DayRange, Change = s.Change.ToString() });
                 System.Diagnostics.Debug.WriteLine("Added stock " + s.Symbol + " to list.");
             }
             // disable this so far

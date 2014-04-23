@@ -2,24 +2,23 @@
     xmlns:local="clr-namespace:Stock_Scouter">
 
     <local:MainViewModel.PageCollection>
-        <local:PortfolioViewModel Title="Default" />
         <local:PortfolioViewModel Title="Watchlist">
             <local:PortfolioViewModel.StockViews>
-                <local:StockBriefViewModel Symbol="XOM" Name="Exxon Mobil" PriceDescription="Maecenas praesent accumsan bibendum"/>
-                <local:StockBriefViewModel Symbol="MSFT" Name="Microsoft" PriceDescription="Maecenas praesent accumsan bibendum"/>
-                <local:StockBriefViewModel Symbol="INTC" Name="Intel" PriceDescription="Maecenas praesent accumsan bibendum"/>
-                <local:StockBriefViewModel Symbol="AAPL" Name="Apple" PriceDescription="Maecenas praesent accumsan bibendum"/>
-                <local:StockBriefViewModel Symbol="C" Name="Citigroup" PriceDescription="Maecenas praesent accumsan bibendum"/>
+                <local:StockBriefViewModel Symbol="XOM" Name="Exxon Mobil" LastTradePrice="89.14" DayRange="88.33 - 99.22" Change="+0.12" Color="Green"/>
+                <local:StockBriefViewModel Symbol="MSFT" Name="Microsoft" LastTradePrice="41.77" DayRange="40.03 - 42.25" Change="+0.001" Color="Green"/>
+                <local:StockBriefViewModel Symbol="INTC" Name="Intel" LastTradePrice="27.45" DayRange="27.44 - 27.66" Change="0" Color="Green"/>
+                <local:StockBriefViewModel Symbol="AAPL" Name="Apple" LastTradePrice="598.88" DayRange="588.88 - 599.99" Change="-3.545" Color="Red"/>
+                <local:StockBriefViewModel Symbol="C" Name="Citigroup" LastTradePrice="11.11" DayRange="10.10 - 13.13" Change="+0.01" Color="Green"/>
             </local:PortfolioViewModel.StockViews>
         </local:PortfolioViewModel>
         <local:PortfolioViewModel Title="Bought">
             <local:PortfolioViewModel.StockViews>
-                <local:StockBriefViewModel Symbol="ANIK" Name="Anika Pharmaceutical" PriceDescription="Maecenas praesent accumsan bibendum"/>
+                <local:StockBriefViewModel Symbol="GOOG" Name="Google" LastTradePrice="1211.11" DayRange="1212.12 - 1213.13" Change="-12.338" Color="Red"/>
             </local:PortfolioViewModel.StockViews>
         </local:PortfolioViewModel>
         <local:PortfolioViewModel Title="Indexes">
             <local:PortfolioViewModel.StockViews>
-                <local:StockBriefViewModel Symbol="SPX" Name="SP500" PriceDescription="Maecenas praesent accumsan bibendum"/>
+                <local:StockBriefViewModel Symbol="SPX" Name="SP500" LastTradePrice="1860.01" DayRange="1860.00 - 1861.33" Change="+0.41" Color="Green"/>
             </local:PortfolioViewModel.StockViews>
         </local:PortfolioViewModel>
     </local:MainViewModel.PageCollection>

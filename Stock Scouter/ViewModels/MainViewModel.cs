@@ -58,9 +58,12 @@ namespace Stock_Scouter
             List<string> portfolios = AppSettings.GetPortfolioList();
             foreach (string entry in portfolios)
             {
-                this.PageCollection.Add(new PortfolioViewModel() {Title = entry});
+                PortfolioViewModel pvm = new PortfolioViewModel() { Title = entry };
+                pvm.LoadData();
+                this.PageCollection.Add(pvm);
                 System.Diagnostics.Debug.WriteLine("Added portfolio view " + entry + " to main page.");
             }
+            
             // disable this so far
             // this.IsDataLoaded = true;
         }

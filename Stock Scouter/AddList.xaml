@@ -28,7 +28,7 @@
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
-                        <TextBox Grid.Column="0" x:Name="Name" Margin="20,20,10,520" TextWrapping="Wrap"/>
+                        <TextBox Grid.Column="0" x:Name="ListName" Margin="20,20,10,520" TextWrapping="Wrap"/>
                         <Button Grid.Column="1" Name="Button" Content="Create" HorizontalAlignment="Right" Padding="4" Margin="0,20,10,520" Width="147" Click="CreateNewList" />
                     </Grid>
                 </Grid>

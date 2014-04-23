@@ -19,10 +19,22 @@ namespace Stock_Scouter
             InitializeComponent();
         }
 
+        protected override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+
+            string symbol = "";
+
+            if (NavigationContext.QueryString.TryGetValue("symbol", out symbol))
+                PagePanorama.Title = symbol; // an example of passing args
+
+
+        }
+
         void OnLoad(object sender, RoutedEventArgs e)
         {
             System.Diagnostics.Debug.WriteLine("This is an onload event!");
-            System.Diagnostics.Debug.WriteLine("WebClient returns " + YahooFinance.GetQuotes(new string[]{"XOM"}));
+            //System.Diagnostics.Debug.WriteLine("WebClient returns " + YahooFinance.GetQuotes(new string[]{"XOM"}));
         }
     }
 }

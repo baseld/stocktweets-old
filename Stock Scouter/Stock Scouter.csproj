@@ -143,7 +143,9 @@
     </DesignData>
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
     <None Include="Properties\AppManifest.xml" />
     <None Include="Properties\WMAppManifest.xml">
@@ -156,7 +158,6 @@
     <Content Include="Assets\Icons\checkmark-48.png" />
     <Content Include="Assets\Icons\plus2_math-48.png" />
     <Content Include="Assets\SplashScreenImage.jpg" />
-    <Content Include="README_FIRST.txt" />
     <Content Include="Toolkit.Content\ApplicationBar.Add.png" />
     <Content Include="Toolkit.Content\ApplicationBar.Cancel.png" />
     <Content Include="Toolkit.Content\ApplicationBar.Check.png" />

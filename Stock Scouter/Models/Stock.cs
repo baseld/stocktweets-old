@@ -111,6 +111,13 @@ namespace Stock_Scouter.Models
             set { this._peRatio = value; }
         }
 
+        private double _change;
+        public double Change
+        {
+            get { return this._change; }
+            set { this._change = value; }
+        }
+
         public Stock()
         {
         }

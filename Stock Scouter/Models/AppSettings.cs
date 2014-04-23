@@ -47,9 +47,8 @@ namespace Stock_Scouter.Models
 
         public static void addPortfolio(Portfolio p)
         {
-            List<string> pl = GetPortfolioList();
-            pl.Add(p.Name);
-            settings["PortfolioList"] = pl;
+            GetPortfolioList().Add(p.Name);
+            System.Diagnostics.Debug.WriteLine("Added portfolio " + p.Name + " to list.");
         }
 
         public static Portfolio GetPortfolio(string key)
@@ -57,6 +56,7 @@ namespace Stock_Scouter.Models
             if (settings.Contains("P_" + key)) return (Portfolio)settings["P_" + key];
             Portfolio p = new Portfolio() {Name = key};
             settings.Add("P_" + key, p);
+            System.Diagnostics.Debug.WriteLine("Portfolio " + key + " not found. Created it.");
             return p;
         }
 

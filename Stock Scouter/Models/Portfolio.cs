@@ -37,12 +37,13 @@ namespace Stock_Scouter.Models
             return this.stockList;
         }
 
-        public void addStock(Stock s)
+        public bool addStock(Stock s)
         {
-            if (this.stockList.Contains(s.Symbol)) return;
+            if (this.stockList.Contains(s.Symbol)) return false;
             this.stockList.Add(s.Symbol);
             AppSettings.SetStock(s.Symbol, s);
             AppSettings.SetPortfolio(this.Name, this);
+            return true;
         }
 
         public void removeStock(Stock s)

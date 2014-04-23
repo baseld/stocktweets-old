@@ -10,6 +10,7 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using Microsoft.Phone.Controls;
+using System.IO;
 using Stock_Scouter.Models;
 
 namespace Stock_Scouter
@@ -39,21 +40,25 @@ namespace Stock_Scouter
             DataContext = App.ViewModel;
             this.Loaded += new RoutedEventHandler(MainPage_Loaded);
         }
-        /*
-        // Handle selection changed on ListBox
-        private void MainListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+
+        // may be pretty slow
+        public FrameworkElement GetDescendantByName(FrameworkElement element, string name)
         {
-            // If selected index is -1 (no selection) do nothing
-            if (MainListBox.SelectedIndex == -1)
-                return;
+            if (element == null || string.IsNullOrWhiteSpace(name)) { return null; }
 
-            // Navigate to the new page
-            NavigationService.Navigate(new Uri("/DetailPage.xaml?selectedItem=" + MainListBox.SelectedIndex, UriKind.Relative));
-
-            // Reset selected index to -1 (no selection)
-            MainListBox.SelectedIndex = -1;
+            if (name.Equals(element.Name, StringComparison.OrdinalIgnoreCase))
+            {
+                return element;
+            }
+            var childCount = VisualTreeHelper.GetChildrenCount(element);
+            for (int i = 0; i < childCount; i++)
+            {
+                var result = GetDescendantByName(VisualTreeHelper.GetChild(element, i) as FrameworkElement, name);
+                if (result != null) { return result; }
+            }
+            return null;
         }
-        */
+
         // Load data for the ViewModel Items
         private void MainPage_Loaded(object sender, RoutedEventArgs e)
         {
@@ -68,28 +73,98 @@ namespace Stock_Scouter
             NavigationService.Navigate(new Uri("/AddList.xaml", UriKind.Relative));
         }
 
-        private void ContextMenuItem_OnClick(object sender, RoutedEventArgs e)
+        private void ContextMenu_removeItem(object sender, RoutedEventArgs e)
         {
-
+            if (sender is StockBriefViewModel)
+            {
+                System.Diagnostics.Debug.WriteLine("At least I guess the type right!");
+            }
         }
         
         private void Pivot_Loaded(object sender, RoutedEventArgs e)
         {
-            System.Diagnostics.Debug.WriteLine(Pivot.SelectedItemProperty.ToString());
-            System.Diagnostics.Debug.WriteLine(Pivot.HeaderTemplateProperty.ToString());
         }
         
         private void SearchButton_onClick(object sender, RoutedEventArgs e)
         {
+            string sym = ((System.Windows.Controls.TextBox)(GetDescendantByName(PortfolioPivot, "KeywordStr"))).Text;
+            System.Diagnostics.Debug.WriteLine(sym);
+
+            if (sym.Length == 0) return;
+
+            string[] symbols = sym.Split(',');
+            System.Diagnostics.Debug.WriteLine("There are " + symbols.Length.ToString() + " symbols in the string.");
+
+            YahooFinance.get(YahooFinance.GetQuoteUri(symbols), null, 
+                delegate(Stream str)
+                {
+                    System.Diagnostics.Debug.WriteLine("Success");
+                    // convert stream to string
+                    try
+                    {
+                        StreamReader reader = new StreamReader(str);
+                        string result = reader.ReadToEnd();
+                        System.Diagnostics.Debug.WriteLine("stream2str: " + result);
+                        List<Stock> list = YahooFinance.CsvToStock(result);
+
+                        Deployment.Current.Dispatcher.BeginInvoke(() => 
+                        {
+                            PortfolioViewModel currentView = (PortfolioViewModel)PortfolioPivot.SelectedItem;
+                            Portfolio currentPortfolio = AppSettings.GetPortfolio(currentView.Title);
+                            if (PortfolioPivot.SelectedItem is PortfolioViewModel)
+                            {
+                                System.Diagnostics.Debug.WriteLine("I got the portfolio view model: " + currentView.Title + "\n -stocks: " + currentPortfolio.GetStockList().ToString());
+                            }
+                            foreach (Stock s in list)
+                            {
+                                bool ret = currentPortfolio.addStock(s);
+                                if (ret)
+                                {
+                                    System.Diagnostics.Debug.WriteLine(s.Symbol);
+                                    currentView.StockViews.Add(new StockBriefViewModel() { Symbol = s.Symbol, Name = s.Name, AskPrice = s.AskPrice.ToString(), BidPrice = s.BidPrice.ToString(), DayRange = s.DayRange, Change = s.Change.ToString() });
+                                    //PortfolioPivot.Items.Add(new StockBriefViewModel() { Symbol = s.Symbol, Name = s.Name, AskPrice = s.AskPrice.ToString(), BidPrice = s.BidPrice.ToString(), DayRange = s.DayRange, Change = s.Change.ToString() })
+                                }
+                            }
+                            currentView.LoadData();
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine(ex.Message);
+                        System.Diagnostics.Debug.WriteLine(ex.Source);
+                        //throw;
+                    }
+                }, 
+                delegate(String reason)
+                {
+                    System.Diagnostics.Debug.WriteLine("Error: " + reason);
+                }
+            );
+        }
+
+        private void CurrentList_Refresh(object sender, EventArgs e)
+        {
+
+        }
+
+        private void CurrentList_Delete(object sender, EventArgs e)
+        {
+
+        }
+
+        private void ListBox_onSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            System.Diagnostics.Debug.WriteLine("selection is changed! sender type is " + sender.GetType());
+            ListBox lb = sender as ListBox;
+            if (lb.SelectedIndex == -1) return;
+            System.Diagnostics.Debug.WriteLine("selected index is " + lb.SelectedIndex.ToString());
             
-            //string sym = KeywordStr.Text;
-            //System.Diagnostics.Debug.WriteLine(sym);
-            /*Stock[] s = YahooFinance.CsvToStock("\"XOM\",\"Exxon Mobil Corpo\",\"4/17/2014\",100.42,99.69,100.97,99.69,15439810,\"84.79 - 101.74\",2.52,2.52,13.56");
-            Portfolio p = new Portfolio();
-            foreach (Stock item in s)
-            {
-                p.addStock(item);
-            }*/
+            // what a stupid way!
+            string symbol = AppSettings.GetPortfolio(((PortfolioViewModel)PortfolioPivot.SelectedItem).Title).GetStockList().ElementAt(lb.SelectedIndex);
+
+            System.Diagnostics.Debug.WriteLine("symbol is " + symbol);
+            NavigationService.Navigate(new Uri("/DetailPage.xaml?symbol=" + symbol, UriKind.Relative));
+            lb.SelectedIndex = -1; // reset index
         }
 
     }
