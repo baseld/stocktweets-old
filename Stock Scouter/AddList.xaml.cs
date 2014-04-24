@@ -20,12 +20,11 @@ namespace Stock_Scouter
 
         private void CreateNewList(object sender, RoutedEventArgs e)
         {
-            //YahooFinance.GetQuotes(new string[] {});
-            //System.Diagnostics.Debug.WriteLine(Symbol.Text);
-            Portfolio p = AppSettings.GetPortfolio(ListName.Text);
-            AppSettings.addPortfolio(p);
+            if (!AppSettings.isPortfolioExist(ListName.Text)){
+                Portfolio p = AppSettings.GetPortfolio(ListName.Text);
+                AppSettings.addPortfolio(p);
+            }
         }
-
         
     }
 }

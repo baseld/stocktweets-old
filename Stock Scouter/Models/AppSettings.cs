@@ -51,6 +51,11 @@ namespace Stock_Scouter.Models
             System.Diagnostics.Debug.WriteLine("Added portfolio " + p.Name + " to list.");
         }
 
+        public static bool isPortfolioExist(string key)
+        {
+            return settings.Contains("P_" + key);
+        }
+
         public static Portfolio GetPortfolio(string key)
         {
             if (settings.Contains("P_" + key)) return (Portfolio)settings["P_" + key];
