@@ -106,12 +106,19 @@ namespace Stock_Scouter
                     }
                 }
             };
+
+            // focus on the text box by default
+            box.Loaded += (s, ev) =>
+            {
+                tb.Focus();
+            };
+
             box.Show();
         }
 
         private void CurrentList_Refresh(object sender, EventArgs e)
         {
-
+            App.ViewModel.LoadData();
         }
 
         private void CurrentList_Delete(object sender, EventArgs e)
@@ -128,7 +135,7 @@ namespace Stock_Scouter
         {
             // sender is a MenuItem.
             MenuItem obj = sender as MenuItem;
-            //obj.
+            System.Diagnostics.Debug.WriteLine(obj.Name);
         }
 
         private void SearchButton_onClick(object sender, RoutedEventArgs e)
