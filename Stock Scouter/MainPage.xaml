@@ -19,10 +19,23 @@
     <!--LayoutRoot is the root grid where all page content is placed-->
     <Grid x:Name="LayoutRoot" Background="Transparent">
         <!--Pivot Control-->
+        
+        <Grid x:Name="SearchPanel" Grid.Row="1" Background="Transparent" Margin="20,145,20,0" VerticalAlignment="Top" Canvas.ZIndex="99">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="320" />
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <TextBox Grid.Column="0" Grid.Row="0" x:Name="KeywordStr" TextWrapping="Wrap"></TextBox>
+            <Button Grid.Column="1" Grid.Row="0" Name="SearchButton" Content="Search" HorizontalAlignment="Right" Click="SearchButton_onClick" />
+        </Grid>
+
         <phone:Pivot x:Name="PortfolioPivot" ItemsSource="{Binding PageCollection}" 
                         Title="STOCK SCOUTER" 
                         HorizontalContentAlignment="Stretch" 
-                        VerticalContentAlignment="Stretch" Loaded="Pivot_Loaded">
+                        VerticalContentAlignment="Stretch" Canvas.ZIndex="97">
             <phone:Pivot.HeaderTemplate>
                 <DataTemplate>
                     <Grid x:Name="grid">
@@ -37,20 +50,8 @@
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
-                       
-                        <Grid x:Name="SearchPanel" Grid.Row="1" Background="Transparent" Margin="14,0,10,0" VerticalAlignment="Top">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="300" />
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
-                            <TextBox Grid.Column="0" Grid.Row="0" x:Name="KeywordStr" TextWrapping="Wrap"></TextBox>
-                            <Button Grid.Column="1" Grid.Row="0" Name="SearchButton" Content="Search" HorizontalAlignment="Right" Click="SearchButton_onClick" />
-                        </Grid>
 
-                        <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,75,12,0" VerticalAlignment="Top">
+                        <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,60,12,0" VerticalAlignment="Top">
                             <ListBox Name="MainListBox" Margin="0,0,-12,0" ItemsSource="{Binding StockViews}" SelectionChanged="ListBox_onSelectionChanged">
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
@@ -93,8 +94,9 @@
             <shell:ApplicationBarIconButton Click="addList_Click" IconUri="/Toolkit.Content/ApplicationBar.Add.png" Text="new list"/>
             <shell:ApplicationBarIconButton IconUri="/Toolkit.Content/ApplicationBar.Select.png" Text="filter"/>
             <shell:ApplicationBar.MenuItems>
-                <shell:ApplicationBarMenuItem Text="Refresh List" Click="CurrentList_Refresh"/>
-                <shell:ApplicationBarMenuItem Text="Delete List" Click="CurrentList_Delete"/>
+                <shell:ApplicationBarMenuItem Text="Refresh" Click="CurrentList_Refresh"/>
+                <shell:ApplicationBarMenuItem Text="Edit" Click="CurrentList_Edit"/>
+                <shell:ApplicationBarMenuItem Text="Delete" Click="CurrentList_Delete"/>
                 <shell:ApplicationBarMenuItem Text="Settings"/>
             </shell:ApplicationBar.MenuItems>
         </shell:ApplicationBar>

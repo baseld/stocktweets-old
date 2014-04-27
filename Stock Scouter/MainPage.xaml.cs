@@ -67,35 +67,85 @@ namespace Stock_Scouter
                 App.ViewModel.LoadData();
             }
         }
+
         //app bar add to watchlist
         private void addList_Click(object sender, EventArgs e)
         {
-            NavigationService.Navigate(new Uri("/AddList.xaml", UriKind.Relative));
+            //NavigationService.Navigate(new Uri("/AddList.xaml", UriKind.Relative));
+            var tb = new TextBox();
+            var box = new CustomMessageBox()
+            {
+                Caption = "Add a new list",
+                Message = "Please enter the a list name",
+                LeftButtonContent = "Add",
+                RightButtonContent = "Cancel",
+                Content = tb,
+                IsFullScreen = false
+            };
+            box.Dismissed += (s, ev) =>
+            {
+                if (ev.Result == CustomMessageBoxResult.LeftButton)
+                {
+                    if (!AppSettings.isPortfolioExist(tb.Text))
+                    {
+                        // add new portfolio
+                        Portfolio p = AppSettings.GetPortfolio(tb.Text);
+                        AppSettings.addPortfolio(p);
+                        // reload portfolio list
+                        App.ViewModel.LoadData();
+                        // switch to the newly created portfolio
+                        PortfolioPivot.SelectedIndex = App.ViewModel.PageCollection.Count - 1;
+                    }
+                    else
+                    {
+                        // prompt for redundant list name
+                        string message = "Oops, a list named " + tb.Text + " already exists.\nPlease try another one.";
+                        string caption = "List name used";
+                        MessageBoxButton buttons = MessageBoxButton.OK;
+                        MessageBoxResult result = MessageBox.Show(message, caption, buttons);
+                    }
+                }
+            };
+            box.Show();
+        }
+
+        private void CurrentList_Refresh(object sender, EventArgs e)
+        {
+
+        }
+
+        private void CurrentList_Delete(object sender, EventArgs e)
+        {
+
+        }
+
+        private void CurrentList_Edit(object sender, EventArgs e)
+        {
+
         }
 
         private void ContextMenu_removeItem(object sender, RoutedEventArgs e)
         {
-            if (sender is StockBriefViewModel)
-            {
-                System.Diagnostics.Debug.WriteLine("At least I guess the type right!");
-            }
+            // sender is a MenuItem.
+            MenuItem obj = sender as MenuItem;
+            //obj.
         }
-        
-        private void Pivot_Loaded(object sender, RoutedEventArgs e)
-        {
-        }
-        
+
         private void SearchButton_onClick(object sender, RoutedEventArgs e)
         {
-            string sym = ((System.Windows.Controls.TextBox)(GetDescendantByName(PortfolioPivot, "KeywordStr"))).Text;
-            System.Diagnostics.Debug.WriteLine(sym);
+            string symbol = KeywordStr.Text;
 
-            if (sym.Length == 0) return;
+            if (symbol.Length == 0)
+            {
+                System.Diagnostics.Debug.WriteLine("The symbol bar is empty!");
+                return;
+            }
 
-            string[] symbols = sym.Split(',');
+            System.Diagnostics.Debug.WriteLine("Symbol to search is " + symbol);
+            string[] symbols = symbol.Split(',');
             System.Diagnostics.Debug.WriteLine("There are " + symbols.Length.ToString() + " symbols in the string.");
 
-            YahooFinance.get(YahooFinance.GetQuoteUri(symbols), null, 
+            YahooFinance.get(YahooFinance.GetQuoteUri(symbols), null,
                 delegate(Stream str)
                 {
                     System.Diagnostics.Debug.WriteLine("Success");
@@ -107,7 +157,7 @@ namespace Stock_Scouter
                         System.Diagnostics.Debug.WriteLine("stream2str: " + result);
                         List<Stock> list = YahooFinance.CsvToStock(result);
 
-                        Deployment.Current.Dispatcher.BeginInvoke(() => 
+                        Deployment.Current.Dispatcher.BeginInvoke(() =>
                         {
                             PortfolioViewModel currentView = (PortfolioViewModel)PortfolioPivot.SelectedItem;
                             Portfolio currentPortfolio = AppSettings.GetPortfolio(currentView.Title);
@@ -134,22 +184,12 @@ namespace Stock_Scouter
                         System.Diagnostics.Debug.WriteLine(ex.Source);
                         //throw;
                     }
-                }, 
+                },
                 delegate(String reason)
                 {
                     System.Diagnostics.Debug.WriteLine("Error: " + reason);
                 }
             );
-        }
-
-        private void CurrentList_Refresh(object sender, EventArgs e)
-        {
-
-        }
-
-        private void CurrentList_Delete(object sender, EventArgs e)
-        {
-
         }
 
         private void ListBox_onSelectionChanged(object sender, SelectionChangedEventArgs e)

@@ -99,9 +99,6 @@
     <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="AddList.xaml.cs">
-      <DependentUpon>AddList.xaml</DependentUpon>
-    </Compile>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
@@ -125,10 +122,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </ApplicationDefinition>
-    <Page Include="AddList.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="DetailPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -156,7 +149,9 @@
     <Content Include="Assets\ApplicationIcon.png" />
     <Content Include="Assets\Background.png" />
     <Content Include="Assets\Icons\checkmark-48.png" />
+    <Content Include="Assets\Icons\edit_property-48.png" />
     <Content Include="Assets\Icons\plus2_math-48.png" />
+    <Content Include="Assets\Icons\search-32.png" />
     <Content Include="Assets\SplashScreenImage.jpg" />
     <Content Include="Toolkit.Content\ApplicationBar.Add.png" />
     <Content Include="Toolkit.Content\ApplicationBar.Cancel.png" />
