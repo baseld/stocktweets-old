@@ -135,7 +135,11 @@ namespace Stock_Scouter
         {
             // sender is a MenuItem.
             MenuItem obj = sender as MenuItem;
-            System.Diagnostics.Debug.WriteLine(obj.Name);
+            StockBriefViewModel item = obj.DataContext as StockBriefViewModel;
+            PortfolioViewModel currentView = (PortfolioViewModel)PortfolioPivot.SelectedItem;
+            Portfolio currentPortfolio = AppSettings.GetPortfolio(currentView.Title);
+            currentPortfolio.removeStock(AppSettings.GetStock(item.Symbol));
+            currentView.LoadData();
         }
 
         private void SearchButton_onClick(object sender, RoutedEventArgs e)
@@ -205,7 +209,7 @@ namespace Stock_Scouter
             ListBox lb = sender as ListBox;
             if (lb.SelectedIndex == -1) return;
             System.Diagnostics.Debug.WriteLine("selected index is " + lb.SelectedIndex.ToString());
-            
+
             // what a stupid way!
             string symbol = AppSettings.GetPortfolio(((PortfolioViewModel)PortfolioPivot.SelectedItem).Title).GetStockList().ElementAt(lb.SelectedIndex);
 
