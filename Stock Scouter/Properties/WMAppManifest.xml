@@ -1,24 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Deployment xmlns="http://schemas.microsoft.com/windowsphone/2012/deployment" AppPlatformVersion="8.0">
   <DefaultLanguage xmlns="" code="en-US" />
-  <App xmlns="" ProductID="{b56c6da2-682c-40ce-a6f8-d07109c59270}" Title="Stock_Scouter" RuntimeType="Silverlight" Version="1.0.0.0" Genre="apps.normal" Author="Stock_Scouter author" Description="Sample description" Publisher="Stock_Scouter" PublisherID="{0499b3c9-6b35-4c05-8e4d-339cff0d6293}">
-    <IconPath IsRelative="true" IsResource="false">Assets\ApplicationIcon.png</IconPath>
+  <App xmlns="" ProductID="{b56c6da2-682c-40ce-a6f8-d07109c59270}" Title="Stock Scouter" RuntimeType="Silverlight" Version="1.0.0.0" Genre="apps.normal" Author="Xiangyu Bu" Description="Stock Scouter is an app that lets you keep track of stocks with more than one watchlists." Publisher="Stock_Scouter" PublisherID="{0499b3c9-6b35-4c05-8e4d-339cff0d6293}">
+    <IconPath IsRelative="true" IsResource="false">ApplicationIcon.png</IconPath>
     <Capabilities>
-      <Capability Name="ID_CAP_GAMERSERVICES" />
-      <Capability Name="ID_CAP_IDENTITY_DEVICE" />
       <Capability Name="ID_CAP_IDENTITY_USER" />
-      <Capability Name="ID_CAP_LOCATION" />
-      <Capability Name="ID_CAP_MICROPHONE" />
       <Capability Name="ID_CAP_NETWORKING" />
-      <Capability Name="ID_CAP_PHONEDIALER" />
       <Capability Name="ID_CAP_PUSH_NOTIFICATION" />
-      <Capability Name="ID_CAP_SENSORS" />
       <Capability Name="ID_CAP_WEBBROWSERCOMPONENT" />
       <Capability Name="ID_CAP_ISV_CAMERA" />
-      <Capability Name="ID_CAP_CONTACTS" />
-      <Capability Name="ID_CAP_APPOINTMENTS" />
-      <Capability Name="ID_CAP_MEDIALIB_AUDIO" />
-      <Capability Name="ID_CAP_MEDIALIB_PHOTO" />
       <Capability Name="ID_CAP_MEDIALIB_PLAYBACK" />
     </Capabilities>
     <Tasks>
@@ -27,15 +17,19 @@
     <Tokens>
       <PrimaryToken TokenID="Stock_ScouterToken" TaskName="_default">
         <TemplateFlip>
-          <SmallImageURI IsResource="false" IsRelative="true">Assets\Background.png</SmallImageURI>
+          <SmallImageURI IsResource="false" IsRelative="true">Background.png</SmallImageURI>
           <Count>0</Count>
-          <BackgroundImageURI IsResource="false" IsRelative="true">Assets\Background.png</BackgroundImageURI>
-          <Title>Stock_Scouter</Title>
-          <BackContent></BackContent>
-          <BackBackgroundImageURI></BackBackgroundImageURI>
-          <BackTitle></BackTitle>
-          <DeviceLockImageURI></DeviceLockImageURI>
-          <HasLarge>false</HasLarge>
+          <BackgroundImageURI IsResource="false" IsRelative="true">Background.png</BackgroundImageURI>
+          <Title>Stock Scouter</Title>
+          <BackContent>
+          </BackContent>
+          <BackBackgroundImageURI>
+          </BackBackgroundImageURI>
+          <BackTitle>
+          </BackTitle>
+          <DeviceLockImageURI>
+          </DeviceLockImageURI>
+          <HasLarge>False</HasLarge>
         </TemplateFlip>
       </PrimaryToken>
     </Tokens>

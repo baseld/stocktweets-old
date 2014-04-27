@@ -82,21 +82,21 @@ namespace Stock_Scouter.Models
             if (settings.Contains("P_" + key)) settings.Remove("P_" + key);
         }
 
-        public static Stock GetStock(string key)
+        public static Quote GetStock(string key)
         {
-            if (!settings.Contains("S_" + key)) throw new NullReferenceException("The stock symbol \"" + key + "\" was not in the database.");
-            return (Stock)settings["S_" + key];
+            if (!settings.Contains("Q_" + key)) throw new NullReferenceException("The stock symbol \"" + key + "\" was not in the database.");
+            return (Quote)settings["Q_" + key];
         }
 
-        public static void SetStock(string key, Stock s)
+        public static void SetQuote(string key, Quote q)
         {
-            if (!settings.Contains("S_" + key))
+            if (!settings.Contains("Q_" + key))
             {
-                settings.Add("S_" + key, s);
+                settings.Add("Q_" + key, q);
             }
             else
             {
-                settings["S_" + key] = s;
+                settings["Q_" + key] = q;
             }
         }
 

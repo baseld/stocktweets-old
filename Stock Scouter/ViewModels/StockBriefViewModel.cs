@@ -131,23 +131,6 @@ namespace Stock_Scouter
             }
         }
 
-        private string _dayRange;
-        public string DayRange
-        {
-            get
-            {
-                return this._dayRange;
-            }
-            set
-            {
-                if (this._dayRange != value)
-                {
-                    this._dayRange = value;
-                    NotifyPropertyChanged("DayRange");
-                }
-            }
-        }
-
         public event PropertyChangedEventHandler PropertyChanged;
         private void NotifyPropertyChanged(String propertyName)
         {

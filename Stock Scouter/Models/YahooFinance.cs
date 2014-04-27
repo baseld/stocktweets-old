@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using System.Net;
 using System.IO;
+using System.Collections.ObjectModel;
+using System.Xml.Linq;
 
 namespace Stock_Scouter.Models
 {
@@ -18,94 +19,9 @@ namespace Stock_Scouter.Models
 
     class YahooFinance
     {
-        private static readonly Dictionary<string, string> Fields = new Dictionary<string, string>()
-        {
-            {"Ask", "a"},
-            {"Average Daily Volume", "a2"},
-            {"Ask Size", "a5"},
-            {"Bid", "b"},
-            {"Ask (Real-time)", "b2"},
-            {"Bid (Real-time)", "b3"},
-            {"Book Value", "b4"},
-            {"Bid Size", "b6"},
-            {"Change & Percent Change", "c"},
-            {"Change", "c1"},
-            {"Commission", "c3"},
-            {"Change (Real-time)", "c6"},
-            {"After Hours Change (Real-time)", "c8"},
-            {"Dividend/Share", "d"},
-            {"Last Trade Date", "d1"},
-            {"Trade Date", "d2"},
-            {"Earnings/Share", "e"},
-            {"Error Indication (returned for symbol changed / invalid)", "e1"},
-            {"EPS Estimate Current Year", "e7"},
-            {"EPS Estimate Next Year", "e8"},
-            {"EPS Estimate Next Quarter", "e9"},
-            {"Float Shares", "f6"},
-            {"Day's Low", "g"},
-            {"Day's High", "h"},
-            {"52-week Low", "j"},
-            {"52-week High", "k"},
-            {"Holdings Gain Percent", "g1"},
-            {"Annualized Gain", "g3"},
-            {"Holdings Gain", "g4"},
-            {"Holdings Gain Percent (Real-time)", "g5"},
-            {"Holdings Gain (Real-time)", "g6"},
-            {"More Info", "i"},
-            {"Order Book (Real-time)", "i5"},
-            {"Market Capitalization", "j1"},
-            {"Market Cap (Real-time)", "j3"},
-            {"EBITDA", "j4"},
-            {"Change From 52-week Low", "j5"},
-            {"Percent Change From 52-week Low", "j6"},
-            {"Last Trade (Real-time) With Time", "k1"},
-            {"Change Percent (Real-time)", "k2"},
-            {"Last Trade Size", "k3"},
-            {"Change From 52-week High", "k4"},
-            {"Percent Change From 52-week High", "k5"},
-            {"Last Trade (With Time)", "l"},
-            {"Last Trade (Price Only)", "l1"},
-            {"High Limit", "l2"},
-            {"Low Limit", "l3"},
-            {"Day's Range", "m"},
-            {"Day's Range (Real-time)", "m2"},
-            {"50-day Moving Average", "m3"},
-            {"200-day Moving Average", "m4"},
-            {"Change From 200-day Moving Average", "m5"},
-            {"Percent Change From 200-day Moving Average", "m6"},
-            {"Change From 50-day Moving Average", "m7"},
-            {"Percent Change From 50-day Moving Average", "m8"},
-            {"Name", "n"},
-            {"Notes", "n4"},
-            {"Open", "o"},
-            {"Previous Close", "p"},
-            {"Price Paid", "p1"},
-            {"Change in Percent", "p2"},
-            {"Price/Sales", "p5"},
-            {"Price/Book", "p6"},
-            {"Ex-Dividend Date", "q"},
-            {"P/E Ratio", "r"},
-            {"Dividend Pay Date", "r1"},
-            {"P/E Ratio (Real-time)", "r2"},
-            {"PEG Ratio", "r5"},
-            {"Price/EPS Estimate Current Year", "r6"},
-            {"Price/EPS Estimate Next Year", "r7"},
-            {"Symbol", "s"},
-            {"Shares Owned", "s1"},
-            {"Short Ratio", "s7"},
-            {"Last Trade Time", "t1"},
-            {"Trade Links", "t6"},
-            {"Ticker Trend", "t7"},
-            {"1 yr Target Price", "t8"},
-            {"Volume", "v"},
-            {"Holdings Value", "v1"},
-            {"Holdings Value (Real-time)", "v7"},
-            {"52-week Range", "w"},
-            {"Day's Value Change", "w1"},
-            {"Day's Value Change (Real-time)", "w4"},
-            {"Stock Exchange", "x"},
-            {"Dividend Yield", "y"}
-        };
+
+        private const string BASE_URL = "http://query.yahooapis.com/v1/public/yql?q={0}&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys";
+        private const string BASE_QUERY = "select * from yahoo.finance.quotes where symbol in ({0})";
 
         public delegate void RESTSuccessCallback(Stream stream);
         public delegate void RESTErrorCallback(String reason);
@@ -195,48 +111,109 @@ namespace Stock_Scouter.Models
             }, request);
         }
 
-
-        public static Uri GetQuoteUri(string[] symbols)
+        public static Uri GetQuotesXmlUrl(List<string> symbols)
         {
-            string symbolStr = String.Join("+", symbols).Replace("++", "+");
-            return new Uri("http://download.finance.yahoo.com/d/quotes.csv?s=" + symbolStr + "&f=snd1l1ohgvmdyrc1");
+            symbols.Remove("");
+            string symbolList = String.Join("%2C", symbols.Select(w => "%22" + w + "%22").ToArray());
+            string sql = string.Format(BASE_QUERY, symbolList);
+            string url = string.Format(BASE_URL, sql);
+
+            System.Diagnostics.Debug.WriteLine((new Uri(url)).ToString());
+            return new Uri(url);
         }
 
-        public static Uri GetDetailedQuoteUri(string[] symbols)
+        public static ObservableCollection<Quote> GetQuotes(string xmlData)
         {
-            string symbolStr = String.Join("+", symbols).Replace("++", "+");
-            return new Uri("http://download.finance.yahoo.com/d/quotes.csv?s=" + symbolStr + "&f=snd1l1ohgvmdyrc1");
-        }
+            XDocument doc = XDocument.Parse(xmlData);
+            //System.Diagnostics.Debug.WriteLine(doc.ToString());
 
-        public static List<Stock> CsvToStock(string csv)
-        {
-            string[] stocks = csv.Split('\n');
-            List<Stock> list = new List<Stock>();
+            ObservableCollection<Quote> stocks = new ObservableCollection<Quote>();
+            
+            XElement results = doc.Root.Element("results");
+            IEnumerable<XElement> quotes = results.Elements("quote");
 
-            foreach (string line in stocks)
+            foreach (XElement q in quotes)
             {
-                System.Diagnostics.Debug.WriteLine(line);
-                //"XOM","Exxon Mobil Corpo","4/17/2014",100.42,99.69,100.97,99.69,15439810,"84.79 - 101.74",2.52,2.52,13.56,+1
-                string[] items = line.Split(',');
-                if (items.Length < 13 || items[2] == "\"N/A\"") continue;
-                Stock s = new Stock();
-                s.Symbol = items[0].Replace("\"", "");
-                s.Name = items[1].Replace("\"", "");
-                s.LastTradeDate = items[2].Replace("\"", "");
-                s.LastTradePrice = Convert.ToDouble(items[3]);
-                s.OpenPrice = Convert.ToDouble(items[4]);
-                s.DayHighPrice = Convert.ToDouble(items[5]);
-                s.DayLowPrice = Convert.ToDouble(items[6]);
-                s.Volume = Convert.ToInt32(items[7]);
-                s.DayRange = items[8].Replace("\"", "");
-                s.Dividend = items[9];
-                s.DividendYield = items[10];
-                s.PERatio = items[11];
-                s.Change = Convert.ToDouble(items[12]);
-                list.Add(s);
+                Quote quote = new Quote();
+
+                System.Diagnostics.Debug.WriteLine("Processing " + q.Element("Symbol").Value);
+                if (q.Element("ErrorIndicationreturnedforsymbolchangedinvalid").Value != "")
+                    continue;
+
+                quote.Symbol = q.Element("Symbol").Value;
+                quote.Ask = GetDecimal(q.Element("Ask").Value);
+                quote.Bid = GetDecimal(q.Element("Bid").Value);
+                quote.AverageDailyVolume = GetDecimal(q.Element("AverageDailyVolume").Value);
+                quote.BookValue = GetDecimal(q.Element("BookValue").Value);
+                quote.Change = GetDecimal(q.Element("Change").Value);
+                quote.DividendShare = GetDecimal(q.Element("DividendShare").Value);
+                quote.LastTradeDate = GetDateTime(q.Element("LastTradeDate") + " " + q.Element("LastTradeTime").Value);
+                quote.EarningsShare = GetDecimal(q.Element("EarningsShare").Value);
+                quote.EpsEstimateCurrentYear = GetDecimal(q.Element("EPSEstimateCurrentYear").Value);
+                quote.EpsEstimateNextYear = GetDecimal(q.Element("EPSEstimateNextYear").Value);
+                quote.EpsEstimateNextQuarter = GetDecimal(q.Element("EPSEstimateNextQuarter").Value);
+                quote.DailyLow = GetDecimal(q.Element("DaysLow").Value);
+                quote.DailyHigh = GetDecimal(q.Element("DaysHigh").Value);
+                quote.YearlyLow = GetDecimal(q.Element("YearLow").Value);
+                quote.YearlyHigh = GetDecimal(q.Element("YearHigh").Value);
+                quote.MarketCapitalization = GetDecimal(q.Element("MarketCapitalization").Value);
+                quote.Ebitda = GetDecimal(q.Element("EBITDA").Value);
+                quote.ChangeFromYearLow = GetDecimal(q.Element("ChangeFromYearLow").Value);
+                quote.PercentChangeFromYearLow = GetDecimal(q.Element("PercentChangeFromYearLow").Value);
+                quote.ChangeFromYearHigh = GetDecimal(q.Element("ChangeFromYearHigh").Value);
+                quote.LastTradePrice = GetDecimal(q.Element("LastTradePriceOnly").Value);
+                quote.PercentChangeFromYearHigh = GetDecimal(q.Element("PercebtChangeFromYearHigh").Value); //missspelling in yahoo for field name
+                quote.FiftyDayMovingAverage = GetDecimal(q.Element("FiftydayMovingAverage").Value);
+                quote.TwoHunderedDayMovingAverage = GetDecimal(q.Element("TwoHundreddayMovingAverage").Value);
+                quote.ChangeFromTwoHundredDayMovingAverage = GetDecimal(q.Element("ChangeFromTwoHundreddayMovingAverage").Value);
+                quote.PercentChangeFromTwoHundredDayMovingAverage = GetDecimal(q.Element("PercentChangeFromTwoHundreddayMovingAverage").Value);
+                quote.PercentChangeFromFiftyDayMovingAverage = GetDecimal(q.Element("PercentChangeFromFiftydayMovingAverage").Value);
+                quote.Name = q.Element("Name").Value;
+                quote.Open = GetDecimal(q.Element("Open").Value);
+                quote.PreviousClose = GetDecimal(q.Element("PreviousClose").Value);
+                quote.ChangeInPercent = GetDecimal(q.Element("ChangeinPercent").Value);
+                quote.PriceSales = GetDecimal(q.Element("PriceSales").Value);
+                quote.PriceBook = GetDecimal(q.Element("PriceBook").Value);
+                quote.ExDividendDate = GetDateTime(q.Element("ExDividendDate").Value);
+                quote.PeRatio = GetDecimal(q.Element("PERatio").Value);
+                quote.DividendPayDate = GetDateTime(q.Element("DividendPayDate").Value);
+                quote.PegRatio = GetDecimal(q.Element("PEGRatio").Value);
+                quote.PriceEpsEstimateCurrentYear = GetDecimal(q.Element("PriceEPSEstimateCurrentYear").Value);
+                quote.PriceEpsEstimateNextYear = GetDecimal(q.Element("PriceEPSEstimateNextYear").Value);
+                quote.ShortRatio = GetDecimal(q.Element("ShortRatio").Value);
+                quote.OneYearPriceTarget = GetDecimal(q.Element("OneyrTargetPrice").Value);
+                quote.Volume = GetDecimal(q.Element("Volume").Value);
+                quote.StockExchange = q.Element("StockExchange").Value;
+
+                quote.LastUpdate = DateTime.Now;
+
+                stocks.Add(quote);
             }
 
-            return list;
+            return stocks;
         }
+
+        private static decimal? GetDecimal(string input)
+        {
+            if (input == null) return null;
+
+            input = input.Replace("%", "");
+
+            decimal value;
+
+            if (Decimal.TryParse(input, out value)) return value;
+            return null;
+        }
+
+        private static DateTime? GetDateTime(string input)
+        {
+            if (input == null) return null;
+
+            DateTime value;
+
+            if (DateTime.TryParse(input, out value)) return value;
+            return null;
+        }
+
     }
 }

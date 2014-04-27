@@ -37,30 +37,22 @@ namespace Stock_Scouter.Models
             return this.stockList;
         }
 
-        public bool addStock(Stock s)
+        public bool addQuote(Quote q)
         {
-            if (this.stockList.Contains(s.Symbol)) return false;
-            this.stockList.Add(s.Symbol);
-            AppSettings.SetStock(s.Symbol, s);
+            if (stockList.Contains(q.Symbol)) return false;
+            stockList.Add(q.Symbol);
+            AppSettings.SetQuote(q.Symbol, q);
             AppSettings.SetPortfolio(this.Name, this);
             return true;
         }
 
-        public void removeStock(Stock s)
+        public void RemoveQuote(Quote s)
         {
-            if (this.stockList.Contains(s.Symbol))
+            if (stockList.Contains(s.Symbol))
             {
-                this.stockList.Remove(s.Symbol);
+                stockList.Remove(s.Symbol);
                 AppSettings.SetPortfolio(this.Name, this);
                 //TODO: clean internal storage
-            }
-        }
-
-        public void updateStock(Stock s)
-        {
-            if (this.stockList.Contains(s.Symbol))
-            {
-                IsolatedStorageSettings.ApplicationSettings["stocks"] = this.stockList;
             }
         }
     }
