@@ -132,7 +132,47 @@ namespace Stock_Scouter
 
         private void CurrentList_Edit(object sender, EventArgs e)
         {
+            var tb = new TextBox();
+            var box = new CustomMessageBox()
+            {
+                Caption = "Rename list",
+                Message = "Please enter the new name",
+                LeftButtonContent = "Rename",
+                RightButtonContent = "Cancel",
+                Content = tb,
+                IsFullScreen = false
+            };
+            box.Dismissed += (s, ev) =>
+            {
+                if (ev.Result == CustomMessageBoxResult.LeftButton)
+                {
+                    if (!AppSettings.isPortfolioExist(tb.Text))
+                    {
+                        PortfolioViewModel currentView = (PortfolioViewModel)PortfolioPivot.SelectedItem;
+                        Portfolio currentPortfolio = AppSettings.GetPortfolio(currentView.Title);
+                        AppSettings.RenamePortfolio(tb.Text, currentPortfolio);
+                        currentView.Title = tb.Text;
+                        currentView.LoadData();
+                        //App.ViewModel.LoadData();
+                    }
+                    else
+                    {
+                        // prompt for redundant list name
+                        string message = "Oops, a list named " + tb.Text + " already exists.\nPlease try another one.";
+                        string caption = "List name used";
+                        MessageBoxButton buttons = MessageBoxButton.OK;
+                        MessageBoxResult result = MessageBox.Show(message, caption, buttons);
+                    }
+                }
+            };
 
+            // focus on the text box by default
+            box.Loaded += (s, ev) =>
+            {
+                tb.Focus();
+            };
+
+            box.Show();
         }
 
         private void ContextMenu_removeItem(object sender, RoutedEventArgs e)

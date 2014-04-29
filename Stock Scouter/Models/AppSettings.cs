@@ -78,6 +78,21 @@ namespace Stock_Scouter.Models
             }
         }
 
+        public static void RenamePortfolio(string newName, Portfolio p)
+        {
+            string oldName = p.Name;
+            if (settings.Contains("P_" + oldName))
+            {
+                p.Name = newName;
+                settings.Remove("P_" + oldName);
+                settings.Add("P_" + newName, p);
+                List<string> portfolioList = GetPortfolioList();
+                int i = portfolioList.IndexOf(oldName);
+                portfolioList[i] = newName;
+                settings["PortfolioList"] = portfolioList;
+            }
+        }
+
         public static void DeletePortfolio(string key)
         {
             if (settings.Contains("P_" + key))
@@ -128,31 +143,7 @@ namespace Stock_Scouter.Models
             return defaultValue;
         }
 
-        private static double findKey(string key, double defaultValue)
-        {
-            if (settings.Contains(key)) return (double)settings[key];
-            settings.Add(key, defaultValue);
-            return defaultValue;
-        }
-
-        private static string findKey(string key, string defaultValue)
-        {
-            if (settings.Contains(key)) return (string)settings[key];
-            settings.Add(key, defaultValue);
-            return defaultValue;
-        }
-
         private static void setKey(string key, int value)
-        {
-            settings[key] = value;
-        }
-
-        private static void setKey(string key, double value)
-        {
-            settings[key] = value;
-        }
-
-        private static void setKey(string key, string value)
         {
             settings[key] = value;
         }
