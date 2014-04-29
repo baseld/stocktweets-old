@@ -16,6 +16,7 @@ namespace Stock_Scouter.Models
     {
         private static IsolatedStorageSettings settings = IsolatedStorageSettings.ApplicationSettings;
         private static int AUTO_REFRESH_INTERVAL = 5; // in seconds
+        private static bool ENABLE_AUTO_REFRESH = true;
 
         public static int AutoRefreshInterval
         {
@@ -26,6 +27,18 @@ namespace Stock_Scouter.Models
             set
             {
                 setKey("AutoRefreshInterval", value);
+            }
+        }
+
+        public static bool EnableAutoRefresh
+        {
+            get
+            {
+                return findKey("EnableAutoRefresh", ENABLE_AUTO_REFRESH);
+            }
+            set
+            {
+                setKey("EnableAutoRefresh", value);
             }
         }
 
@@ -144,6 +157,18 @@ namespace Stock_Scouter.Models
         }
 
         private static void setKey(string key, int value)
+        {
+            settings[key] = value;
+        }
+
+        private static bool findKey(string key, bool defaultValue)
+        {
+            if (settings.Contains(key)) return (bool)settings[key];
+            settings.Add(key, defaultValue);
+            return defaultValue;
+        }
+
+        private static void setKey(string key, bool value)
         {
             settings[key] = value;
         }

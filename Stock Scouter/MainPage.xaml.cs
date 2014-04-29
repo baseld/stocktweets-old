@@ -19,8 +19,9 @@ namespace Stock_Scouter
 {
     public partial class MainPage : PhoneApplicationPage
     {
+        private static DispatcherTimer dispatcherTimer = null;
+        
         private string _currentPivotTitle;
-
         public string CurrentPivotTitle
         {
             get
@@ -61,34 +62,72 @@ namespace Stock_Scouter
             return null;
         }
 
-        DispatcherTimer dispatcherTimer;
-
         // Load data for the ViewModel Items
         private void MainPage_Loaded(object sender, RoutedEventArgs e)
         {
             if (!App.ViewModel.IsDataLoaded)
             {
                 App.ViewModel.LoadData();
+                if (AppSettings.EnableAutoRefresh)
+                {
+                    dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
+                    dispatcherTimer.Tick += new EventHandler(dispatcherTimer_Tick);
+                    dispatcherTimer.Interval = new TimeSpan(0, 0, AppSettings.AutoRefreshInterval);
+                    dispatcherTimer.Start();
+                }
             }
-            dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
-            dispatcherTimer.Tick += new EventHandler(dispatcherTimer_Tick);
-            dispatcherTimer.Interval = new TimeSpan(0,0,1);
-            dispatcherTimer.Start();
         }
 
         private void dispatcherTimer_Tick(object sender, EventArgs e)
         {
-            // Updating the Label which displays the current second
-            // lblSeconds.Content = DateTime.Now.Second;
+            System.Diagnostics.Debug.WriteLine("A tick event is triggered.");
 
-            // Forcing the CommandManager to raise the RequerySuggested event
-            System.Diagnostics.Debug.WriteLine("");
+            PortfolioViewModel currentView = (PortfolioViewModel)PortfolioPivot.SelectedItem;
+            Portfolio currentPortfolio = AppSettings.GetPortfolio(currentView.Title);
+
+            List<string> currentStockList = currentPortfolio.GetStockList();
+
+            YahooFinance.get(YahooFinance.GetQuotesXmlUrl(currentStockList), null,
+                delegate(Stream str)
+                {
+                    System.Diagnostics.Debug.WriteLine("Successfully get new data for stocks");
+                    // convert stream to string
+                    try
+                    {
+                        StreamReader reader = new StreamReader(str);
+                        string result = reader.ReadToEnd();
+                        //System.Diagnostics.Debug.WriteLine("stream2str: " + result);
+                        ObservableCollection<Quote> quotes = YahooFinance.GetQuotes(result);
+
+                        foreach (Quote q in quotes)
+                        {
+                            AppSettings.SetQuote(q.Symbol, q);
+                        }
+
+                        Deployment.Current.Dispatcher.BeginInvoke(() =>
+                        {
+                            currentView.LoadData();
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine(ex.Message);
+                        System.Diagnostics.Debug.WriteLine(ex.Source);
+                        //throw;
+                    }
+                },
+                delegate(String reason)
+                {
+                    System.Diagnostics.Debug.WriteLine("Error: " + reason);
+                }
+            );
         }
 
         //app bar add to watchlist
         private void addList_Click(object sender, EventArgs e)
         {
             //NavigationService.Navigate(new Uri("/AddList.xaml", UriKind.Relative));
+            if (dispatcherTimer != null) dispatcherTimer.Stop();
             var tb = new TextBox();
             var box = new CustomMessageBox()
             {
@@ -121,6 +160,7 @@ namespace Stock_Scouter
                         MessageBoxButton buttons = MessageBoxButton.OK;
                         MessageBoxResult result = MessageBox.Show(message, caption, buttons);
                     }
+                    if (dispatcherTimer != null) dispatcherTimer.Start();
                 }
             };
 
@@ -148,6 +188,7 @@ namespace Stock_Scouter
 
         private void CurrentList_Edit(object sender, EventArgs e)
         {
+            if (dispatcherTimer != null) dispatcherTimer.Stop();
             var tb = new TextBox();
             var box = new CustomMessageBox()
             {
@@ -179,6 +220,7 @@ namespace Stock_Scouter
                         MessageBoxButton buttons = MessageBoxButton.OK;
                         MessageBoxResult result = MessageBox.Show(message, caption, buttons);
                     }
+                    if (dispatcherTimer != null) dispatcherTimer.Start();
                 }
             };
 
