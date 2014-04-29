@@ -124,7 +124,10 @@ namespace Stock_Scouter
 
         private void CurrentList_Delete(object sender, EventArgs e)
         {
-
+            PortfolioViewModel currentView = (PortfolioViewModel)PortfolioPivot.SelectedItem;
+            Portfolio currentPortfolio = AppSettings.GetPortfolio(currentView.Title);
+            currentPortfolio.Remove();
+            App.ViewModel.LoadData();
         }
 
         private void CurrentList_Edit(object sender, EventArgs e)

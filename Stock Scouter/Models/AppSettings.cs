@@ -39,7 +39,8 @@ namespace Stock_Scouter.Models
             {
                 Portfolio p = GetPortfolio("Default");
                 List<string> pl = new List<string>();
-                pl.Add("Default");
+                pl.Add("My Watchlist");
+                deleteKey("PortfolioList");
                 settings.Add("PortfolioList", pl);
                 return pl;
             }
@@ -79,7 +80,16 @@ namespace Stock_Scouter.Models
 
         public static void DeletePortfolio(string key)
         {
-            if (settings.Contains("P_" + key)) settings.Remove("P_" + key);
+            if (settings.Contains("P_" + key))
+            {
+                settings.Remove("P_" + key);
+                List<string> portfolioList = GetPortfolioList();
+                if (portfolioList.Contains(key))
+                {
+                    portfolioList.Remove(key);
+                    settings["PortfolioList"] = portfolioList;
+                }
+            }
         }
 
         public static Quote GetStock(string key)

@@ -27,6 +27,12 @@ namespace Stock_Scouter.Models
             this.stockList = new List<string>();
         }
 
+        public Portfolio(string s)
+        {
+            this.Name = s;
+            this.stockList = new List<string>();
+        }
+
         public int getNumOfStocks()
         {
             return this.stockList.Count();
@@ -55,5 +61,11 @@ namespace Stock_Scouter.Models
                 //TODO: clean internal storage
             }
         }
+
+        public void Remove()
+        {
+            AppSettings.DeletePortfolio(this._portfolioName);
+        }
+
     }
 }
