@@ -18,8 +18,9 @@
 
     <!--LayoutRoot contains the root grid where all other page content is placed-->
     <Grid x:Name="LayoutRoot">
-        
-        <phone:Panorama Name="PagePanorama" Title="stock name here" Margin="10,0,-10,0">
+
+
+        <phone:Panorama Name="PagePanorama" Title="stock name here" TitleTemplate="{StaticResource SmallPanoramaTitle}" Margin="10,0,-10,0">
 
             <!--Panorama item one-->
             <phone:PanoramaItem Header="basics">
