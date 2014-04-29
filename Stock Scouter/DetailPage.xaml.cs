@@ -14,6 +14,9 @@ namespace Stock_Scouter
 {
     public partial class DetailPage : PhoneApplicationPage
     {
+        private static string currentSymbol;
+        private static DetailViewModel ViewModel = null;
+
         public DetailPage()
         {
             InitializeComponent();
@@ -23,17 +26,16 @@ namespace Stock_Scouter
         {
             base.OnNavigatedTo(e);
 
-            string symbol = "";
+            if (NavigationContext.QueryString.TryGetValue("symbol", out currentSymbol))
+                PagePanorama.Title = currentSymbol; // an example of passing args
 
-            if (NavigationContext.QueryString.TryGetValue("symbol", out symbol))
-                PagePanorama.Title = symbol; // an example of passing args
-
-
+            ViewModel = new DetailViewModel() {Symbol = currentSymbol, Quote = AppSettings.GetStock(currentSymbol)};
         }
 
         void OnLoad(object sender, RoutedEventArgs e)
         {
             System.Diagnostics.Debug.WriteLine("This is an onload event!");
+            //this.currentQuote = AppSettings.GetStock(currentSymbol);
             //System.Diagnostics.Debug.WriteLine("WebClient returns " + YahooFinance.GetQuotes(new string[]{"XOM"}));
         }
     }

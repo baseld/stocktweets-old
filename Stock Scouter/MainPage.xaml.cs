@@ -12,6 +12,7 @@ using System.Windows.Shapes;
 using Microsoft.Phone.Controls;
 using System.IO;
 using System.Collections.ObjectModel;
+using System.Windows.Threading;
 using Stock_Scouter.Models;
 
 namespace Stock_Scouter
@@ -60,6 +61,8 @@ namespace Stock_Scouter
             return null;
         }
 
+        DispatcherTimer dispatcherTimer;
+
         // Load data for the ViewModel Items
         private void MainPage_Loaded(object sender, RoutedEventArgs e)
         {
@@ -67,6 +70,19 @@ namespace Stock_Scouter
             {
                 App.ViewModel.LoadData();
             }
+            dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
+            dispatcherTimer.Tick += new EventHandler(dispatcherTimer_Tick);
+            dispatcherTimer.Interval = new TimeSpan(0,0,1);
+            dispatcherTimer.Start();
+        }
+
+        private void dispatcherTimer_Tick(object sender, EventArgs e)
+        {
+            // Updating the Label which displays the current second
+            // lblSeconds.Content = DateTime.Now.Second;
+
+            // Forcing the CommandManager to raise the RequerySuggested event
+            System.Diagnostics.Debug.WriteLine("");
         }
 
         //app bar add to watchlist

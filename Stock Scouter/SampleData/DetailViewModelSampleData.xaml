@@ -1,0 +1,88 @@
+<local:DetailViewModel 
+    xmlns:local="clr-namespace:Stock_Scouter">
+    <local:DetailViewModel.Symbol>
+        QQQ
+    </local:DetailViewModel.Symbol>
+    <local:DetailViewModel.Quote>
+        <AverageDailyVolume>44461300</AverageDailyVolume>
+        <Bid>85.32</Bid>
+        <AskRealtime>0.00</AskRealtime>
+        <BidRealtime>85.32</BidRealtime>
+        <BookValue>0.00</BookValue>
+        <Change_PercentChange>-1.40 - -1.60%</Change_PercentChange>
+        <Change>-1.40</Change>
+        <Commission />
+        <ChangeRealtime>-1.40</ChangeRealtime>
+        <AfterHoursChangeRealtime>N/A - N/A</AfterHoursChangeRealtime>
+        <DividendShare>1.313</DividendShare>
+        <LastTradeDate>4/25/2014</LastTradeDate>
+        <TradeDate />
+        <EarningsShare>0.00</EarningsShare>
+        <ErrorIndicationreturnedforsymbolchangedinvalid />
+        <EPSEstimateCurrentYear>0.00</EPSEstimateCurrentYear>
+        <EPSEstimateNextYear>0.00</EPSEstimateNextYear>
+        <EPSEstimateNextQuarter>0.00</EPSEstimateNextQuarter>
+        <DaysLow>85.98</DaysLow>
+        <DaysHigh>87.17</DaysHigh>
+        <YearLow>69.15</YearLow>
+        <YearHigh>91.36</YearHigh>
+        <HoldingsGainPercent>- - -</HoldingsGainPercent>
+        <AnnualizedGain />
+        <HoldingsGain />
+        <HoldingsGainPercentRealtime>N/A - N/A</HoldingsGainPercentRealtime>
+        <HoldingsGainRealtime />
+        <MoreInfo>cn</MoreInfo>
+        <OrderBookRealtime />
+        <MarketCapitalization />
+        <MarketCapRealtime />
+        <EBITDA>0</EBITDA>
+        <ChangeFromYearLow>+17.04</ChangeFromYearLow>
+        <PercentChangeFromYearLow>+24.64%</PercentChangeFromYearLow>
+        <LastTradeRealtimeWithTime>N/A - &lt;b&gt;86.19&lt;/b&gt;</LastTradeRealtimeWithTime>
+        <ChangePercentRealtime>N/A - -1.60%</ChangePercentRealtime>
+        <ChangeFromYearHigh>-5.17</ChangeFromYearHigh>
+        <PercebtChangeFromYearHigh>-5.66%</PercebtChangeFromYearHigh>
+        <LastTradeWithTime>Apr 25 - &lt;b&gt;86.19&lt;/b&gt;</LastTradeWithTime>
+        <LastTradePriceOnly>86.19</LastTradePriceOnly>
+        <HighLimit />
+        <LowLimit />
+        <DaysRange>85.98 - 87.17</DaysRange>
+        <DaysRangeRealtime>N/A - N/A</DaysRangeRealtime>
+        <FiftydayMovingAverage>87.7685</FiftydayMovingAverage>
+        <TwoHundreddayMovingAverage>86.1975</TwoHundreddayMovingAverage>
+        <ChangeFromTwoHundreddayMovingAverage>-0.0075</ChangeFromTwoHundreddayMovingAverage>
+        <PercentChangeFromTwoHundreddayMovingAverage>-0.01%</PercentChangeFromTwoHundreddayMovingAverage>
+        <ChangeFromFiftydayMovingAverage>-1.5785</ChangeFromFiftydayMovingAverage>
+        <PercentChangeFromFiftydayMovingAverage>-1.80%</PercentChangeFromFiftydayMovingAverage>
+        <Name>PowerShares QQQ T</Name>
+        <Notes />
+        <Open>87.07</Open>
+        <PreviousClose>87.59</PreviousClose>
+        <PricePaid />
+        <ChangeinPercent>-1.60%</ChangeinPercent>
+        <PriceSales />
+        <PriceBook />
+        <ExDividendDate>Mar 21</ExDividendDate>
+        <PERatio />
+        <DividendPayDate>Apr 30</DividendPayDate>
+        <PERatioRealtime />
+        <PEGRatio />
+        <PriceEPSEstimateCurrentYear />
+        <PriceEPSEstimateNextYear />
+        <Symbol>QQQ</Symbol>
+        <SharesOwned />
+        <ShortRatio />
+        <LastTradeTime>4:00pm</LastTradeTime>
+        <TickerTrend>&amp;nbsp;======&amp;nbsp;</TickerTrend>
+        <OneyrTargetPrice />
+        <Volume>44341588</Volume>
+        <HoldingsValue />
+        <HoldingsValueRealtime />
+        <YearRange>69.15 - 91.36</YearRange>
+        <DaysValueChange>- - -1.60%</DaysValueChange>
+        <DaysValueChangeRealtime>N/A - N/A</DaysValueChangeRealtime>
+        <StockExchange>NGM</StockExchange>
+        <DividendYield>1.50</DividendYield>
+        <PercentChange>-1.60%</PercentChange>
+    </local:DetailViewModel.Quote>
+</local:DetailViewModel>

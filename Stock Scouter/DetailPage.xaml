@@ -3,10 +3,12 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
+	xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
     xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
+	d:DataContext="{d:DesignData SampleData/DetailViewModelSampleData.xaml}"
     FontFamily="{StaticResource PhoneFontFamilyNormal}"
     FontSize="{StaticResource PhoneFontSizeNormal}"
     Foreground="{StaticResource PhoneForegroundBrush}"
@@ -17,11 +19,27 @@
     <!--LayoutRoot contains the root grid where all other page content is placed-->
     <Grid x:Name="LayoutRoot">
         
-        <phone:Panorama Name="PagePanorama" Title="stock name here">
+        <phone:Panorama Name="PagePanorama" Title="stock name here" Margin="10,0,-10,0">
 
             <!--Panorama item one-->
             <phone:PanoramaItem Header="basics">
-                <Grid/>
+                <StackPanel x:Name="BasicsGrid">
+                    <TextBlock x:Name="FullName" HorizontalAlignment="Center" TextWrapping="Wrap" Text="Full CompanyName" VerticalAlignment="Top" Margin="28,0,27,10" Style="{StaticResource PhoneTextLargeStyle}"/>
+            		<Grid Width="Auto">
+            			<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="140" />
+							<ColumnDefinition Width="50"/>
+			               <ColumnDefinition Width="Auto"/>
+						</Grid.ColumnDefinitions>
+						<Grid.RowDefinitions>
+							<RowDefinition Height="Auto"/>
+						</Grid.RowDefinitions>
+						<TextBlock Grid.Column="0" Grid.Row="0" Name="Price" TextWrapping="Wrap" HorizontalAlignment="Center">$3.33</TextBlock>
+                        <TextBlock Grid.Column="1" Grid.Row="0" Name="Indicator" TextWrapping="Wrap" HorizontalAlignment="Right" Margin="0,0,5,0">Up</TextBlock>
+                        <TextBlock Grid.Column="2" Grid.Row="0" Name="ChangePrecentage" TextWrapping="Wrap" HorizontalAlignment="Left">33.33%</TextBlock>
+            		</Grid>
+
+            	</StackPanel>
             </phone:PanoramaItem>
 
             <!--Panorama item two-->

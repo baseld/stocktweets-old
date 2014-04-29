@@ -115,7 +115,7 @@
             <shell:ApplicationBarIconButton IconUri="/Toolkit.Content/ApplicationBar.Select.png" Text="filter"/>
             <shell:ApplicationBar.MenuItems>
                 <shell:ApplicationBarMenuItem Text="Refresh" Click="CurrentList_Refresh"/>
-                <shell:ApplicationBarMenuItem Text="Edit" Click="CurrentList_Edit"/>
+                <shell:ApplicationBarMenuItem Text="Rename" Click="CurrentList_Edit"/>
                 <shell:ApplicationBarMenuItem Text="Delete" Click="CurrentList_Delete"/>
                 <shell:ApplicationBarMenuItem Text="Settings"/>
                 <shell:ApplicationBarMenuItem Text="Test" Click="Test_Trigger"/>
