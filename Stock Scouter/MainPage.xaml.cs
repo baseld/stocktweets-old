@@ -82,45 +82,7 @@ namespace Stock_Scouter
         {
             System.Diagnostics.Debug.WriteLine("A tick event is triggered.");
 
-            PortfolioViewModel currentView = (PortfolioViewModel)PortfolioPivot.SelectedItem;
-            Portfolio currentPortfolio = AppSettings.GetPortfolio(currentView.Title);
-
-            List<string> currentStockList = currentPortfolio.GetStockList();
-
-            YahooFinance.get(YahooFinance.GetQuotesXmlUrl(currentStockList), null,
-                delegate(Stream str)
-                {
-                    System.Diagnostics.Debug.WriteLine("Successfully get new data for stocks");
-                    // convert stream to string
-                    try
-                    {
-                        StreamReader reader = new StreamReader(str);
-                        string result = reader.ReadToEnd();
-                        //System.Diagnostics.Debug.WriteLine("stream2str: " + result);
-                        ObservableCollection<Quote> quotes = YahooFinance.GetQuotes(result);
-
-                        foreach (Quote q in quotes)
-                        {
-                            AppSettings.SetQuote(q.Symbol, q);
-                        }
-
-                        Deployment.Current.Dispatcher.BeginInvoke(() =>
-                        {
-                            currentView.LoadData();
-                        });
-                    }
-                    catch (Exception ex)
-                    {
-                        System.Diagnostics.Debug.WriteLine(ex.Message);
-                        System.Diagnostics.Debug.WriteLine(ex.Source);
-                        //throw;
-                    }
-                },
-                delegate(String reason)
-                {
-                    System.Diagnostics.Debug.WriteLine("Error: " + reason);
-                }
-            );
+            CurrentList_RefreshView();
         }
 
         //app bar add to watchlist
@@ -173,9 +135,55 @@ namespace Stock_Scouter
             box.Show();
         }
 
+        private void CurrentList_RefreshView()
+        {
+            PortfolioViewModel currentView = (PortfolioViewModel)PortfolioPivot.SelectedItem;
+            Portfolio currentPortfolio = AppSettings.GetPortfolio(currentView.Title);
+            List<string> currentStockList = currentPortfolio.GetStockList();
+
+            // do not refresh if the portfolio has nothing
+            if (currentStockList.Count == 0) return;
+
+            YahooFinance.get(YahooFinance.GetQuotesXmlUrl(currentStockList), null,
+                delegate(Stream str)
+                {
+                    System.Diagnostics.Debug.WriteLine("Successfully get new data for stocks");
+                    // convert stream to string
+                    try
+                    {
+                        StreamReader reader = new StreamReader(str);
+                        string result = reader.ReadToEnd();
+                        //System.Diagnostics.Debug.WriteLine("stream2str: " + result);
+                        ObservableCollection<Quote> quotes = YahooFinance.GetQuotes(result);
+
+                        foreach (Quote q in quotes)
+                        {
+                            AppSettings.SetQuote(q.Symbol, q);
+                        }
+
+                        Deployment.Current.Dispatcher.BeginInvoke(() =>
+                        {
+                            currentView.LoadData();
+                            //App.ViewModel.LoadData();
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine(ex.Message);
+                        System.Diagnostics.Debug.WriteLine(ex.Source);
+                        //throw;
+                    }
+                },
+                delegate(String reason)
+                {
+                    System.Diagnostics.Debug.WriteLine("Error: " + reason);
+                }
+            );
+        }
+
         private void CurrentList_Refresh(object sender, EventArgs e)
         {
-            App.ViewModel.LoadData();
+            CurrentList_RefreshView();
         }
 
         private void CurrentList_Delete(object sender, EventArgs e)
