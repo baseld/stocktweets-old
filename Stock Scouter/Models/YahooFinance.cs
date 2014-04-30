@@ -147,7 +147,8 @@ namespace Stock_Scouter.Models
                 quote.BookValue = GetDecimal(q.Element("BookValue").Value);
                 quote.Change = GetDecimal(q.Element("Change").Value);
                 quote.DividendShare = GetDecimal(q.Element("DividendShare").Value);
-                quote.LastTradeDate = GetDateTime(q.Element("LastTradeDate") + " " + q.Element("LastTradeTime").Value);
+                quote.LastTradeDate = GetDateTime(q.Element("LastTradeDate").Value + " " + q.Element("LastTradeTime").Value);
+                quote.LastTradeTime = q.Element("LastTradeTime").Value;
                 quote.EarningsShare = GetDecimal(q.Element("EarningsShare").Value);
                 quote.EpsEstimateCurrentYear = GetDecimal(q.Element("EPSEstimateCurrentYear").Value);
                 quote.EpsEstimateNextYear = GetDecimal(q.Element("EPSEstimateNextYear").Value);

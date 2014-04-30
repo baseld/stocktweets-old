@@ -4,21 +4,21 @@
     <local:MainViewModel.PageCollection>
         <local:PortfolioViewModel Title="Watchlist">
             <local:PortfolioViewModel.StockViews>
-                <local:StockBriefViewModel Symbol="XOM" Name="Exxon Mobil" LastTradePrice="89.14" Change="+0.12" Color="Green"/>
-                <local:StockBriefViewModel Symbol="MSFT" Name="Microsoft" LastTradePrice="41.77" Change="+0.001" Color="Green"/>
-                <local:StockBriefViewModel Symbol="INTC" Name="Intel" LastTradePrice="27.45" Change="0" Color="Green"/>
-                <local:StockBriefViewModel Symbol="AAPL" Name="Apple" LastTradePrice="598.88" Change="-3.545" Color="Red"/>
-                <local:StockBriefViewModel Symbol="C" Name="Citigroup" LastTradePrice="11.11" Change="+0.01" Color="Green"/>
+                <local:StockBriefViewModel Symbol="XOM" Name="Exxon Mobil" LastTradePrice="89.14" LastTradeDate="4/25/2014 4:00pm"  Change="+0.12" ChangeInPercent="+0.12%"  Color="Green"/>
+                <local:StockBriefViewModel Symbol="MSFT" Name="Microsoft" LastTradePrice="41.77" LastTradeDate="4/25/2014 4:00pm" Change="+0.001" ChangeInPercent="+0%" Color="Green"/>
+                <local:StockBriefViewModel Symbol="INTC" Name="Intel" LastTradePrice="27.45" LastTradeDate="4/25/2014 4:00pm" Change="0" ChangeInPercent="+1.23%" Color="Green"/>
+                <local:StockBriefViewModel Symbol="AAPL" Name="Apple" LastTradePrice="598.88" LastTradeDate="4/25/2014 4:00pm" Change="-3.545" ChangeInPercent="-0.22%" Color="Red"/>
+                <local:StockBriefViewModel Symbol="C" Name="Citigroup" LastTradePrice="11.11" LastTradeDate="4/25/2014 4:00pm" Change="+0.01" ChangeInPercent="+0.05%" Color="Green"/>
             </local:PortfolioViewModel.StockViews>
         </local:PortfolioViewModel>
         <local:PortfolioViewModel Title="Bought">
             <local:PortfolioViewModel.StockViews>
-                <local:StockBriefViewModel Symbol="GOOG" Name="Google" LastTradePrice="1211.11" Change="-12.338" Color="Red"/>
+                <local:StockBriefViewModel Symbol="GOOG" Name="Google" LastTradePrice="1211.11" LastTradeDate="4/25/2014 4:00pm" Change="-12.338" ChangeInPercent="+0.05%" Color="Red"/>
             </local:PortfolioViewModel.StockViews>
         </local:PortfolioViewModel>
         <local:PortfolioViewModel Title="Indexes">
             <local:PortfolioViewModel.StockViews>
-                <local:StockBriefViewModel Symbol="SPX" Name="SP500" LastTradePrice="1860.01" Change="+0.41" Color="Green"/>
+                <local:StockBriefViewModel Symbol="SPX" Name="SP500" LastTradePrice="1860.01" LastTradeDate="4/25/2014 4:00pm" Change="+0.41" ChangeInPercent="+0.05%" Color="Green"/>
             </local:PortfolioViewModel.StockViews>
         </local:PortfolioViewModel>
     </local:MainViewModel.PageCollection>

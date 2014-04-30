@@ -13,7 +13,7 @@
     FontSize="{StaticResource PhoneFontSizeNormal}"
     Foreground="{StaticResource PhoneForegroundBrush}"
     SupportedOrientations="Portrait"  Orientation="Portrait"
-    shell:SystemTray.IsVisible="True">
+    shell:SystemTray.IsVisible="False">
 
     <!--Data context is set to sample data above and LayoutRoot contains the root grid where all other page content is placed-->
     <!--LayoutRoot is the root grid where all page content is placed-->
@@ -55,25 +55,30 @@
                         </Grid.RowDefinitions>
 
                         <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,60,12,0" VerticalAlignment="Top">
+                            
                             <ListBox Name="MainListBox" Margin="0,0,-12,0" ItemsSource="{Binding StockViews}" SelectionChanged="ListBox_onSelectionChanged">
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
-                                        <StackPanel Margin="0,0,0,10">
+                                        <StackPanel Margin="0,0,0,03">
+                                            <StackPanel.Background>
+                                                <SolidColorBrush Color="Black" Opacity="0.3" />
+                                            </StackPanel.Background>
                                             <toolkit:ContextMenuService.ContextMenu>
                                                 <toolkit:ContextMenu>
                                                     <toolkit:MenuItem Header="Remove" Click="ContextMenu_removeItem"/>
                                                 </toolkit:ContextMenu>
                                             </toolkit:ContextMenuService.ContextMenu>
-                                            <Grid Grid.Row="0" Background="Transparent" VerticalAlignment="Top">
+                                            <Grid Grid.Row="0" Background="Transparent" VerticalAlignment="Top" Margin="5,5,5,5">
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="Auto" MinWidth="280" />
-                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="190" />
+                                                    <ColumnDefinition Width="Auto" MinWidth="160"/>
+                                                    <ColumnDefinition Width="85"/>
                                                 </Grid.ColumnDefinitions>
                                                 <Grid.RowDefinitions>
                                                     <RowDefinition Height="Auto"/>
                                                 </Grid.RowDefinitions>
 
-                                                <Grid Grid.Row="0" Grid.Column="0" Background="Transparent" VerticalAlignment="Top">
+                                                <Grid Grid.Column="0" Background="Transparent">
                                                     <Grid.ColumnDefinitions>
                                                         <ColumnDefinition Width="Auto" />
                                                     </Grid.ColumnDefinitions>
@@ -81,11 +86,11 @@
                                                         <RowDefinition Height="Auto"/>
                                                         <RowDefinition Height="Auto"/>
                                                     </Grid.RowDefinitions>
-                                                    <TextBlock Name="stockSymbol" Grid.Row="0" Text="{Binding Symbol}" TextWrapping="Wrap" Style="{StaticResource PhoneTextLargeStyle}" Margin="0,0,12,0"/>
-                                                    <TextBlock Name="stockName" Grid.Row="1" Text="{Binding Name}" TextWrapping="Wrap"/>
+                                                    <TextBlock Name="stockSymbol" Grid.Row="0" Text="{Binding Symbol}" TextWrapping="Wrap" Style="{StaticResource PhoneTextNormalStyle}" Margin="0,0,0,0"/>
+                                                    <TextBlock Name="stockName" Grid.Row="1" Text="{Binding Name}" Style="{StaticResource PhoneTextSubtleStyle}" FontSize="16" Margin="0,0,0,0" TextWrapping="Wrap"/>
                                                 </Grid>
 
-                                                <Grid Grid.Row="0" Grid.Column="1"  VerticalAlignment="Center" HorizontalAlignment="Center" Width="160" Background="{Binding Color}">
+                                                <Grid Grid.Column="1" Background="Transparent" HorizontalAlignment="Right" Margin="0,0,15,0">
                                                     <Grid.ColumnDefinitions>
                                                         <ColumnDefinition Width="Auto" />
                                                     </Grid.ColumnDefinitions>
@@ -93,8 +98,20 @@
                                                         <RowDefinition Height="Auto"/>
                                                         <RowDefinition Height="Auto"/>
                                                     </Grid.RowDefinitions>
-                                                    <TextBlock Grid.Row="0" Text="{Binding LastTradePrice}" TextWrapping="Wrap"/>
-                                                    <TextBlock Grid.Row="1" Text="{Binding Change}" TextWrapping="Wrap"/>
+                                                    <TextBlock Grid.Row="0" Text="{Binding LastTradePrice}" TextWrapping="Wrap" TextAlignment="Right" Margin="0,0,0,0"/>
+                                                    <TextBlock Grid.Row="1" Text="{Binding LastTradeDate}" Style="{StaticResource PhoneTextSubtleStyle}" FontSize="16" Margin="0,0,0,0" TextWrapping="Wrap" TextAlignment="Right"/>
+                                                </Grid>
+
+                                                <Grid Grid.Column="2" Background="{Binding Color}">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="85" />
+                                                    </Grid.ColumnDefinitions>
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="Auto"/>
+                                                        <RowDefinition Height="Auto"/>
+                                                    </Grid.RowDefinitions>
+                                                    <TextBlock Grid.Row="0" TextAlignment="Center" Text="{Binding Change}" TextWrapping="Wrap"/>
+                                                    <TextBlock Grid.Row="1" TextAlignment="Center" Text="{Binding ChangeInPercent}" Style="{StaticResource PhoneTextSubtleStyle}" FontSize="16" TextWrapping="Wrap"/>
                                                 </Grid>
                                             </Grid>
 
@@ -112,11 +129,10 @@
     <phone:PhoneApplicationPage.ApplicationBar>
         <shell:ApplicationBar IsVisible="True" IsMenuEnabled="True">
             <shell:ApplicationBarIconButton Click="addList_Click" IconUri="/Toolkit.Content/ApplicationBar.Add.png" Text="new list"/>
-            <shell:ApplicationBarIconButton IconUri="/Toolkit.Content/ApplicationBar.Select.png" Text="filter"/>
+            <shell:ApplicationBarIconButton Click="CurrentList_Edit" IconUri="/Toolkit.Content/appbar.edit.png" Text="rename"/>
+            <shell:ApplicationBarIconButton Click="CurrentList_Delete" IconUri="/Toolkit.Content/ApplicationBar.Delete.png" Text="delete"/>
+            <shell:ApplicationBarIconButton Click="CurrentList_Refresh" IconUri="/Toolkit.Content/appbar.refresh.png" Text="refresh"/>
             <shell:ApplicationBar.MenuItems>
-                <shell:ApplicationBarMenuItem Text="Refresh" Click="CurrentList_Refresh"/>
-                <shell:ApplicationBarMenuItem Text="Rename" Click="CurrentList_Edit"/>
-                <shell:ApplicationBarMenuItem Text="Delete" Click="CurrentList_Delete"/>
                 <shell:ApplicationBarMenuItem Text="Settings" Click="NavigateTo_Settings"/>
                 <shell:ApplicationBarMenuItem Text="Test" Click="Test_Trigger"/>
             </shell:ApplicationBar.MenuItems>

@@ -17,6 +17,7 @@ namespace Stock_Scouter.Models
         private static IsolatedStorageSettings settings = IsolatedStorageSettings.ApplicationSettings;
         private static int AUTO_REFRESH_INTERVAL = 5; // in seconds
         private static bool ENABLE_AUTO_REFRESH = true;
+        private static string DEFAULT_PORTFOLIO_NAME = "Watchlist";
 
         public static int AutoRefreshInterval
         {
@@ -50,9 +51,9 @@ namespace Stock_Scouter.Models
             }
             else
             {
-                Portfolio p = GetPortfolio("Default");
+                Portfolio p = GetPortfolio(DEFAULT_PORTFOLIO_NAME);
                 List<string> pl = new List<string>();
-                pl.Add("My Watchlist");
+                pl.Add(DEFAULT_PORTFOLIO_NAME);
                 deleteKey("PortfolioList");
                 settings.Add("PortfolioList", pl);
                 return pl;

@@ -46,6 +46,40 @@ namespace Stock_Scouter
             }
         }
 
+        private string _changeInPercent;
+        public string ChangeInPercent
+        {
+            get
+            {
+                return this._changeInPercent;
+            }
+            set
+            {
+                if (this._changeInPercent != value)
+                {
+                    this._changeInPercent = value;
+                    NotifyPropertyChanged("ChangeInPercent");
+                }
+            }
+        }
+
+        private string _lastTradeDate;
+        public string LastTradeDate
+        {
+            get
+            {
+                return this._lastTradeDate;
+            }
+            set
+            {
+                if (this._lastTradeDate != value)
+                {
+                    this._lastTradeDate = value;
+                    NotifyPropertyChanged("LastTradeDate");
+                }
+            }
+        }
+
         private string _lastTradePrice;
         public string LastTradePrice
         {
@@ -93,40 +127,6 @@ namespace Stock_Scouter
                 {
                     this._name = value;
                     NotifyPropertyChanged("Name");
-                }
-            }
-        }
-
-        private string _askPrice;
-        public string AskPrice
-        {
-            get
-            {
-                return this._askPrice;
-            }
-            set
-            {
-                if (this._askPrice != value)
-                {
-                    this._askPrice = value;
-                    NotifyPropertyChanged("AskPrice");
-                }
-            }
-        }
-
-        private string _bidPrice;
-        public string BidPrice
-        {
-            get
-            {
-                return this._bidPrice;
-            }
-            set
-            {
-                if (this._bidPrice != value)
-                {
-                    this._bidPrice = value;
-                    NotifyPropertyChanged("BidPrice");
                 }
             }
         }

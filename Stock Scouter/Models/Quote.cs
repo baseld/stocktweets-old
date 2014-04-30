@@ -18,10 +18,11 @@ namespace Stock_Scouter.Models
         private decimal? bid;
         private decimal? ask;
         private decimal? bookValue;
-        private decimal? changePercent;
+        //private decimal? changePercent;
         private decimal? change;
         private decimal? dividendShare;
         private DateTime? lastTradeDate;
+        private string lastTradeTime;
         private decimal? earningsShare;
         private decimal? epsEstimateCurrentYear;
         private decimal? epsEstimateNextYear;
@@ -486,6 +487,15 @@ namespace Stock_Scouter.Models
             }
         }
 
+        public string LastTradeTime
+        {
+            get { return lastTradeTime; }
+            set
+            {
+                lastTradeTime = value;
+                if (PropertyChanged != null) PropertyChanged(this, new PropertyChangedEventArgs("LastTradeTime"));
+            }
+        }
 
         public decimal? DividendShare
         {
@@ -508,7 +518,7 @@ namespace Stock_Scouter.Models
             }
         }
 
-
+        /*
         public decimal? ChangePercent
         {
             get { return changePercent; }
@@ -518,7 +528,7 @@ namespace Stock_Scouter.Models
                 if (PropertyChanged != null) PropertyChanged(this, new PropertyChangedEventArgs("ChangePercent"));
             }
         }
-
+        */
 
         public decimal? BookValue
         {

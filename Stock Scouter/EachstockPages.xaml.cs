@@ -31,7 +31,7 @@ namespace Stock_Scouter
                 PagePanorama.Title = q.Name; // an example of passing args
                 Price.Text = q.LastTradePrice.ToString();
                 Change.Text=q.Change.ToString();
-                ChangePercent.Text=q.ChangePercent.ToString();
+                ChangeInPercent.Text=q.ChangeInPercent.ToString();
                 Dailyhigh.Text = q.DailyHigh.ToString();
                 Dailylow.Text = q.DailyLow.ToString();
 
@@ -39,7 +39,7 @@ namespace Stock_Scouter
 
             System.Diagnostics.Debug.WriteLine(q.Name);
             System.Diagnostics.Debug.WriteLine(q.Change);
-            System.Diagnostics.Debug.WriteLine(q.ChangePercent);
+            System.Diagnostics.Debug.WriteLine(q.ChangeInPercent);
         }
 
         private void graphtime_click(object sender, RoutedEventArgs e)

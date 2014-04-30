@@ -77,7 +77,7 @@ namespace Stock_Scouter
             foreach (string entry in _portfolio.GetStockList())
             {
                 Quote s = AppSettings.GetStock(entry);
-                this.StockViews.Add(new StockBriefViewModel() { Symbol = s.Symbol, Name = s.Name, LastTradePrice = s.LastTradePrice.ToString(), Change = s.Change.ToString() });
+                this.StockViews.Add(new StockBriefViewModel() { Symbol = s.Symbol, Name = s.Name, LastTradePrice = s.LastTradePrice.ToString(), LastTradeDate = s.LastTradeDate.ToString(), Change = s.Change.ToString(), ChangeInPercent=s.ChangeInPercent.ToString() + "%" });
                 System.Diagnostics.Debug.WriteLine("Added stock " + s.Symbol + " to list.");
             }
             // disable this so far

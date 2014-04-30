@@ -35,7 +35,7 @@
                             </Grid.ColumnDefinitions>
                             <TextBlock Grid.Column="0" Name="Price" TextWrapping="Wrap" HorizontalAlignment="Left"/>
                             <TextBlock Grid.Column="1" Name="Change" TextWrapping="Wrap" HorizontalAlignment="Right" Margin="0,0,5,0"/>
-                            <TextBlock Grid.Column="2" Name="ChangePercent" TextWrapping="Wrap" HorizontalAlignment="Center"/>
+                            <TextBlock Grid.Column="2" Name="ChangeInPercent" TextWrapping="Wrap" HorizontalAlignment="Center"/>
                         </Grid>
                         <Grid Grid.Row="1">
                         <Grid.ColumnDefinitions>

@@ -168,13 +168,13 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="ApplicationIcon.png" />
+    <Content Include="Assets\logo.png" />
     <Content Include="Background.png" />
-    <Content Include="Assets\Icons\checkmark-48.png" />
-    <Content Include="Assets\Icons\edit_property-48.png" />
-    <Content Include="Assets\Icons\plus2_math-48.png" />
-    <Content Include="Assets\Icons\search-32.png" />
     <Content Include="SplashScreenImage.jpg" />
     <Content Include="Assets\Wallpaper.jpg" />
+    <Content Include="Toolkit.Content\appbar.edit.png" />
+    <Content Include="Toolkit.Content\appbar.refresh.png" />
+    <Content Include="Toolkit.Content\appbar.save.png" />
     <Content Include="Toolkit.Content\ApplicationBar.Add.png" />
     <Content Include="Toolkit.Content\ApplicationBar.Cancel.png" />
     <Content Include="Toolkit.Content\ApplicationBar.Check.png" />

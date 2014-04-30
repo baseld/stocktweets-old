@@ -1,38 +1,20 @@
-﻿using System;
+﻿using Microsoft.Phone.Controls;
+using Stock_Scouter.Models;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
-using System.Net;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Shapes;
-using Microsoft.Phone.Controls;
-using System.IO;
-using System.Collections.ObjectModel;
 using System.Windows.Threading;
-using Stock_Scouter.Models;
 
 namespace Stock_Scouter
 {
     public partial class MainPage : PhoneApplicationPage
     {
         private static DispatcherTimer dispatcherTimer = null;
-        
-        private string _currentPivotTitle;
-        public string CurrentPivotTitle
-        {
-            get
-            {
-                return this._currentPivotTitle;
-            }
-            set
-            {
-                this._currentPivotTitle = value;
-            }
-        }
 
         // Constructor
         public MainPage()
@@ -42,6 +24,8 @@ namespace Stock_Scouter
             // Set the data context of the listbox control to the sample data
             DataContext = App.ViewModel;
             this.Loaded += new RoutedEventHandler(MainPage_Loaded);
+
+ 
         }
 
         // may be pretty slow
@@ -73,15 +57,15 @@ namespace Stock_Scouter
                     dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
                     dispatcherTimer.Tick += new EventHandler(dispatcherTimer_Tick);
                     dispatcherTimer.Interval = new TimeSpan(0, 0, AppSettings.AutoRefreshInterval);
-                    dispatcherTimer.Start();
                 }
             }
+            if (!AppSettings.EnableAutoRefresh) dispatcherTimer = null;
+            if (dispatcherTimer != null) dispatcherTimer.Start();
         }
 
         private void dispatcherTimer_Tick(object sender, EventArgs e)
         {
             System.Diagnostics.Debug.WriteLine("A tick event is triggered.");
-
             CurrentList_RefreshView();
         }
 
@@ -163,6 +147,7 @@ namespace Stock_Scouter
 
                         Deployment.Current.Dispatcher.BeginInvoke(() =>
                         {
+                            AppSettings.SetPortfolio(currentPortfolio.Name, currentPortfolio);
                             currentView.LoadData();
                             //App.ViewModel.LoadData();
                         });
@@ -214,11 +199,13 @@ namespace Stock_Scouter
                     if (!AppSettings.isPortfolioExist(tb.Text))
                     {
                         PortfolioViewModel currentView = (PortfolioViewModel)PortfolioPivot.SelectedItem;
+                        int currentViewIndex = PortfolioPivot.SelectedIndex;
                         Portfolio currentPortfolio = AppSettings.GetPortfolio(currentView.Title);
                         AppSettings.RenamePortfolio(tb.Text, currentPortfolio);
                         currentView.Title = tb.Text;
-                        currentView.LoadData();
-                        //App.ViewModel.LoadData();
+                        //currentView.LoadData();
+                        App.ViewModel.LoadData();
+                        PortfolioPivot.SelectedIndex = currentViewIndex;
                     }
                     else
                     {
@@ -297,10 +284,10 @@ namespace Stock_Scouter
                                 bool ret = currentPortfolio.addQuote(quote);
                                 if (ret)
                                 {
-                                    System.Diagnostics.Debug.WriteLine(quote.Symbol);
-                                    currentView.StockViews.Add(new StockBriefViewModel() { Symbol = quote.Symbol, Name = quote.Name, AskPrice = quote.Ask.ToString(), BidPrice = quote.Bid.ToString(), Change = quote.Change.ToString() });
+                                    System.Diagnostics.Debug.WriteLine("Added " + quote.Symbol);
                                 }
                             }
+                            AppSettings.SetPortfolio(currentPortfolio.Name, currentPortfolio);
                             currentView.LoadData();
                             if (dispatcherTimer != null) dispatcherTimer.Start();
                         });
@@ -366,9 +353,9 @@ namespace Stock_Scouter
                                 if (ret)
                                 {
                                     System.Diagnostics.Debug.WriteLine(quote.Symbol);
-                                    currentView.StockViews.Add(new StockBriefViewModel() { Symbol = quote.Symbol, Name = quote.Name, AskPrice = quote.Ask.ToString(), BidPrice = quote.Bid.ToString(), Change = quote.Change.ToString() });
                                 }
                             }
+                            AppSettings.SetPortfolio(currentPortfolio.Name, currentPortfolio);
                             currentView.LoadData();
                         });
                     }

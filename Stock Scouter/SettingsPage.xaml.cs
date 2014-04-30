@@ -18,6 +18,10 @@ namespace Stock_Scouter
         public SettingsPage()
         {
             InitializeComponent();
+            EnableAutoRefresh_Input.IsChecked = AppSettings.EnableAutoRefresh;
+            if (EnableAutoRefresh_Input.IsChecked != true)
+                AutoRefreshInterval_Input.IsEnabled = false;
+            AutoRefreshInterval_Input.Text = AppSettings.AutoRefreshInterval.ToString();
         }
 
         private void SaveChanges(object sender, EventArgs e)
@@ -71,7 +75,7 @@ namespace Stock_Scouter
                     AutoRefreshInterval_Input.Text = AppSettings.AutoRefreshInterval.ToString();
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 AutoRefreshInterval_Input.Text = AppSettings.AutoRefreshInterval.ToString();
             }
