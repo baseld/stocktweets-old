@@ -330,7 +330,7 @@ namespace Stock_Scouter
             string symbol = AppSettings.GetPortfolio(((PortfolioViewModel)PortfolioPivot.SelectedItem).Title).GetStockList().ElementAt(lb.SelectedIndex);
 
             System.Diagnostics.Debug.WriteLine("symbol is " + symbol);
-            NavigationService.Navigate(new Uri("/DetailPage.xaml?symbol=" + symbol, UriKind.Relative));
+            NavigationService.Navigate(new Uri("/EachstockPages.xaml?symbol=" + symbol, UriKind.Relative));
             lb.SelectedIndex = -1; // reset index
         }
 
