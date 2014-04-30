@@ -254,6 +254,7 @@ namespace Stock_Scouter
 
         private void SearchButton_onClick(object sender, RoutedEventArgs e)
         {
+            if (dispatcherTimer != null) dispatcherTimer.Stop();
             string symbol = KeywordStr.Text;
             System.Diagnostics.Debug.WriteLine("Symbol to search is " + symbol);
 
@@ -301,6 +302,7 @@ namespace Stock_Scouter
                                 }
                             }
                             currentView.LoadData();
+                            if (dispatcherTimer != null) dispatcherTimer.Start();
                         });
                     }
                     catch (Exception ex)
@@ -382,6 +384,22 @@ namespace Stock_Scouter
                     System.Diagnostics.Debug.WriteLine("Error: " + reason);
                 }
             );
+        }
+
+        private void NavigateTo_Settings(object sender, EventArgs e)
+        {
+            if (dispatcherTimer != null) dispatcherTimer.Stop();
+            NavigationService.Navigate(new Uri("/SettingsPage.xaml", UriKind.Relative));
+        }
+
+        private void MainPage_GotFocus(object sender, RoutedEventArgs e)
+        {
+            System.Diagnostics.Debug.WriteLine("Main page got focus.");
+        }
+
+        private void MainPage_LostFocus(object sender, RoutedEventArgs e)
+        {
+            System.Diagnostics.Debug.WriteLine("Main page lost focus.");
         }
 
     }
