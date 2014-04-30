@@ -1,0 +1,105 @@
+﻿<phone:PhoneApplicationPage
+    x:Class="Stock_Scouter.EachstockPages"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
+    xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    FontFamily="{StaticResource PhoneFontFamilyNormal}"
+    FontSize="{StaticResource PhoneFontSizeNormal}"
+    Foreground="{StaticResource PhoneForegroundBrush}"
+    SupportedOrientations="Portrait"  Orientation="Portrait"
+    shell:SystemTray.IsVisible="False">
+
+    <!--LayoutRoot contains the root grid where all other page content is placed-->
+    <Grid x:Name="LayoutRoot">
+        <phone:Panorama Name="PagePanorama" Title="stock name here" TitleTemplate="{StaticResource SmallPanoramaTitle}" Margin="10,0,-10,0">
+
+            <!--Panorama item one-->
+            <phone:PanoramaItem Header="basics">
+                <StackPanel x:Name="BasicsGrid">
+                   
+                    <Grid Width="Auto" Height="auto">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Grid Grid.Row="0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Name="Price" TextWrapping="Wrap" HorizontalAlignment="Left"/>
+                            <TextBlock Grid.Column="1" Name="Change" TextWrapping="Wrap" HorizontalAlignment="Right" Margin="0,0,5,0"/>
+                            <TextBlock Grid.Column="2" Name="ChangePercent" TextWrapping="Wrap" HorizontalAlignment="Center"/>
+                        </Grid>
+                        <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/> 
+                        </Grid.RowDefinitions>
+                            <TextBlock Grid.Column="0" Grid.Row="0" Text="Daily Low" TextWrapping="Wrap"/>
+                            <TextBlock Grid.Column="1" Grid.Row="0" Name="Dailylow" TextWrapping="Wrap"/>
+                            <TextBlock Grid.Column="2" Grid.Row="0" Text="Daily High" TextWrapping="Wrap"/>
+                            <TextBlock Grid.Column="3" Grid.Row="0" Name="Dailyhigh" TextWrapping="Wrap"/>
+
+                        </Grid>
+                        <Grid Grid.Row="2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                            </Grid.RowDefinitions>
+                            <Button Grid.Column="0" Name="day_1button" Content="1d" FontSize="20"  Margin="-15,0,-10,0" Padding="5,5,5,5" Click="graphtime_click"/>
+                            <Button Grid.Column="1" Name="day_5button" Content="3d" FontSize="20"  Margin="-15,0,-10,0" Padding="5,5,5,5" Click="graphtime_click"/>
+                            <Button Grid.Column="2" Name="month_3button" Content="3m" FontSize="20" Margin="-15,0,-10,0" Padding="5,5,5,5" Click="graphtime_click"/>
+                            <Button Grid.Column="3" Name="month_6button" Content="6m" FontSize="20" Margin="-15,0,-10,0" Padding="5,5,5,5" Click="graphtime_click"/>
+                            <Button Grid.Column="4" Name="year_1button" Content="1y" FontSize="20" Margin="-15,0,-10,0" Padding="5,5,5,5" Click="graphtime_click"/>
+                            <Button Grid.Column="5" Name="year_2button" Content="2y" FontSize="20"  Margin="-15,0,-10,0" Padding="5,5,5,5" Click="graphtime_click"/>
+                            <Button Grid.Column="6" Name="year_5button" Content="5y" FontSize="20"  Margin="-15,0,-10,0" Padding="5,5,5,5" Click="graphtime_click"/>
+                            <Button Grid.Column="7" Name="maxbutton" Content="max" FontSize="20"  Margin="-15,0,-10,0" Padding="5,5,5,5" Click="graphtime_click"/>
+                            
+
+                        </Grid>
+                         
+                </Grid>
+
+                </StackPanel>
+            </phone:PanoramaItem>
+
+            <!--Panorama item two-->
+            <phone:PanoramaItem Header="details">
+                <Grid/>
+            </phone:PanoramaItem>
+
+            <!--Panorama item two-->
+            <phone:PanoramaItem Header="news">
+                <Grid/>
+            </phone:PanoramaItem>
+
+            <phone:PanoramaItem Header="comments">
+                <Grid/>
+            </phone:PanoramaItem>
+        </phone:Panorama>
+    </Grid>
+
+</phone:PhoneApplicationPage>

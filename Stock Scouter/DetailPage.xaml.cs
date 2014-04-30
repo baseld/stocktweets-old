@@ -27,8 +27,12 @@ namespace Stock_Scouter
             base.OnNavigatedTo(e);
 
             if (NavigationContext.QueryString.TryGetValue("symbol", out currentSymbol))
+            {
                 PagePanorama.Title = currentSymbol; // an example of passing args
+            }
 
+            Quote q = AppSettings.GetStock(currentSymbol);
+            System.Diagnostics.Debug.WriteLine(q.Name);
             ViewModel = new DetailViewModel() {Symbol = currentSymbol, Quote = AppSettings.GetStock(currentSymbol)};
         }
 

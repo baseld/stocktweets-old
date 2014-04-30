@@ -37,10 +37,10 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <TextBlock Grid.Column="0" Grid.Row="0" Name="EnableAutoRefreshTimer_Prompt" TextWrapping="Wrap">Automatically refresh pages</TextBlock>
-            <Button Grid.Column="1" Grid.Row="0" Name="aaa" Content="Search" HorizontalAlignment="Right" Click="SearchButton_onClick" />
+            <Button Grid.Column="1" Grid.Row="0" Name="aaa" Content="Search" HorizontalAlignment="Right"  />
             
             <TextBlock Grid.Column="0" Grid.Row="1" Name="AutoRefreshInterval_Prompt" TextWrapping="Wrap">Interval between automatic refreshes</TextBlock>
-            <Button Grid.Column="1" Grid.Row="1" Name="bbb" Content="Search" HorizontalAlignment="Right" Click="SearchButton_onClick" />
+            <Button Grid.Column="1" Grid.Row="1" Name="bbb" Content="Search" HorizontalAlignment="Right"/>
         </Grid>
     </Grid>
 
