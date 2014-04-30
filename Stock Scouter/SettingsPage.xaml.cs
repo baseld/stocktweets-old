@@ -76,10 +76,5 @@ namespace Stock_Scouter
                 AutoRefreshInterval_Input.Text = AppSettings.AutoRefreshInterval.ToString();
             }
         }
-
-        private void AutoRefreshInterval_TextChanged(object sender, System.Windows.Input.TextCompositionEventArgs e)
-        {
-
-        }
     }
 }

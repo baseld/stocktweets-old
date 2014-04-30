@@ -392,15 +392,5 @@ namespace Stock_Scouter
             NavigationService.Navigate(new Uri("/SettingsPage.xaml", UriKind.Relative));
         }
 
-        private void MainPage_GotFocus(object sender, RoutedEventArgs e)
-        {
-            System.Diagnostics.Debug.WriteLine("Main page got focus.");
-        }
-
-        private void MainPage_LostFocus(object sender, RoutedEventArgs e)
-        {
-            System.Diagnostics.Debug.WriteLine("Main page lost focus.");
-        }
-
     }
 }
