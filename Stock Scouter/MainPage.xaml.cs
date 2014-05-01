@@ -25,7 +25,6 @@ namespace Stock_Scouter
             DataContext = App.ViewModel;
             this.Loaded += new RoutedEventHandler(MainPage_Loaded);
 
- 
         }
 
         // may be pretty slow
@@ -106,8 +105,8 @@ namespace Stock_Scouter
                         MessageBoxButton buttons = MessageBoxButton.OK;
                         MessageBoxResult result = MessageBox.Show(message, caption, buttons);
                     }
-                    if (dispatcherTimer != null) dispatcherTimer.Start();
                 }
+                if (dispatcherTimer != null) dispatcherTimer.Start();
             };
 
             // focus on the text box by default
@@ -126,7 +125,11 @@ namespace Stock_Scouter
             List<string> currentStockList = currentPortfolio.GetStockList();
 
             // do not refresh if the portfolio has nothing
-            if (currentStockList.Count == 0) return;
+            if (currentStockList.Count == 0)
+            {
+                if (dispatcherTimer != null) dispatcherTimer.Stop();
+                return;
+            }
 
             YahooFinance.get(YahooFinance.GetQuotesXmlUrl(currentStockList), null,
                 delegate(Stream str)
@@ -215,8 +218,8 @@ namespace Stock_Scouter
                         MessageBoxButton buttons = MessageBoxButton.OK;
                         MessageBoxResult result = MessageBox.Show(message, caption, buttons);
                     }
-                    if (dispatcherTimer != null) dispatcherTimer.Start();
                 }
+                if (dispatcherTimer != null) dispatcherTimer.Start();
             };
 
             // focus on the text box by default
@@ -317,6 +320,7 @@ namespace Stock_Scouter
             string symbol = AppSettings.GetPortfolio(((PortfolioViewModel)PortfolioPivot.SelectedItem).Title).GetStockList().ElementAt(lb.SelectedIndex);
 
             System.Diagnostics.Debug.WriteLine("symbol is " + symbol);
+            if (dispatcherTimer != null) dispatcherTimer.Stop();
             NavigationService.Navigate(new Uri("/EachstockPages.xaml?symbol=" + symbol, UriKind.Relative));
             lb.SelectedIndex = -1; // reset index
         }
