@@ -11,11 +11,12 @@ using Stock_Scouter.Models;
 
 namespace Stock_Scouter
 {
-    public partial class EachstockPages : PhoneApplicationPage
+    public partial class QuotePage : PhoneApplicationPage
     {
         private static string currentSymbol;
-        Quote q;
-        public EachstockPages()
+        private Quote q;
+
+        public QuotePage()
         {
             InitializeComponent();
         }
@@ -27,7 +28,7 @@ namespace Stock_Scouter
 
             if (NavigationContext.QueryString.TryGetValue("symbol", out currentSymbol))
             {
-                q = AppSettings.GetStock(currentSymbol);
+                q = App.GetQuote(currentSymbol);
                 PagePanorama.Title = q.Name; // an example of passing args
                 Price.Text = q.LastTradePrice.ToString();
                 Change.Text=q.Change.ToString();

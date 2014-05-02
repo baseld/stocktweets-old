@@ -1,5 +1,4 @@
 ﻿using Microsoft.Phone.Controls;
-using Stock_Scouter.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -8,7 +7,10 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Threading;
+using System.Xml.Linq;
+using Stock_Scouter.Models;
 
 namespace Stock_Scouter
 {
@@ -51,14 +53,14 @@ namespace Stock_Scouter
             if (!App.ViewModel.IsDataLoaded)
             {
                 App.ViewModel.LoadData();
-                if (AppSettings.EnableAutoRefresh)
+                if (App.IsAutoRefreshEnabled)
                 {
-                    dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
+                    dispatcherTimer = new DispatcherTimer();
                     dispatcherTimer.Tick += new EventHandler(dispatcherTimer_Tick);
-                    dispatcherTimer.Interval = new TimeSpan(0, 0, AppSettings.AutoRefreshInterval);
+                    dispatcherTimer.Interval = new TimeSpan(0, 0, App.AutoRefreshInterval);
                 }
             }
-            if (!AppSettings.EnableAutoRefresh) dispatcherTimer = null;
+            if (!App.IsAutoRefreshEnabled) dispatcherTimer = null;
             if (dispatcherTimer != null) dispatcherTimer.Start();
         }
 
@@ -71,7 +73,6 @@ namespace Stock_Scouter
         //app bar add to watchlist
         private void addList_Click(object sender, EventArgs e)
         {
-            //NavigationService.Navigate(new Uri("/AddList.xaml", UriKind.Relative));
             if (dispatcherTimer != null) dispatcherTimer.Stop();
             var tb = new TextBox();
             var box = new CustomMessageBox()
@@ -87,11 +88,11 @@ namespace Stock_Scouter
             {
                 if (ev.Result == CustomMessageBoxResult.LeftButton)
                 {
-                    if (!AppSettings.isPortfolioExist(tb.Text))
+                    if (!App.PortfolioExists(tb.Text))
                     {
                         // add new portfolio
-                        Portfolio p = AppSettings.GetPortfolio(tb.Text);
-                        AppSettings.addPortfolio(p);
+                        Portfolio p = App.GetPortfolio(tb.Text);
+                        App.AddPortfolio(p);
                         // reload portfolio list
                         App.ViewModel.LoadData();
                         // switch to the newly created portfolio
@@ -121,8 +122,8 @@ namespace Stock_Scouter
         private void CurrentList_RefreshView()
         {
             PortfolioViewModel currentView = (PortfolioViewModel)PortfolioPivot.SelectedItem;
-            Portfolio currentPortfolio = AppSettings.GetPortfolio(currentView.Title);
-            List<string> currentStockList = currentPortfolio.GetStockList();
+            Portfolio currentPortfolio = App.GetPortfolio(currentView.Title);
+            List<string> currentStockList = currentPortfolio.StockList;
 
             // do not refresh if the portfolio has nothing
             if (currentStockList.Count == 0)
@@ -140,19 +141,14 @@ namespace Stock_Scouter
                     {
                         StreamReader reader = new StreamReader(str);
                         string result = reader.ReadToEnd();
+                        IEnumerable<XElement> xmlObjs = YahooFinance.ParseQuotesXml(result);
                         //System.Diagnostics.Debug.WriteLine("stream2str: " + result);
-                        ObservableCollection<Quote> quotes = YahooFinance.GetQuotes(result);
-
-                        foreach (Quote q in quotes)
-                        {
-                            AppSettings.SetQuote(q.Symbol, q);
-                        }
-
+                        
                         Deployment.Current.Dispatcher.BeginInvoke(() =>
                         {
-                            AppSettings.SetPortfolio(currentPortfolio.Name, currentPortfolio);
-                            currentView.LoadData();
-                            //App.ViewModel.LoadData();
+                            YahooFinance.UpdateQuotes(xmlObjs);
+                            
+                            //currentView.LoadData();
                         });
                     }
                     catch (Exception ex)
@@ -176,10 +172,11 @@ namespace Stock_Scouter
 
         private void CurrentList_Delete(object sender, EventArgs e)
         {
+            if (dispatcherTimer != null) dispatcherTimer.Stop();
             PortfolioViewModel currentView = (PortfolioViewModel)PortfolioPivot.SelectedItem;
-            Portfolio currentPortfolio = AppSettings.GetPortfolio(currentView.Title);
-            currentPortfolio.Remove();
+            App.DeletePortfolio(App.GetPortfolio(currentView.Title));
             App.ViewModel.LoadData();
+            if (dispatcherTimer != null) dispatcherTimer.Start();
         }
 
         private void CurrentList_Edit(object sender, EventArgs e)
@@ -199,14 +196,12 @@ namespace Stock_Scouter
             {
                 if (ev.Result == CustomMessageBoxResult.LeftButton)
                 {
-                    if (!AppSettings.isPortfolioExist(tb.Text))
+                    if (!App.PortfolioExists(tb.Text))
                     {
                         PortfolioViewModel currentView = (PortfolioViewModel)PortfolioPivot.SelectedItem;
                         int currentViewIndex = PortfolioPivot.SelectedIndex;
-                        Portfolio currentPortfolio = AppSettings.GetPortfolio(currentView.Title);
-                        AppSettings.RenamePortfolio(tb.Text, currentPortfolio);
-                        currentView.Title = tb.Text;
-                        //currentView.LoadData();
+                        Portfolio currentPortfolio = App.GetPortfolio(currentView.Title);
+                        currentPortfolio.Name = tb.Text;
                         App.ViewModel.LoadData();
                         PortfolioPivot.SelectedIndex = currentViewIndex;
                     }
@@ -235,11 +230,12 @@ namespace Stock_Scouter
         {
             // sender is a MenuItem.
             MenuItem obj = sender as MenuItem;
-            StockBriefViewModel item = obj.DataContext as StockBriefViewModel;
+            Quote item = obj.DataContext as Quote;
             PortfolioViewModel currentView = (PortfolioViewModel)PortfolioPivot.SelectedItem;
-            Portfolio currentPortfolio = AppSettings.GetPortfolio(currentView.Title);
-            currentPortfolio.RemoveQuote(AppSettings.GetStock(item.Symbol));
-            currentView.LoadData();
+            Portfolio currentPortfolio = App.GetPortfolio(currentView.Title);
+            currentView.RemoveStockFromView(item);
+            currentPortfolio.RemoveQuote(item);
+            //currentView.LoadData();
         }
 
         private void SearchButton_onClick(object sender, RoutedEventArgs e)
@@ -259,7 +255,7 @@ namespace Stock_Scouter
 
             if (syms.Count == 0)
             {
-                string message = "Please provide more than one symbol to search, separated by a comma.";
+                string message = "Please provide symbol(s) to search, separated by a comma.\nE.g., QQQ,SPY";
                 string caption = "Empty symbol to search";
                 MessageBoxButton buttons = MessageBoxButton.OK;
                 MessageBoxResult result = MessageBox.Show(message, caption, buttons);
@@ -275,23 +271,27 @@ namespace Stock_Scouter
                     {
                         StreamReader reader = new StreamReader(str);
                         string result = reader.ReadToEnd();
+                        IEnumerable<XElement> xmlObjs = YahooFinance.ParseQuotesXml(result);
                         //System.Diagnostics.Debug.WriteLine("stream2str: " + result);
-                        ObservableCollection<Quote> quotes = YahooFinance.GetQuotes(result);
-
+                        
                         Deployment.Current.Dispatcher.BeginInvoke(() =>
                         {
+                            YahooFinance.UpdateQuotes(xmlObjs);
+                            //this is not good though
+                            
                             PortfolioViewModel currentView = (PortfolioViewModel)PortfolioPivot.SelectedItem;
-                            Portfolio currentPortfolio = AppSettings.GetPortfolio(currentView.Title);
-                            foreach (Quote quote in quotes)
+                            Portfolio currentPortfolio = App.GetPortfolio(currentView.Title);
+                            foreach (string s in syms)
                             {
-                                bool ret = currentPortfolio.addQuote(quote);
-                                if (ret)
+                                Quote quote = App.GetQuote(s);
+                                if (quote == null) continue;
+                                if (currentPortfolio.AddQuote(quote))
                                 {
-                                    System.Diagnostics.Debug.WriteLine("Added " + quote.Symbol);
+                                    currentView.AddStockToView(quote);
                                 }
                             }
-                            AppSettings.SetPortfolio(currentPortfolio.Name, currentPortfolio);
-                            currentView.LoadData();
+                            //App.SavePortfolio(currentPortfolio);
+                            //currentView.LoadData();
                             if (dispatcherTimer != null) dispatcherTimer.Start();
                         });
                     }
@@ -299,7 +299,6 @@ namespace Stock_Scouter
                     {
                         System.Diagnostics.Debug.WriteLine(ex.Message);
                         System.Diagnostics.Debug.WriteLine(ex.Source);
-                        //throw;
                     }
                 },
                 delegate(String reason)
@@ -317,64 +316,19 @@ namespace Stock_Scouter
             System.Diagnostics.Debug.WriteLine("selected index is " + lb.SelectedIndex.ToString());
 
             // what a stupid way!
-            string symbol = AppSettings.GetPortfolio(((PortfolioViewModel)PortfolioPivot.SelectedItem).Title).GetStockList().ElementAt(lb.SelectedIndex);
+            string symbol = App.GetPortfolio(((PortfolioViewModel)PortfolioPivot.SelectedItem).Title).StockList.ElementAt(lb.SelectedIndex);
 
             System.Diagnostics.Debug.WriteLine("symbol is " + symbol);
             if (dispatcherTimer != null) dispatcherTimer.Stop();
-            NavigationService.Navigate(new Uri("/EachstockPages.xaml?symbol=" + symbol, UriKind.Relative));
+            NavigationService.Navigate(new Uri("/QuotePage.xaml?symbol=" + symbol, UriKind.Relative));
             lb.SelectedIndex = -1; // reset index
         }
 
         // this function is used to trigger new features
         private void Test_Trigger(object sender, EventArgs e)
         {
-            List<string> syms = new List<string>();
-            syms.Add("QQQ");
-            syms.Add("SPY");
-            syms.Add("MSFT");
-            syms.Add("");
-            syms.Add("DOESNOTEXIST");
-
-            YahooFinance.get(YahooFinance.GetQuotesXmlUrl(syms), null,
-                delegate(Stream str)
-                {
-                    System.Diagnostics.Debug.WriteLine("Success");
-                    // convert stream to string
-                    try
-                    {
-                        StreamReader reader = new StreamReader(str);
-                        string result = reader.ReadToEnd();
-                        //System.Diagnostics.Debug.WriteLine("stream2str: " + result);
-                        ObservableCollection<Quote> quotes = YahooFinance.GetQuotes(result);
-
-                        Deployment.Current.Dispatcher.BeginInvoke(() =>
-                        {
-                            PortfolioViewModel currentView = (PortfolioViewModel)PortfolioPivot.SelectedItem;
-                            Portfolio currentPortfolio = AppSettings.GetPortfolio(currentView.Title);
-                            foreach (Quote quote in quotes)
-                            {
-                                bool ret = currentPortfolio.addQuote(quote);
-                                if (ret)
-                                {
-                                    System.Diagnostics.Debug.WriteLine(quote.Symbol);
-                                }
-                            }
-                            AppSettings.SetPortfolio(currentPortfolio.Name, currentPortfolio);
-                            currentView.LoadData();
-                        });
-                    }
-                    catch (Exception ex)
-                    {
-                        System.Diagnostics.Debug.WriteLine(ex.Message);
-                        System.Diagnostics.Debug.WriteLine(ex.Source);
-                        //throw;
-                    }
-                },
-                delegate(String reason)
-                {
-                    System.Diagnostics.Debug.WriteLine("Error: " + reason);
-                }
-            );
+            KeywordStr.Text = "QQQ,SPY,MSFT,,DOESNOTEXIST";
+            SearchButton_onClick(SearchButton, null);
         }
 
         private void NavigateTo_Settings(object sender, EventArgs e)
@@ -384,4 +338,5 @@ namespace Stock_Scouter
         }
 
     }
+
 }

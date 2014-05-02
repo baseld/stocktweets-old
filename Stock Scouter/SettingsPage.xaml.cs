@@ -18,16 +18,16 @@ namespace Stock_Scouter
         public SettingsPage()
         {
             InitializeComponent();
-            EnableAutoRefresh_Input.IsChecked = AppSettings.EnableAutoRefresh;
+            EnableAutoRefresh_Input.IsChecked = App.IsAutoRefreshEnabled;
             if (EnableAutoRefresh_Input.IsChecked != true)
                 AutoRefreshInterval_Input.IsEnabled = false;
-            AutoRefreshInterval_Input.Text = AppSettings.AutoRefreshInterval.ToString();
+            AutoRefreshInterval_Input.Text = App.AutoRefreshInterval.ToString();
         }
 
         private void SaveChanges(object sender, EventArgs e)
         {
-            AppSettings.AutoRefreshInterval = Convert.ToInt32(AutoRefreshInterval_Input.Text);
-            AppSettings.EnableAutoRefresh = EnableAutoRefresh;
+            App.AutoRefreshInterval = Convert.ToInt32(AutoRefreshInterval_Input.Text);
+            App.IsAutoRefreshEnabled = EnableAutoRefresh;
             BackToPreviousPage();
         }
 
@@ -72,12 +72,12 @@ namespace Stock_Scouter
                     string caption = "Error";
                     MessageBoxButton buttons = MessageBoxButton.OK;
                     MessageBoxResult result = MessageBox.Show(message, caption, buttons);
-                    AutoRefreshInterval_Input.Text = AppSettings.AutoRefreshInterval.ToString();
+                    AutoRefreshInterval_Input.Text = App.AutoRefreshInterval.ToString();
                 }
             }
             catch (Exception)
             {
-                AutoRefreshInterval_Input.Text = AppSettings.AutoRefreshInterval.ToString();
+                AutoRefreshInterval_Input.Text = App.AutoRefreshInterval.ToString();
             }
         }
     }

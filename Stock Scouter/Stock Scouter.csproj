@@ -102,26 +102,18 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="DetailPage.xaml.cs">
-      <DependentUpon>DetailPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="EachstockPages.xaml.cs">
-      <DependentUpon>EachstockPages.xaml</DependentUpon>
+    <Compile Include="QuotePage.xaml.cs">
+      <DependentUpon>QuotePage.xaml</DependentUpon>
     </Compile>
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Models\AppSettings.cs" />
-    <Compile Include="Models\Quote.cs" />
     <Compile Include="Models\YahooFinance.cs" />
-    <Compile Include="Models\Portfolio.cs" />
     <Compile Include="SettingsPage.xaml.cs">
       <DependentUpon>SettingsPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ViewModels\DetailViewModel.cs" />
     <Compile Include="ViewModels\PortfolioViewModel.cs" />
-    <Compile Include="ViewModels\StockBriefViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -129,11 +121,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </ApplicationDefinition>
-    <Page Include="DetailPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="EachstockPages.xaml">
+    <Page Include="QuotePage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

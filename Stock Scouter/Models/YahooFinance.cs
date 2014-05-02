@@ -122,27 +122,33 @@ namespace Stock_Scouter.Models
             return new Uri(url);
         }
 
-        public static ObservableCollection<Quote> GetQuotes(string xmlData)
+        public static IEnumerable<XElement> ParseQuotesXml(string xmlData)
         {
             XDocument doc = XDocument.Parse(xmlData);
-            //System.Diagnostics.Debug.WriteLine(doc.ToString());
-
-            ObservableCollection<Quote> stocks = new ObservableCollection<Quote>();
-            
             XElement results = doc.Root.Element("results");
-            IEnumerable<XElement> quotes = results.Elements("quote");
+            IEnumerable<XElement> quotes = results.Elements("quote").Where(x => x.Element("ErrorIndicationreturnedforsymbolchangedinvalid").Value == "");
+            return quotes;
+        }
 
-            foreach (XElement q in quotes)
+        public static void UpdateQuotes(IEnumerable<XElement> xel)
+        {
+            foreach (XElement q in xel)
             {
-                Quote quote = new Quote();
-
                 System.Diagnostics.Debug.WriteLine("Processing " + q.Element("Symbol").Value);
-                if (q.Element("ErrorIndicationreturnedforsymbolchangedinvalid").Value != "")
-                    continue;
+
+                bool needSave = false;
+                Quote quote = App.GetQuote(q.Element("Symbol").Value);
+                if (quote == null)
+                {
+                    needSave = true;
+                    quote = new Quote();
+                }
 
                 quote.Symbol = q.Element("Symbol").Value;
                 quote.Ask = GetDecimal(q.Element("Ask").Value);
+                if (quote.Ask == null) quote.Ask = GetDecimal(q.Element("AskRealtime").Value);
                 quote.Bid = GetDecimal(q.Element("Bid").Value);
+                if (quote.Bid == null) quote.Bid = GetDecimal(q.Element("BidRealtime").Value);
                 quote.AverageDailyVolume = GetDecimal(q.Element("AverageDailyVolume").Value);
                 quote.BookValue = GetDecimal(q.Element("BookValue").Value);
                 quote.Change = GetDecimal(q.Element("Change").Value);
@@ -172,7 +178,7 @@ namespace Stock_Scouter.Models
                 quote.Name = q.Element("Name").Value;
                 quote.Open = GetDecimal(q.Element("Open").Value);
                 quote.PreviousClose = GetDecimal(q.Element("PreviousClose").Value);
-                quote.ChangeInPercent = GetDecimal(q.Element("ChangeinPercent").Value);
+                quote.ChangeInPercent = q.Element("ChangeinPercent").Value;
                 quote.PriceSales = GetDecimal(q.Element("PriceSales").Value);
                 quote.PriceBook = GetDecimal(q.Element("PriceBook").Value);
                 quote.ExDividendDate = GetDateTime(q.Element("ExDividendDate").Value);
@@ -185,13 +191,10 @@ namespace Stock_Scouter.Models
                 quote.OneYearPriceTarget = GetDecimal(q.Element("OneyrTargetPrice").Value);
                 quote.Volume = GetDecimal(q.Element("Volume").Value);
                 quote.StockExchange = q.Element("StockExchange").Value;
-
                 quote.LastUpdate = DateTime.Now;
 
-                stocks.Add(quote);
+                if (needSave) App.AddQuote(quote);
             }
-
-            return stocks;
         }
 
         private static decimal? GetDecimal(string input)

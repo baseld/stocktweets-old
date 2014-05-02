@@ -1,28 +1,16 @@
 ﻿using System;
-using System.ComponentModel;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using System.Collections.ObjectModel;
-using Stock_Scouter.Models;
+using System.ComponentModel;
 
 namespace Stock_Scouter
 {
     public class PortfolioViewModel : INotifyPropertyChanged
     {
-        private ObservableCollection<StockBriefViewModel> _stockViews;
+        private ObservableCollection<Quote> _stockViews;
 
         public PortfolioViewModel()
         {
-            this._stockViews = new ObservableCollection<StockBriefViewModel>();
+            this._stockViews = new ObservableCollection<Quote>();
         }
 
         private string _title;
@@ -42,7 +30,7 @@ namespace Stock_Scouter
             }
         }
 
-        public ObservableCollection<StockBriefViewModel> StockViews
+        public ObservableCollection<Quote> StockViews
         {
             get { return _stockViews; }
             set
@@ -54,7 +42,6 @@ namespace Stock_Scouter
                 }
             }
         }
-
 
         public bool IsDataLoaded
         {
@@ -71,17 +58,25 @@ namespace Stock_Scouter
             // but this is not ideal
             this.StockViews.Clear();
 
-            Portfolio _portfolio = AppSettings.GetPortfolio(this.Title);
-
-            System.Diagnostics.Debug.WriteLine("Start to add stocks to the Portfolio view.");
-            foreach (string entry in _portfolio.GetStockList())
+            Portfolio p = App.GetPortfolio(this.Title);
+            
+            foreach (string entry in p.StockList)
             {
-                Quote s = AppSettings.GetStock(entry);
-                this.StockViews.Add(new StockBriefViewModel() { Symbol = s.Symbol, Name = s.Name, LastTradePrice = s.LastTradePrice.ToString(), LastTradeDate = s.LastTradeDate.ToString(), Change = s.Change.ToString(), ChangeInPercent=s.ChangeInPercent.ToString() + "%" });
-                System.Diagnostics.Debug.WriteLine("Added stock " + s.Symbol + " to list.");
+                AddStockToView(App.GetQuote(entry));
             }
             // disable this so far
-            // this.IsDataLoaded = true;
+            this.IsDataLoaded = true;
+        }
+
+        public void RemoveStockFromView(Quote s)
+        {
+            this.StockViews.Remove(s);
+        }
+
+        public void AddStockToView(Quote s)
+        {
+            StockViews.Add(s);
+            System.Diagnostics.Debug.WriteLine("Added stock " + s.Symbol + " to list " + Title + ".");
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

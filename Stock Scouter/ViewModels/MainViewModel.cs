@@ -1,19 +1,7 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using System.Collections.ObjectModel;
-using Stock_Scouter.Models;
-
+using System.ComponentModel;
 
 namespace Stock_Scouter
 {
@@ -50,21 +38,17 @@ namespace Stock_Scouter
         /// </summary>
         public void LoadData()
         {
-            // clear previously rendered list
-            // but this is not ideal
-
             this.PageCollection.Clear();
 
-            List<string> portfolios = AppSettings.GetPortfolioList();
-            foreach (string entry in portfolios)
+            List<Portfolio> portfolios = App.PortfolioList;
+            foreach (Portfolio entry in portfolios)
             {
-                PortfolioViewModel pvm = new PortfolioViewModel() { Title = entry };
+                PortfolioViewModel pvm = new PortfolioViewModel() { Title = entry.Name };
                 pvm.LoadData();
                 this.PageCollection.Add(pvm);
-                System.Diagnostics.Debug.WriteLine("Added portfolio view " + entry + " to main page.");
+                System.Diagnostics.Debug.WriteLine("Added portfolio view " + entry.Name + " to main page.");
             }
             
-            // disable this so far
             // this.IsDataLoaded = true;
         }
 
