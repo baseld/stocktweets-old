@@ -703,7 +703,7 @@ namespace Stock_Scouter
         }
 
 
-        public decimal? Ebitda
+        public string Ebitda
         {
             get { return ebitda; }
             set
