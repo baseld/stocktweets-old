@@ -117,13 +117,18 @@ namespace Stock_Scouter
             string vsStr;
             if (vs != null)
             {
-                vsStr = 
+                if (vs.Contains("S&P500"))
+                {
+                    vs.Remove("S&P500");
+                    vs.Add("%5EGSPC");
+                }
+                vsStr = "&c=" + String.Join(",", vs);
             }
             else
             {
-                vsStr = "";
+                vsStr = "&c=";
             }
-            string baseUrl = "http://chart.finance.yahoo.com/z?s=" + symbol + "&t=" + timeSpan + "&q=l&l=on&z=l&c=%5EGSPC&a=v&p=s&lang=en-US&region=US";
+            return new Uri("http://chart.finance.yahoo.com/z?s=" + symbol + "&t=" + timeSpan + "&q=l&l=on&z=l" + vsStr + "&a=v&p=s&lang=en-US&region=US");
         }
         
         public static Uri GetQuotesXmlUrl(List<string> symbols)
