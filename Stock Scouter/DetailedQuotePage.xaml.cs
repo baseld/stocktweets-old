@@ -87,6 +87,45 @@ namespace Stock_Scouter
             {
                 System.Diagnostics.Debug.WriteLine("DetailedQuotedPage: symbol is " + CurrentSymbol);
                 CurrentQuote = App.GetQuote(CurrentSymbol);
+                Name.Text = CurrentQuote.Name + "(" + CurrentQuote.Symbol + ")";
+                LastTradePrice.Text = CurrentQuote.LastTradePrice.ToString();
+                Change.Text = CurrentQuote.Change.ToString();
+                ChangeInPercent.Text = CurrentQuote.ChangeInPercent.ToString();
+                LastTradeDate.Text = CurrentQuote.LastTradeDate.ToString();
+                PreviousClose.Text = CurrentQuote.PreviousClose.ToString();
+                if (CurrentQuote.MarketCapitalization == "")
+                {
+                    MarketCapitalization.Text = "N/A";
+                }
+                else
+                {
+                    MarketCapitalization.Text = CurrentQuote.MarketCapitalization.ToString();
+                }
+                Open.Text = CurrentQuote.Open.ToString();
+                decimal volume = CurrentQuote.Volume.Value;
+                volume = volume / 1000000;
+                decimal avgvol = CurrentQuote.AverageDailyVolume.Value;
+                avgvol = avgvol / 1000000;
+                Vol_AvgVol.Text = volume.ToString("#.#") + "M/" + avgvol.ToString("#.#") + "M";
+                DaysRange.Text = CurrentQuote.DailyLow.ToString() + " - " + CurrentQuote.DailyHigh.ToString();
+                if (CurrentQuote.PeRatio == null)
+                {
+                    PERatio.Text = "N/A";
+                }
+                else
+                {
+                    PERatio.Text = CurrentQuote.PeRatio.ToString();
+                }
+                YearsRange.Text = CurrentQuote.YearlyLow.ToString() + " - " + CurrentQuote.YearlyHigh.ToString();
+                if (CurrentQuote.DividendYield == null)
+                {
+                    DividendYield.Text = "N/A";
+                }
+                else
+                {
+                    DividendYield.Text = CurrentQuote.DividendYield.ToString();
+                }
+
                 RssView.Symbol = CurrentSymbol;
             }
         }
