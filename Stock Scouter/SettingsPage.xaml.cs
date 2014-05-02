@@ -7,7 +7,6 @@ using System.Windows.Controls;
 using System.Windows.Navigation;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
-using Stock_Scouter.Models;
 
 namespace Stock_Scouter
 {

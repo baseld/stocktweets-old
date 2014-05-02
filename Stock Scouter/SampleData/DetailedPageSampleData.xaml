@@ -1,0 +1,12 @@
+﻿<local:DetailedQuotePage 
+    xmlns:local="clr-namespace:Stock_Scouter">
+
+    <local:DetailedQuotePage.RssView>
+        <local:RssViewModel>
+            <local:RssViewModel.RssCollection>
+                <local:RssItemViewModel Title="3 Reasons Why Disney Is Worth Watching" Description="test" Link="http://us.rd.yahoo.com/finance/external/mfool/rss/SIG=13a2m21nj/*http://www.fool.com/investing/general/2014/05/01/3-reasons-why-disney-is-worth-watchingrth-watching.aspx?source=eogyholnk0000001" PubDate="Jan 1, 2014" />
+            </local:RssViewModel.RssCollection>
+        </local:RssViewModel>
+    </local:DetailedQuotePage.RssView>
+
+</local:DetailedQuotePage>

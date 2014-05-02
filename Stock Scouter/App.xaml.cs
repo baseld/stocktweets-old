@@ -15,7 +15,6 @@ using Microsoft.Phone.Shell;
 using System.IO.IsolatedStorage;
 using System.ComponentModel;
 using System.Collections.ObjectModel;
-using Stock_Scouter.Models;
 
 namespace Stock_Scouter
 {
@@ -178,6 +177,7 @@ namespace Stock_Scouter
 
         public static Quote GetQuote(string symbol)
         {
+            symbol = symbol.ToUpper();
             var query = from q in QuoteList where q.Symbol == symbol select q;
             if (query.Count() > 0) return query.First();
             return null;

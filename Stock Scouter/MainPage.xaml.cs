@@ -10,7 +10,6 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Threading;
 using System.Xml.Linq;
-using Stock_Scouter.Models;
 
 namespace Stock_Scouter
 {
@@ -132,7 +131,7 @@ namespace Stock_Scouter
                 return;
             }
 
-            YahooFinance.get(YahooFinance.GetQuotesXmlUrl(currentStockList), null,
+            YahooAPI.get(YahooAPI.GetQuotesXmlUrl(currentStockList), null,
                 delegate(Stream str)
                 {
                     System.Diagnostics.Debug.WriteLine("Successfully get new data for stocks");
@@ -141,12 +140,12 @@ namespace Stock_Scouter
                     {
                         StreamReader reader = new StreamReader(str);
                         string result = reader.ReadToEnd();
-                        IEnumerable<XElement> xmlObjs = YahooFinance.ParseQuotesXml(result);
+                        IEnumerable<XElement> xmlObjs = YahooAPI.ParseQuotesXml(result);
                         //System.Diagnostics.Debug.WriteLine("stream2str: " + result);
                         
                         Deployment.Current.Dispatcher.BeginInvoke(() =>
                         {
-                            YahooFinance.UpdateQuotes(xmlObjs);
+                            YahooAPI.UpdateQuotes(xmlObjs);
                             
                             //currentView.LoadData();
                         });
@@ -241,17 +240,17 @@ namespace Stock_Scouter
         private void SearchButton_onClick(object sender, RoutedEventArgs e)
         {
             if (dispatcherTimer != null) dispatcherTimer.Stop();
-            string symbol = KeywordStr.Text;
-            System.Diagnostics.Debug.WriteLine("Symbol to search is " + symbol);
 
             List<string> syms = new List<string>();
-            string[] symbols = symbol.Split(',');
+            string[] symbols = KeywordStr.Text.Split(',');
 
             foreach (string s in symbols)
             {
                 if (s.Length == 0) continue;
                 if (!syms.Contains(s)) syms.Add(s);
             }
+
+            System.Diagnostics.Debug.WriteLine(String.Join(",", symbols));
 
             if (syms.Count == 0)
             {
@@ -262,7 +261,7 @@ namespace Stock_Scouter
                 return;
             }
 
-            YahooFinance.get(YahooFinance.GetQuotesXmlUrl(syms), null,
+            YahooAPI.get(YahooAPI.GetQuotesXmlUrl(syms), null,
                 delegate(Stream str)
                 {
                     System.Diagnostics.Debug.WriteLine("Success");
@@ -271,12 +270,12 @@ namespace Stock_Scouter
                     {
                         StreamReader reader = new StreamReader(str);
                         string result = reader.ReadToEnd();
-                        IEnumerable<XElement> xmlObjs = YahooFinance.ParseQuotesXml(result);
+                        IEnumerable<XElement> xmlObjs = YahooAPI.ParseQuotesXml(result);
                         //System.Diagnostics.Debug.WriteLine("stream2str: " + result);
                         
                         Deployment.Current.Dispatcher.BeginInvoke(() =>
                         {
-                            YahooFinance.UpdateQuotes(xmlObjs);
+                            YahooAPI.UpdateQuotes(xmlObjs);
                             //this is not good though
                             
                             PortfolioViewModel currentView = (PortfolioViewModel)PortfolioPivot.SelectedItem;
@@ -284,7 +283,11 @@ namespace Stock_Scouter
                             foreach (string s in syms)
                             {
                                 Quote quote = App.GetQuote(s);
-                                if (quote == null) continue;
+                                if (quote == null)
+                                {
+                                    System.Diagnostics.Debug.WriteLine("Symbol " + s + " was not found in db.");
+                                    continue;
+                                }
                                 if (currentPortfolio.AddQuote(quote))
                                 {
                                     currentView.AddStockToView(quote);
@@ -320,7 +323,7 @@ namespace Stock_Scouter
 
             System.Diagnostics.Debug.WriteLine("symbol is " + symbol);
             if (dispatcherTimer != null) dispatcherTimer.Stop();
-            NavigationService.Navigate(new Uri("/QuotePage.xaml?symbol=" + symbol, UriKind.Relative));
+            NavigationService.Navigate(new Uri("/DetailedQuotePage.xaml?symbol=" + symbol, UriKind.Relative));
             lb.SelectedIndex = -1; // reset index
         }
 
@@ -329,6 +332,7 @@ namespace Stock_Scouter
         {
             KeywordStr.Text = "QQQ,SPY,MSFT,,DOESNOTEXIST";
             SearchButton_onClick(SearchButton, null);
+            KeywordStr.Text = "";
         }
 
         private void NavigateTo_Settings(object sender, EventArgs e)

@@ -32,7 +32,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
+    <Optimize>true</Optimize>
     <OutputPath>Bin\Debug</OutputPath>
     <DefineConstants>DEBUG;TRACE;SILVERLIGHT;WINDOWS_PHONE</DefineConstants>
     <NoStdLib>true</NoStdLib>
@@ -102,13 +102,13 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="QuotePage.xaml.cs">
-      <DependentUpon>QuotePage.xaml</DependentUpon>
+    <Compile Include="DetailedQuotePage.xaml.cs">
+      <DependentUpon>DetailedQuotePage.xaml</DependentUpon>
     </Compile>
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Models\YahooFinance.cs" />
+    <Compile Include="YahooAPI.cs" />
     <Compile Include="SettingsPage.xaml.cs">
       <DependentUpon>SettingsPage.xaml</DependentUpon>
     </Compile>
@@ -121,7 +121,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </ApplicationDefinition>
-    <Page Include="QuotePage.xaml">
+    <Page Include="DetailedQuotePage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -133,9 +133,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </DesignData>
-    <DesignData Include="SampleData\DetailViewModelSampleData.xaml">
+    <DesignData Include="SampleData\DetailedPageSampleData.xaml">
       <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
     </DesignData>
     <Page Include="SettingsPage.xaml">
       <SubType>Designer</SubType>
@@ -156,8 +155,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="ApplicationIcon.png" />
-    <Content Include="Assets\logo.png" />
+    <Content Include="Assets\Wallpaper-Green.jpg" />
+    <Content Include="Assets\Wallpaper-Red.jpg" />
     <Content Include="Background.png" />
+    <Content Include="SampleData\CompanyNews.xml">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="SplashScreenImage.jpg" />
     <Content Include="Assets\Wallpaper.jpg" />
     <Content Include="Toolkit.Content\appbar.edit.png" />
@@ -174,6 +177,9 @@
     <Reference Include="Microsoft.Phone.Controls.Toolkit">
       <HintPath>..\packages\WPtoolkit.4.2013.08.16\lib\sl4-windowsphone71\Microsoft.Phone.Controls.Toolkit.dll</HintPath>
     </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).$(TargetFrameworkVersion).Overrides.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).CSharp.targets" />

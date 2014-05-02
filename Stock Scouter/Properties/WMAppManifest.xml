@@ -1,15 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Deployment xmlns="http://schemas.microsoft.com/windowsphone/2012/deployment" AppPlatformVersion="8.0">
   <DefaultLanguage xmlns="" code="en-US" />
-  <App xmlns="" ProductID="{b56c6da2-682c-40ce-a6f8-d07109c59270}" Title="Stock Scouter" RuntimeType="Silverlight" Version="1.0.0.0" Genre="apps.normal" Author="Xiangyu Bu" Description="Stock Scouter is an app that lets you keep track of stocks with more than one watchlists." Publisher="Stock_Scouter" PublisherID="{0499b3c9-6b35-4c05-8e4d-339cff0d6293}">
-    <IconPath IsRelative="true" IsResource="false">Assets\logo.png</IconPath>
+  <App xmlns="" ProductID="{b56c6da2-682c-40ce-a6f8-d07109c59270}" Title="Stock Scouter" RuntimeType="Silverlight" Version="1.0.0.0" Genre="apps.normal" Author="Xiangyu Bu" Description="Stock Scouter is an app that lets you keep track of stocks with multiple watch lists." Publisher="Stock_Scouter" PublisherID="{0499b3c9-6b35-4c05-8e4d-339cff0d6293}">
+    <IconPath IsRelative="true" IsResource="false">ApplicationIcon.png</IconPath>
     <Capabilities>
       <Capability Name="ID_CAP_IDENTITY_USER" />
       <Capability Name="ID_CAP_NETWORKING" />
       <Capability Name="ID_CAP_PUSH_NOTIFICATION" />
       <Capability Name="ID_CAP_WEBBROWSERCOMPONENT" />
-      <Capability Name="ID_CAP_ISV_CAMERA" />
-      <Capability Name="ID_CAP_MEDIALIB_PLAYBACK" />
     </Capabilities>
     <Tasks>
       <DefaultTask Name="_default" NavigationPage="MainPage.xaml" />
@@ -17,11 +15,9 @@
     <Tokens>
       <PrimaryToken TokenID="Stock_ScouterToken" TaskName="_default">
         <TemplateFlip>
-          <SmallImageURI IsRelative="true" IsResource="false">
-          </SmallImageURI>
+          <SmallImageURI IsRelative="true" IsResource="false">Background.png</SmallImageURI>
           <Count>0</Count>
-          <BackgroundImageURI IsRelative="true" IsResource="false">
-          </BackgroundImageURI>
+          <BackgroundImageURI IsRelative="true" IsResource="false">Background.png</BackgroundImageURI>
           <Title>
           </Title>
           <BackContent>
