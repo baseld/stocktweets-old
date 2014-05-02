@@ -177,7 +177,7 @@ namespace Stock_Scouter
 
         public RssViewModel()
         {
-            rssCollection = new ObservableCollection<RssItemViewModel>();
+            // rssCollection = new ObservableCollection<RssItemViewModel>();
             IsDataLoaded = false;
         }
 
@@ -223,8 +223,9 @@ namespace Stock_Scouter
 
                         Deployment.Current.Dispatcher.BeginInvoke(() =>
                         {
-                            foreach (RssItemViewModel r in tmp) RssCollection.Add(r);
-                            this.IsDataLoaded = true;
+                            RssCollection = tmp;
+                            // foreach (RssItemViewModel r in tmp) RssCollection.Add(r);
+                            // this.IsDataLoaded = true;
                         });
                     }
                     catch (Exception ex)
