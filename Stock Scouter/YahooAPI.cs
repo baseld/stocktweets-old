@@ -111,6 +111,21 @@ namespace Stock_Scouter
             }, request);
         }
 
+        // timeSpan = {1d, 5d, 1m, 3m, 6m, 1y, 2y, 5y, max}
+        public static Uri GetQuoteGraphUrl(string symbol, string timeSpan, List<string> vs = null)
+        {
+            string vsStr;
+            if (vs != null)
+            {
+                vsStr = 
+            }
+            else
+            {
+                vsStr = "";
+            }
+            string baseUrl = "http://chart.finance.yahoo.com/z?s=" + symbol + "&t=" + timeSpan + "&q=l&l=on&z=l&c=%5EGSPC&a=v&p=s&lang=en-US&region=US";
+        }
+        
         public static Uri GetQuotesXmlUrl(List<string> symbols)
         {
             symbols.Remove("");
@@ -129,6 +144,8 @@ namespace Stock_Scouter
             IEnumerable<XElement> quotes = results.Elements("quote").Where(x => x.Element("ErrorIndicationreturnedforsymbolchangedinvalid").Value == "");
             return quotes;
         }
+
+        
 
         public static void UpdateQuotes(IEnumerable<XElement> xel)
         {
@@ -163,8 +180,8 @@ namespace Stock_Scouter
                 quote.DailyHigh = GetDecimal(q.Element("DaysHigh").Value);
                 quote.YearlyLow = GetDecimal(q.Element("YearLow").Value);
                 quote.YearlyHigh = GetDecimal(q.Element("YearHigh").Value);
-                quote.MarketCapitalization = GetDecimal(q.Element("MarketCapitalization").Value);
-                quote.Ebitda = GetDecimal(q.Element("EBITDA").Value);
+                quote.MarketCapitalization = q.Element("MarketCapitalization").Value;
+                quote.Ebitda = q.Element("EBITDA").Value;
                 quote.ChangeFromYearLow = GetDecimal(q.Element("ChangeFromYearLow").Value);
                 quote.PercentChangeFromYearLow = GetDecimal(q.Element("PercentChangeFromYearLow").Value);
                 quote.ChangeFromYearHigh = GetDecimal(q.Element("ChangeFromYearHigh").Value);

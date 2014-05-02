@@ -357,8 +357,8 @@ namespace Stock_Scouter
         private decimal? dailyHigh;
         private decimal? yearlyLow;
         private decimal? yearlyHigh;
-        private decimal? marketCapitalization;
-        private decimal? ebitda;
+        private string marketCapitalization;
+        private string ebitda;
         private decimal? changeFromYearLow;
         private decimal? percentChangeFromYearLow;
         private decimal? changeFromYearHigh;
@@ -714,7 +714,7 @@ namespace Stock_Scouter
         }
 
 
-        public decimal? MarketCapitalization
+        public string MarketCapitalization
         {
             get { return marketCapitalization; }
             set
