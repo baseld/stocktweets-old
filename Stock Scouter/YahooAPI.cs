@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Net;
-using System.IO;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Xml.Linq;
 
 namespace Stock_Scouter
@@ -23,99 +20,11 @@ namespace Stock_Scouter
         private const string BASE_URL = "http://query.yahooapis.com/v1/public/yql?q={0}&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys";
         private const string BASE_QUERY = "select * from yahoo.finance.quotes where symbol in ({0})";
 
-        public delegate void RESTSuccessCallback(Stream stream);
-        public delegate void RESTErrorCallback(String reason);
-
-        public static void get(Uri uri, Dictionary<String, String> extra_headers, RESTSuccessCallback success_callback, RESTErrorCallback error_callback)
-        {
-            HttpWebRequest request = WebRequest.CreateHttp(uri);
-
-            if (extra_headers != null)
-                foreach (String header in extra_headers.Keys)
-                    try
-                    {
-                        request.Headers[header] = extra_headers[header];
-                    }
-                    catch (Exception) { }
-
-            request.BeginGetResponse((IAsyncResult result) =>
-            {
-                HttpWebRequest req = result.AsyncState as HttpWebRequest;
-                if (req != null)
-                {
-                    try
-                    {
-                        WebResponse response = req.EndGetResponse(result);
-                        success_callback(response.GetResponseStream());
-                    }
-                    catch (WebException e)
-                    {
-                        error_callback(e.Message);
-                        return;
-                    }
-                }
-            }, request);
-        }
-
-        public static void post(Uri uri, Dictionary<String, String> post_params, Dictionary<String, String> extra_headers, RESTSuccessCallback success_callback, RESTErrorCallback error_callback)
-        {
-            HttpWebRequest request = WebRequest.CreateHttp(uri);
-            request.ContentType = "application/x-www-form-urlencoded";
-            request.Method = "POST";
-
-            if (extra_headers != null)
-                foreach (String header in extra_headers.Keys)
-                    try
-                    {
-                        request.Headers[header] = extra_headers[header];
-                    }
-                    catch (Exception) { }
-
-
-            request.BeginGetRequestStream((IAsyncResult result) =>
-            {
-                HttpWebRequest preq = result.AsyncState as HttpWebRequest;
-                if (preq != null)
-                {
-                    Stream postStream = preq.EndGetRequestStream(result);
-
-                    StringBuilder postParamBuilder = new StringBuilder();
-                    if (post_params != null)
-                        foreach (String key in post_params.Keys)
-                            postParamBuilder.Append(String.Format("{0}={1}&", key, post_params[key]));
-
-                    Byte[] byteArray = Encoding.UTF8.GetBytes(postParamBuilder.ToString());
-
-                    postStream.Write(byteArray, 0, byteArray.Length);
-                    postStream.Close();
-
-
-                    preq.BeginGetResponse((IAsyncResult final_result) =>
-                    {
-                        HttpWebRequest req = final_result.AsyncState as HttpWebRequest;
-                        if (req != null)
-                        {
-                            try
-                            {
-                                WebResponse response = req.EndGetResponse(final_result);
-                                success_callback(response.GetResponseStream());
-                            }
-                            catch (WebException e)
-                            {
-                                error_callback(e.Message);
-                                return;
-                            }
-                        }
-                    }, preq);
-                }
-            }, request);
-        }
-
         // timeSpan = {1d, 5d, 1m, 3m, 6m, 1y, 2y, 5y, max}
         public static Uri GetQuoteGraphUrl(string symbol, string timeSpan, List<string> vs = null)
         {
             string vsStr;
-            if (vs != null)
+            if (vs != null && vs.Count > 0)
             {
                 if (vs.Contains("S&P500"))
                 {
@@ -130,7 +39,7 @@ namespace Stock_Scouter
             }
             return new Uri("http://chart.finance.yahoo.com/z?s=" + symbol + "&t=" + timeSpan + "&q=l&l=on&z=l" + vsStr + "&a=v&p=s&lang=en-US&region=US");
         }
-        
+
         public static Uri GetQuotesXmlUrl(List<string> symbols)
         {
             symbols.Remove("");
@@ -142,19 +51,13 @@ namespace Stock_Scouter
             return new Uri(url);
         }
 
-        public static IEnumerable<XElement> ParseQuotesXml(string xmlData)
+        public static void UpdateQuotes(string xmlData)
         {
             XDocument doc = XDocument.Parse(xmlData);
             XElement results = doc.Root.Element("results");
             IEnumerable<XElement> quotes = results.Elements("quote").Where(x => x.Element("ErrorIndicationreturnedforsymbolchangedinvalid").Value == "");
-            return quotes;
-        }
 
-        
-
-        public static void UpdateQuotes(IEnumerable<XElement> xel)
-        {
-            foreach (XElement q in xel)
+            foreach (XElement q in quotes)
             {
                 System.Diagnostics.Debug.WriteLine("Processing " + q.Element("Symbol").Value);
 
@@ -206,6 +109,7 @@ namespace Stock_Scouter
                 quote.ExDividendDate = GetDateTime(q.Element("ExDividendDate").Value);
                 quote.PeRatio = GetDecimal(q.Element("PERatio").Value);
                 quote.DividendPayDate = GetDateTime(q.Element("DividendPayDate").Value);
+                quote.DividendYield = GetDecimal(q.Element("DividendYield").Value);
                 quote.PegRatio = GetDecimal(q.Element("PEGRatio").Value);
                 quote.PriceEpsEstimateCurrentYear = GetDecimal(q.Element("PriceEPSEstimateCurrentYear").Value);
                 quote.PriceEpsEstimateNextYear = GetDecimal(q.Element("PriceEPSEstimateNextYear").Value);

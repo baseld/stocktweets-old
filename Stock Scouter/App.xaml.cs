@@ -1,20 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using Microsoft.Phone.Controls;
+﻿using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
-using System.IO.IsolatedStorage;
-using System.ComponentModel;
+using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.IO.IsolatedStorage;
+using System.Linq;
+using System.Windows;
+using System.Windows.Media;
+using System.Windows.Navigation;
+using System.Windows.Threading;
 
 namespace Stock_Scouter
 {
@@ -29,6 +24,7 @@ namespace Stock_Scouter
         private static List<Portfolio> portfolioList = null;
         private static ObservableCollection<Quote> quoteList = null;
         private static MainViewModel viewModel = null;
+        private static DispatcherTimer timer = null;
 
         /// <summary>
         /// A static ViewModel used by the views to bind against.
@@ -43,6 +39,14 @@ namespace Stock_Scouter
                     viewModel = new MainViewModel();
 
                 return viewModel;
+            }
+        }
+
+        public static DispatcherTimer Timer
+        {
+            get
+            {
+                return timer;
             }
         }
 
@@ -71,6 +75,7 @@ namespace Stock_Scouter
             set
             {
                 storageSpace["AutoRefreshInterval"] = value;
+                if (Timer != null) Timer.Interval = new TimeSpan(0, 0, value);
             }
         }
 
@@ -175,6 +180,18 @@ namespace Stock_Scouter
             }
         }
 
+        public static List<string> StrToSymbols(string str)
+        {
+            List<string> syms = new List<string>();
+            string[] symbols = str.Split(',');
+
+            foreach (string s in symbols)
+            {
+                if (s.Length > 0 && !syms.Contains(s)) syms.Add(s);
+            }
+            return syms;
+        }
+
         public static Quote GetQuote(string symbol)
         {
             symbol = symbol.ToUpper();
@@ -238,6 +255,11 @@ namespace Stock_Scouter
                 PhoneApplicationService.Current.UserIdleDetectionMode = IdleDetectionMode.Disabled;
             }
 
+            if (IsAutoRefreshEnabled && timer == null)
+            {
+                timer = new DispatcherTimer();
+                timer.Interval = new TimeSpan(0, 0, AutoRefreshInterval);
+            }
         }
 
         // Code to execute when the application is launching (eg, from Start)

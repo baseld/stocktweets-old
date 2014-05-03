@@ -105,6 +105,7 @@
     <Compile Include="DetailedQuotePage.xaml.cs">
       <DependentUpon>DetailedQuotePage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="HttpWrapper.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>

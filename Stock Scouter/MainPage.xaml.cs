@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -15,8 +16,7 @@ namespace Stock_Scouter
 {
     public partial class MainPage : PhoneApplicationPage
     {
-        private static DispatcherTimer dispatcherTimer = null;
-
+        public static EventHandler pageTimerHandler = null;
         // Constructor
         public MainPage()
         {
@@ -52,15 +52,13 @@ namespace Stock_Scouter
             if (!App.ViewModel.IsDataLoaded)
             {
                 App.ViewModel.LoadData();
-                if (App.IsAutoRefreshEnabled)
+                if (App.Timer != null)
                 {
-                    dispatcherTimer = new DispatcherTimer();
-                    dispatcherTimer.Tick += new EventHandler(dispatcherTimer_Tick);
-                    dispatcherTimer.Interval = new TimeSpan(0, 0, App.AutoRefreshInterval);
+                    pageTimerHandler = new EventHandler(dispatcherTimer_Tick);
+                    App.Timer.Tick += pageTimerHandler;
+                    if (!App.Timer.IsEnabled) App.Timer.Start();
                 }
             }
-            if (!App.IsAutoRefreshEnabled) dispatcherTimer = null;
-            if (dispatcherTimer != null) dispatcherTimer.Start();
         }
 
         private void dispatcherTimer_Tick(object sender, EventArgs e)
@@ -72,7 +70,7 @@ namespace Stock_Scouter
         //app bar add to watchlist
         private void addList_Click(object sender, EventArgs e)
         {
-            if (dispatcherTimer != null) dispatcherTimer.Stop();
+            if (App.Timer != null) App.Timer.Stop();
             var tb = new TextBox();
             var box = new CustomMessageBox()
             {
@@ -106,7 +104,7 @@ namespace Stock_Scouter
                         MessageBoxResult result = MessageBox.Show(message, caption, buttons);
                     }
                 }
-                if (dispatcherTimer != null) dispatcherTimer.Start();
+                if (App.Timer != null) App.Timer.Start();
             };
 
             // focus on the text box by default
@@ -120,48 +118,22 @@ namespace Stock_Scouter
 
         private void CurrentList_RefreshView()
         {
+            if (App.Timer != null) App.Timer.Stop();
+
             PortfolioViewModel currentView = (PortfolioViewModel)PortfolioPivot.SelectedItem;
             Portfolio currentPortfolio = App.GetPortfolio(currentView.Title);
             List<string> currentStockList = currentPortfolio.StockList;
 
             // do not refresh if the portfolio has nothing
-            if (currentStockList.Count == 0)
+            if (currentStockList.Count == 0) return;
+            
+            WebClient client = new WebClient();
+            client.DownloadStringCompleted += (obj, args) =>
             {
-                if (dispatcherTimer != null) dispatcherTimer.Stop();
-                return;
-            }
-
-            YahooAPI.get(YahooAPI.GetQuotesXmlUrl(currentStockList), null,
-                delegate(Stream str)
-                {
-                    System.Diagnostics.Debug.WriteLine("Successfully get new data for stocks");
-                    // convert stream to string
-                    try
-                    {
-                        StreamReader reader = new StreamReader(str);
-                        string result = reader.ReadToEnd();
-                        IEnumerable<XElement> xmlObjs = YahooAPI.ParseQuotesXml(result);
-                        //System.Diagnostics.Debug.WriteLine("stream2str: " + result);
-                        
-                        Deployment.Current.Dispatcher.BeginInvoke(() =>
-                        {
-                            YahooAPI.UpdateQuotes(xmlObjs);
-                            
-                            //currentView.LoadData();
-                        });
-                    }
-                    catch (Exception ex)
-                    {
-                        System.Diagnostics.Debug.WriteLine(ex.Message);
-                        System.Diagnostics.Debug.WriteLine(ex.Source);
-                        //throw;
-                    }
-                },
-                delegate(String reason)
-                {
-                    System.Diagnostics.Debug.WriteLine("Error: " + reason);
-                }
-            );
+                YahooAPI.UpdateQuotes(args.Result.ToString());
+                if (App.Timer != null) App.Timer.Start();
+            };
+            client.DownloadStringAsync(YahooAPI.GetQuotesXmlUrl(currentStockList));
         }
 
         private void CurrentList_Refresh(object sender, EventArgs e)
@@ -171,16 +143,16 @@ namespace Stock_Scouter
 
         private void CurrentList_Delete(object sender, EventArgs e)
         {
-            if (dispatcherTimer != null) dispatcherTimer.Stop();
+            if (App.Timer != null) App.Timer.Stop();
             PortfolioViewModel currentView = (PortfolioViewModel)PortfolioPivot.SelectedItem;
             App.DeletePortfolio(App.GetPortfolio(currentView.Title));
             App.ViewModel.LoadData();
-            if (dispatcherTimer != null) dispatcherTimer.Start();
+            if (App.Timer != null) App.Timer.Start();
         }
 
         private void CurrentList_Edit(object sender, EventArgs e)
         {
-            if (dispatcherTimer != null) dispatcherTimer.Stop();
+            if (App.Timer != null) App.Timer.Stop();
             var tb = new TextBox();
             var box = new CustomMessageBox()
             {
@@ -213,7 +185,7 @@ namespace Stock_Scouter
                         MessageBoxResult result = MessageBox.Show(message, caption, buttons);
                     }
                 }
-                if (dispatcherTimer != null) dispatcherTimer.Start();
+                if (App.Timer != null) App.Timer.Start();
             };
 
             // focus on the text box by default
@@ -239,18 +211,9 @@ namespace Stock_Scouter
 
         private void SearchButton_onClick(object sender, RoutedEventArgs e)
         {
-            if (dispatcherTimer != null) dispatcherTimer.Stop();
+            if (App.Timer != null) App.Timer.Stop();
 
-            List<string> syms = new List<string>();
-            string[] symbols = KeywordStr.Text.Split(',');
-
-            foreach (string s in symbols)
-            {
-                if (s.Length == 0) continue;
-                if (!syms.Contains(s)) syms.Add(s);
-            }
-
-            System.Diagnostics.Debug.WriteLine(String.Join(",", symbols));
+            List<string> syms = App.StrToSymbols(KeywordStr.Text);
 
             if (syms.Count == 0)
             {
@@ -260,71 +223,48 @@ namespace Stock_Scouter
                 MessageBoxResult result = MessageBox.Show(message, caption, buttons);
                 return;
             }
-
-            YahooAPI.get(YahooAPI.GetQuotesXmlUrl(syms), null,
-                delegate(Stream str)
+            
+            WebClient client = new WebClient();
+            client.DownloadStringCompleted += (obj, args) =>
+            {
+                YahooAPI.UpdateQuotes(args.Result.ToString());
+                PortfolioViewModel currentView = (PortfolioViewModel)PortfolioPivot.SelectedItem;
+                Portfolio currentPortfolio = App.GetPortfolio(currentView.Title);
+                foreach (string s in syms)
                 {
-                    System.Diagnostics.Debug.WriteLine("Success");
-                    // convert stream to string
-                    try
+                    Quote quote = App.GetQuote(s);
+                    if (quote == null)
                     {
-                        StreamReader reader = new StreamReader(str);
-                        string result = reader.ReadToEnd();
-                        IEnumerable<XElement> xmlObjs = YahooAPI.ParseQuotesXml(result);
-                        //System.Diagnostics.Debug.WriteLine("stream2str: " + result);
-                        
-                        Deployment.Current.Dispatcher.BeginInvoke(() =>
-                        {
-                            YahooAPI.UpdateQuotes(xmlObjs);
-                            //this is not good though
-                            
-                            PortfolioViewModel currentView = (PortfolioViewModel)PortfolioPivot.SelectedItem;
-                            Portfolio currentPortfolio = App.GetPortfolio(currentView.Title);
-                            foreach (string s in syms)
-                            {
-                                Quote quote = App.GetQuote(s);
-                                if (quote == null)
-                                {
-                                    System.Diagnostics.Debug.WriteLine("Symbol " + s + " was not found in db.");
-                                    continue;
-                                }
-                                if (currentPortfolio.AddQuote(quote))
-                                {
-                                    currentView.AddStockToView(quote);
-                                }
-                            }
-                            //App.SavePortfolio(currentPortfolio);
-                            //currentView.LoadData();
-                            if (dispatcherTimer != null) dispatcherTimer.Start();
-                        });
+                        System.Diagnostics.Debug.WriteLine("Symbol " + s + " was not found in db.");
+                        continue;
                     }
-                    catch (Exception ex)
+                    if (currentPortfolio.AddQuote(quote))
                     {
-                        System.Diagnostics.Debug.WriteLine(ex.Message);
-                        System.Diagnostics.Debug.WriteLine(ex.Source);
+                        currentView.AddStockToView(quote);
                     }
-                },
-                delegate(String reason)
-                {
-                    System.Diagnostics.Debug.WriteLine("Error: " + reason);
                 }
-            );
+                if (App.Timer != null) App.Timer.Start();
+            };
+            client.DownloadStringAsync(YahooAPI.GetQuotesXmlUrl(syms));
         }
 
         private void ListBox_onSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            System.Diagnostics.Debug.WriteLine("selection is changed! sender type is " + sender.GetType());
             ListBox lb = sender as ListBox;
             if (lb.SelectedIndex == -1) return;
-            System.Diagnostics.Debug.WriteLine("selected index is " + lb.SelectedIndex.ToString());
 
-            // what a stupid way!
-            string symbol = App.GetPortfolio(((PortfolioViewModel)PortfolioPivot.SelectedItem).Title).StockList.ElementAt(lb.SelectedIndex);
+            if (App.Timer != null)
+            {
+                App.Timer.Stop();
+                App.Timer.Tick -= pageTimerHandler;
+            }
+            System.Diagnostics.Debug.WriteLine("selection is changed!\n - dataContext type is " + lb.DataContext.GetType());
+            System.Diagnostics.Debug.WriteLine(" - selected index is " + lb.SelectedIndex.ToString());
 
-            System.Diagnostics.Debug.WriteLine("symbol is " + symbol);
-            if (dispatcherTimer != null) dispatcherTimer.Stop();
+            string symbol = ((PortfolioViewModel)lb.DataContext).StockViews.ElementAt(lb.SelectedIndex).Symbol;
+            System.Diagnostics.Debug.WriteLine(" - symbol to navigate is " + symbol);
+            
             NavigationService.Navigate(new Uri("/DetailedQuotePage.xaml?symbol=" + symbol, UriKind.Relative));
-            lb.SelectedIndex = -1; // reset index
         }
 
         // this function is used to trigger new features
@@ -337,8 +277,16 @@ namespace Stock_Scouter
 
         private void NavigateTo_Settings(object sender, EventArgs e)
         {
-            if (dispatcherTimer != null) dispatcherTimer.Stop();
+            if (App.Timer != null)
+            {
+                App.Timer.Stop();
+                App.Timer.Tick -= pageTimerHandler;
+            }
             NavigationService.Navigate(new Uri("/SettingsPage.xaml", UriKind.Relative));
+        }
+
+        private void PortfolioPivot_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
         }
 
     }

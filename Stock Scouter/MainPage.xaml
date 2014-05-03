@@ -38,7 +38,7 @@
         <phone:Pivot x:Name="PortfolioPivot" ItemsSource="{Binding PageCollection}" 
                         Title="STOCK SCOUTER" 
                         HorizontalContentAlignment="Stretch" 
-                        VerticalContentAlignment="Stretch" Canvas.ZIndex="97" >
+                        VerticalContentAlignment="Stretch" Canvas.ZIndex="97" SelectionChanged="PortfolioPivot_SelectionChanged">
             <phone:Pivot.HeaderTemplate>
                 <DataTemplate>
                     <Grid x:Name="grid">

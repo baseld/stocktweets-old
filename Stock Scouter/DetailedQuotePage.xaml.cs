@@ -1,18 +1,18 @@
-﻿using System;
-using System.Diagnostics;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Net;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Navigation;
+﻿using Microsoft.Phone.Controls;
 using Microsoft.Phone.Tasks;
-using Microsoft.Phone.Controls;
-using System.Collections.ObjectModel;
 using Microsoft.Phone.Shell;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
+using System.Windows.Navigation;
+using System.Xml.Linq;
+using System.Net;
+using System.Windows.Media.Imaging;
 
 namespace Stock_Scouter
 {
@@ -22,6 +22,7 @@ namespace Stock_Scouter
         private static Quote _currentQuote;
         private static RssViewModel rssViewModel = null;
         private static TweetViewModel tweetViewModel = null;
+        private static ProgressIndicator progressBar = null;
 
         public static string CurrentSymbol
         {
@@ -73,10 +74,25 @@ namespace Stock_Scouter
             }
         }
 
+        public static ProgressIndicator ProgressBar
+        {
+            get
+            {
+                if (progressBar == null)
+                {
+                    progressBar = new ProgressIndicator();
+                    progressBar.IsVisible = true;
+                    progressBar.IsIndeterminate = true;
+                }
+                return progressBar;
+            }
+        }
+
         public DetailedQuotePage()
         {
             InitializeComponent();
             this.DataContext = this;
+            SystemTray.SetProgressIndicator(this, ProgressBar);
         }
 
         protected override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e)
@@ -87,12 +103,24 @@ namespace Stock_Scouter
             {
                 System.Diagnostics.Debug.WriteLine("DetailedQuotedPage: symbol is " + CurrentSymbol);
                 CurrentQuote = App.GetQuote(CurrentSymbol);
-                Name.Text = CurrentQuote.Name + "(" + CurrentQuote.Symbol + ")";
+
+                QuoteName.Text = CurrentQuote.Name;
+                DetailedSymbol.Text = CurrentQuote.Symbol + " (" + CurrentQuote.StockExchange + ")";
                 LastTradePrice.Text = CurrentQuote.LastTradePrice.ToString();
-                Change.Text = CurrentQuote.Change.ToString();
                 ChangeInPercent.Text = CurrentQuote.ChangeInPercent.ToString();
                 LastTradeDate.Text = CurrentQuote.LastTradeDate.ToString();
                 PreviousClose.Text = CurrentQuote.PreviousClose.ToString();
+
+                Change.Text = CurrentQuote.Change.ToString();
+                if (CurrentQuote.Change > 0)
+                {
+                    Change.Foreground = new SolidColorBrush(Colors.Green);
+                }
+                else if (CurrentQuote.Change < 0)
+                {
+                    Change.Foreground = new SolidColorBrush(Colors.Red);
+                }
+                
                 if (CurrentQuote.MarketCapitalization == "")
                 {
                     MarketCapitalization.Text = "N/A";
@@ -101,12 +129,13 @@ namespace Stock_Scouter
                 {
                     MarketCapitalization.Text = CurrentQuote.MarketCapitalization.ToString();
                 }
+
                 Open.Text = CurrentQuote.Open.ToString();
                 decimal volume = CurrentQuote.Volume.Value;
                 volume = volume / 1000000;
-                decimal avgvol = CurrentQuote.AverageDailyVolume.Value;
-                avgvol = avgvol / 1000000;
-                Vol_AvgVol.Text = volume.ToString("#.#") + "M/" + avgvol.ToString("#.#") + "M";
+                decimal avgVol = CurrentQuote.AverageDailyVolume.Value;
+                avgVol = avgVol / 1000000;
+                Vol_AvgVol.Text = volume.ToString("#.#") + "M/" + avgVol.ToString("#.#") + "M";
                 DaysRange.Text = CurrentQuote.DailyLow.ToString() + " - " + CurrentQuote.DailyHigh.ToString();
                 if (CurrentQuote.PeRatio == null)
                 {
@@ -127,6 +156,7 @@ namespace Stock_Scouter
                 }
 
                 RssView.Symbol = CurrentSymbol;
+                ProgressBar.IsVisible = false;
             }
         }
 
@@ -135,78 +165,86 @@ namespace Stock_Scouter
             // round step to 1
             GraphIndicator.Value = Math.Round(e.NewValue);
             System.Diagnostics.Debug.WriteLine("Slider got new value: " + GraphIndicator.Value);
-            if (GraphIndicator.Value == 0)
-            {
-                GraphIndicator_Prompt.Text = "1d";
-            }
-            else if (GraphIndicator.Value == 1)
-            {
-                GraphIndicator_Prompt.Text = "1w";
-            }
-            else if (GraphIndicator.Value == 2)
-            {
-                GraphIndicator_Prompt.Text = "1m";
-            }
-            else if (GraphIndicator.Value == 3)
-            {
-                GraphIndicator_Prompt.Text = "3m";
-            }
-            else if (GraphIndicator.Value == 4)
-            {
-                GraphIndicator_Prompt.Text = "6m";
-            }
-            else if (GraphIndicator.Value == 5)
-            {
-                GraphIndicator_Prompt.Text = "1y";
-            }
-            else if (GraphIndicator.Value == 6)
-            {
-                GraphIndicator_Prompt.Text = "5y";
-            }
-            else
-            {
-                GraphIndicator_Prompt.Text = "??";
-            }
+            string[] prompts = {"1d", "5d", "1m", "3m", "6m", "1y", "5y", "max"};
+            GraphIndicator_Prompt.Text = prompts[(int)GraphIndicator.Value];
         }
+
+        private void UpdateGraph()
+        {
+            List<string> syms = App.StrToSymbols(Graph_CompareWith.Text);
+            Uri graphUri = YahooAPI.GetQuoteGraphUrl(CurrentSymbol, GraphIndicator_Prompt.Text, syms);
+            WebClient client = new WebClient();
+            client.OpenReadCompleted += async (obj, args) =>
+            {
+                Stream stream = new MemoryStream();
+                await args.Result.CopyToAsync(stream);
+                BitmapImage b = new BitmapImage();
+                b.SetSource(stream);
+                this.GraphHolder.Source = b;
+                ProgressBar.IsVisible = false;
+                GraphHolder_Prompt.Visibility = Visibility.Collapsed;
+            };
+            client.DownloadProgressChanged += new DownloadProgressChangedEventHandler(GraphDownloadProgressChanged);
+            client.OpenReadAsync(graphUri);
+            ProgressBar.IsVisible = true;
+            progressBar.IsIndeterminate = false;
+            progressBar.Value = 0;
+        }
+
+       private void GraphDownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
+       {
+           ProgressBar.Value = e.ProgressPercentage;
+       }
 
         private void GraphIndicator_LoadImage(object sender, System.Windows.Input.MouseEventArgs e)
         {
             System.Diagnostics.Debug.WriteLine("Slider: should load image now");
+            UpdateGraph();
         }
 
         // open the link in the browser
         private void NewsListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            System.Diagnostics.Debug.WriteLine("The type of sender is " + sender.GetType());
-            // sender is a ListBox
-            RssItemViewModel rvm = ((ListBox)sender).SelectedItem as RssItemViewModel;
-            
+            ListBox lb = (ListBox)sender;
+            if (lb.SelectedIndex < 0) return;
+
+            RssItemViewModel rvm = lb.SelectedItem as RssItemViewModel;
             WebBrowserTask webBrowserTask = new WebBrowserTask();
             webBrowserTask.Uri = new Uri(rvm.Link, UriKind.Absolute);
+            lb.SelectedIndex = -1;
             webBrowserTask.Show();
         }
 
         // when panorama item changes
         private void Panorama_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Panorama p = sender as Panorama;
-            int currentIndex = p.SelectedIndex;
-            System.Diagnostics.Debug.WriteLine("Panorama selection is changed.\nselectedIndex is " + currentIndex);
-            if (currentIndex == 2)
+            int currentIndex = RootPanorama.SelectedIndex;
+            RefreshView(currentIndex);
+        }
+
+        private void RefreshView(int panoramaIndex)
+        {
+            if (panoramaIndex == 3)
             {
-                // news page
-                RssView.LoadData();
+                progressBar.Value = 0;
+                ProgressBar.IsVisible = true;
+                progressBar.IsIndeterminate = true;
+                RssView.LoadData(ProgressBar);
             }
         }
 
         private void CurrentView_Refresh(object sender, EventArgs e)
         {
-
+            RefreshView(RootPanorama.SelectedIndex);
         }
 
         private void NavigateTo_Settings(object sender, EventArgs e)
         {
 
+        }
+
+        private void GraphHolder_Tap(object sender, System.Windows.Input.GestureEventArgs e)
+        {
         }
     }
 
@@ -245,39 +283,18 @@ namespace Stock_Scouter
             }
         }
 
-        public void LoadData()
+        public void LoadData(ProgressIndicator p = null)
         {
             System.Diagnostics.Debug.WriteLine("Now start to load rss data for symbol " + Symbol);
             List<string> sym = new List<string>() { Symbol };
-            YahooAPI.get(YahooAPI.GetRssXmlUrl(sym), null,
-                delegate(Stream str)
-                {
-                    try
-                    {
-                        StreamReader reader = new StreamReader(str);
-                        string response = reader.ReadToEnd();
-                        System.Diagnostics.Debug.WriteLine("stream2str: " + response);
-
-                        ObservableCollection<RssItemViewModel> tmp = YahooAPI.ParseRssXml(response);
-
-                        Deployment.Current.Dispatcher.BeginInvoke(() =>
-                        {
-                            RssCollection = tmp;
-                            // foreach (RssItemViewModel r in tmp) RssCollection.Add(r);
-                            // this.IsDataLoaded = true;
-                        });
-                    }
-                    catch (Exception ex)
-                    {
-                        System.Diagnostics.Debug.WriteLine(ex.Message);
-                        System.Diagnostics.Debug.WriteLine(ex.Source);
-                    }
-                },
-                delegate(String reason)
-                {
-                    System.Diagnostics.Debug.WriteLine("Error: " + reason);
-                }
-            );
+            
+            WebClient client = new WebClient();
+            client.DownloadStringCompleted += (obj, e) =>
+            {
+                RssCollection = YahooAPI.ParseRssXml(e.Result.ToString());
+                if (p != null) p.IsVisible = false;
+            };
+            client.DownloadStringAsync(YahooAPI.GetRssXmlUrl(sym));
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -404,7 +421,7 @@ namespace Stock_Scouter
         {
             System.Diagnostics.Debug.WriteLine("Now start to load rss data for symbol " + Symbol);
             List<string> sym = new List<string>() { Symbol };
-            YahooAPI.get(YahooAPI.GetRssXmlUrl(sym), null,
+            HttpWrapper.get(YahooAPI.GetRssXmlUrl(sym), null,
                 delegate(Stream str)
                 {
                     try
