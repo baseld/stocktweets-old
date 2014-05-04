@@ -39,49 +39,53 @@
                             <TextBlock Grid.Column="0" HorizontalAlignment="Stretch" Name="Symbol" Text="{Binding Symbol}" Style="{StaticResource PhoneTextTitle2Style}" TextWrapping="Wrap" Margin="5,0,5,0"/>
                             <TextBlock Grid.Column="1" HorizontalAlignment="Stretch" Name="StockExchange" Text="{Binding StockExchange, StringFormat='(\{0\})'}" Style="{StaticResource PhoneTextTitle2Style}" Margin="0" TextWrapping="Wrap"/>
                         </Grid>
-                        <Grid HorizontalAlignment="Stretch" Margin="5,10,5,12">
-                            <Grid.Background>
-                                <SolidColorBrush Color="White" Opacity="0.2" />
-                            </Grid.Background>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
-                            
-                            <Grid Grid.Column="0" HorizontalAlignment="Stretch">
+                        <Border BorderThickness="1,1,1,1" CornerRadius="5" Margin="5,10,5,10">
+                            <Border.BorderBrush>
+                                <SolidColorBrush Color="White" Opacity="0.12" />
+                            </Border.BorderBrush>
+                            <Border.Background>
+                                <SolidColorBrush Color="White" Opacity="0.1" />
+                            </Border.Background>
+                            <Grid HorizontalAlignment="Stretch">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
-                                <TextBlock Grid.ColumnSpan="3" Grid.Row="0" HorizontalAlignment="Stretch" TextAlignment="Center" VerticalAlignment="Center" Text="{Binding LastTradePrice, StringFormat='{}{0:C}'}" TextWrapping="Wrap" Padding="20,0,20,0" FontWeight="Bold" Style="{StaticResource PhoneTextLargeStyle}"/>
-                                <TextBlock Grid.Column="0" Grid.Row="1" HorizontalAlignment="Stretch" TextAlignment="Center" VerticalAlignment="Center" Text="{Binding DailyLow, StringFormat='{}{0:C}'}" TextWrapping="NoWrap" TextTrimming="None"/>
-                                <TextBlock Grid.Column="1" Grid.Row="1" HorizontalAlignment="Center" TextAlignment="Center" VerticalAlignment="Center" Text="-" TextWrapping="Wrap"/>
-                                <TextBlock Grid.Column="2" Grid.Row="1" HorizontalAlignment="Stretch" TextAlignment="Center" VerticalAlignment="Center" Text="{Binding DailyHigh, StringFormat='{}{0:C}'}" TextWrapping="NoWrap" TextTrimming="None"/>
-                            </Grid>
-
-                            <Grid Grid.Column="1" Background="Transparent" HorizontalAlignment="Stretch" Margin="0,0,12,0">
-                                <Grid.ColumnDefinitions>
+                                
+                                <Grid Grid.Column="0" HorizontalAlignment="Stretch" Margin="5,0,5,5">
+                                    <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
-                                <Grid.RowDefinitions>
+                                    <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
-                                <TextBlock Name="Change" Grid.Column="0" HorizontalAlignment="Stretch" TextAlignment="Center" Text="{Binding Change}" Foreground="{Binding Color}" TextWrapping="Wrap" Padding="5"/>
-                                <TextBlock Name="ChangeInPercent" Grid.Column="1" HorizontalAlignment="Stretch" TextAlignment="Center" Text="{Binding ChangeInPercent}" Foreground="{Binding Color}" TextWrapping="Wrap" Padding="5"/>
-                                <TextBlock Name="LastTradeDate" Grid.Row="1" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" TextAlignment="Center" Text="{Binding LastTradeDate}" TextWrapping="Wrap" Padding="5" Style="{StaticResource PhoneTextSmallStyle}"/>
-                            </Grid>
-                        </Grid>
+                                    <TextBlock Grid.ColumnSpan="3" Grid.Row="0" HorizontalAlignment="Stretch" TextAlignment="Center" VerticalAlignment="Center" Text="{Binding LastTradePrice, StringFormat='{}{0:C}'}" TextWrapping="Wrap" FontWeight="Bold" Style="{StaticResource PhoneTextLargeStyle}"/>
+                                    <TextBlock Grid.Column="0" Grid.Row="1" HorizontalAlignment="Stretch" TextAlignment="Center" VerticalAlignment="Center" Text="{Binding DailyLow, StringFormat='{}{0:C}'}" TextWrapping="NoWrap" TextTrimming="None"/>
+                                    <TextBlock Grid.Column="1" Grid.Row="1" HorizontalAlignment="Center" TextAlignment="Center" VerticalAlignment="Center" Text="-" TextWrapping="Wrap"/>
+                                    <TextBlock Grid.Column="2" Grid.Row="1" HorizontalAlignment="Stretch" TextAlignment="Center" VerticalAlignment="Center" Text="{Binding DailyHigh, StringFormat='{}{0:C}'}" TextWrapping="NoWrap" TextTrimming="None"/>
+                                </Grid>
 
+                                <Grid Grid.Column="1" Background="Transparent" HorizontalAlignment="Stretch">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Name="Change" Grid.Column="0" HorizontalAlignment="Stretch" TextAlignment="Center" Text="{Binding Change}" Foreground="{Binding Color}" TextWrapping="Wrap" Padding="5"/>
+                                    <TextBlock Name="ChangeInPercent" Grid.Column="1" HorizontalAlignment="Stretch" TextAlignment="Center" Text="{Binding ChangeInPercent}" Foreground="{Binding Color}" TextWrapping="Wrap" Padding="5"/>
+                                    <TextBlock Name="LastTradeDate" Grid.Row="1" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" TextAlignment="Center" Text="{Binding LastTradeDate}" TextWrapping="Wrap" Padding="5" Style="{StaticResource PhoneTextSmallStyle}"/>
+                                </Grid>
+                            </Grid>
+                        </Border>
                         <TextBlock HorizontalAlignment="Stretch" Text="Summary" Style="{StaticResource PhoneTextTitle3Style}" TextWrapping="Wrap"/>
                         <Grid HorizontalAlignment="Stretch" Margin="5,10,5,12">
                             <Grid.ColumnDefinitions>
@@ -381,9 +385,9 @@
 
     <phone:PhoneApplicationPage.ApplicationBar>
         <shell:ApplicationBar IsVisible="True" IsMenuEnabled="True">
-            <shell:ApplicationBarIconButton x:Name="AppBarIcon_LogIn" IconUri="/Toolkit.Content/appbar.user.png" Text="me" Click="NavigateTo_SignInWithStockTwits"/>
-            <shell:ApplicationBarIconButton x:Name="AppBarIcon_Tweet" IconUri="/Toolkit.Content/appbar.draw.pencil.png" Text="new tweet" Click="StockTwits_NewTweet"/>
-            <shell:ApplicationBarIconButton x:Name="AppBarIcon_Refresh" IconUri="/Toolkit.Content/appbar.refresh.png" Text="refresh" Click="CurrentView_Refresh"/>
+            <shell:ApplicationBarIconButton x:Name="AppBarIcon_LogIn" IconUri="/Assets/appbar.user.png" Text="me" Click="NavigateTo_SignInWithStockTwits"/>
+            <shell:ApplicationBarIconButton x:Name="AppBarIcon_Tweet" IconUri="/Assets/appbar.draw.pencil.png" Text="new tweet" Click="StockTwits_NewTweet"/>
+            <shell:ApplicationBarIconButton x:Name="AppBarIcon_Refresh" IconUri="/Assets/appbar.refresh.png" Text="refresh" Click="CurrentView_Refresh"/>
             <shell:ApplicationBar.MenuItems>
                 <shell:ApplicationBarMenuItem Text="Settings" Click="NavigateTo_Settings" />
             </shell:ApplicationBar.MenuItems>

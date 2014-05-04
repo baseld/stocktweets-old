@@ -61,6 +61,12 @@ namespace Stock_Scouter
                     StockTwits_OAuth_Token r = JsonConvert.DeserializeObject<StockTwits_OAuth_Token>(args.Result);
                     StockTwitsClient.Code = code;
                     StockTwitsClient.User = r;
+                    if (StockTwitsClient.Instance != null)
+                    {
+                        StockTwitsClient.Instance.AccessToken = r.access_token;
+                        StockTwitsClient.Instance.UserID = r.user_id;
+                        StockTwitsClient.Instance.UserName = r.username;
+                    }
                     this.NavigationService.GoBack();
                 });
             }

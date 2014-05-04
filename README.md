@@ -1,7 +1,14 @@
 stockscouter
 ============
 
-A stock watchlist app for Windows Phone 8 platform.
+A stock watchlist app for Windows Phone 8 platform with integration of StockTwits API.
+
+TODOs
+=====
+
+ * Live tiles
+ * Price alerts
+ * Deeper integration with StockTwits
 
 Contact
 =======

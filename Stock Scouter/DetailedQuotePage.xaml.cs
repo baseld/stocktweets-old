@@ -107,6 +107,8 @@ namespace Stock_Scouter
                 System.Diagnostics.Debug.WriteLine("DetailedQuotedPage: symbol is " + CurrentSymbol);
                 CurrentQuote = App.GetQuote(CurrentSymbol);
 
+                TweetView.EmptyData();
+
                 if (CurrentQuote.Change > 0)
                 {
                     Change.Foreground = new SolidColorBrush(Colors.Green);
@@ -500,6 +502,12 @@ namespace Stock_Scouter
                 _cursor = value;
                 NotifyPropertyChanged("Cursor");
             }
+        }
+
+        public void EmptyData()
+        {
+            Cursor = null;
+            TweetCollection.Clear();
         }
 
         public void LoadData(ProgressIndicator p = null)

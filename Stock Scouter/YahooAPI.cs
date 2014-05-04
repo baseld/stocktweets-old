@@ -51,6 +51,11 @@ namespace Stock_Scouter
             return new Uri(url);
         }
 
+        public static Uri GetStockAppTopPickUri()
+        {
+            return new Uri("http://stockapp.sige.us/api/crawler.php?top10");
+        }
+
         public static void UpdateQuotes(string xmlData)
         {
             XDocument doc = XDocument.Parse(xmlData);

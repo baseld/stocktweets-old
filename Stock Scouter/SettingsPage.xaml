@@ -49,8 +49,8 @@
 
     <phone:PhoneApplicationPage.ApplicationBar>
         <shell:ApplicationBar IsVisible="True" IsMenuEnabled="False">
-            <shell:ApplicationBarIconButton Click="SaveChanges" IconUri="/Toolkit.Content/appbar.save.png" Text="save"/>
-            <shell:ApplicationBarIconButton Click="DiscardChanges" IconUri="/Toolkit.Content/ApplicationBar.Cancel.png" Text="discard"/>
+            <shell:ApplicationBarIconButton Click="SaveChanges" IconUri="/Assets/appbar.save.png" Text="save"/>
+            <shell:ApplicationBarIconButton Click="DiscardChanges" IconUri="/Assets/ApplicationBar.Cancel.png" Text="discard"/>
         </shell:ApplicationBar>
     </phone:PhoneApplicationPage.ApplicationBar>
 

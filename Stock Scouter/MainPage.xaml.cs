@@ -1,22 +1,21 @@
 ﻿using Microsoft.Phone.Controls;
+using Microsoft.Phone.Shell;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Threading;
-using System.Xml.Linq;
+using System.Windows.Navigation;
 
 namespace Stock_Scouter
 {
     public partial class MainPage : PhoneApplicationPage
     {
         public static EventHandler pageTimerHandler = null;
+        private static ProgressIndicator progressBar = null;
+
         // Constructor
         public MainPage()
         {
@@ -25,7 +24,9 @@ namespace Stock_Scouter
             // Set the data context of the listbox control to the sample data
             DataContext = App.ViewModel;
             this.Loaded += new RoutedEventHandler(MainPage_Loaded);
-
+            progressBar = new ProgressIndicator();
+            progressBar.IsIndeterminate = true;
+            SystemTray.SetProgressIndicator(this, progressBar);
         }
 
         // may be pretty slow
@@ -223,11 +224,12 @@ namespace Stock_Scouter
                 MessageBoxResult result = MessageBox.Show(message, caption, buttons);
                 return;
             }
-            
+
+            progressBar.IsVisible = true;
             WebClient client = new WebClient();
             client.DownloadStringCompleted += (obj, args) =>
             {
-                YahooAPI.UpdateQuotes(args.Result.ToString());
+                YahooAPI.UpdateQuotes(args.Result);
                 PortfolioViewModel currentView = (PortfolioViewModel)PortfolioPivot.SelectedItem;
                 Portfolio currentPortfolio = App.GetPortfolio(currentView.Title);
                 foreach (string s in syms)
@@ -244,6 +246,7 @@ namespace Stock_Scouter
                     }
                 }
                 if (App.Timer != null) App.Timer.Start();
+                progressBar.IsVisible = false;
             };
             client.DownloadStringAsync(YahooAPI.GetQuotesXmlUrl(syms));
         }
@@ -268,11 +271,19 @@ namespace Stock_Scouter
         }
 
         // this function is used to trigger new features
-        private void Test_Trigger(object sender, EventArgs e)
+        private void PickTopSymbolsFromServer(object sender, EventArgs e)
         {
-            KeywordStr.Text = "QQQ,SPY,MSFT,,DOESNOTEXIST";
-            SearchButton_onClick(SearchButton, null);
-            KeywordStr.Text = "";
+            if (App.Timer != null) App.Timer.Stop();
+            progressBar.IsVisible = true;
+            WebClient client = new WebClient();
+            client.DownloadStringCompleted += (obj, args) =>
+            {
+                progressBar.IsVisible = false;
+                KeywordStr.Text = args.Result;
+                SearchButton_onClick(obj, null);
+                KeywordStr.Text = "";
+            };
+            client.DownloadStringAsync(YahooAPI.GetStockAppTopPickUri());
         }
 
         private void NavigateTo_Settings(object sender, EventArgs e)

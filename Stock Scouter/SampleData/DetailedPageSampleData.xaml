@@ -3,7 +3,7 @@
     
     <local:DetailedQuotePage.CurrentQuote>
         <local:Quote LastTradePrice="591.99" Change="24.4452" ChangeInPercent="+3.33%" LastTradeDate="Apr 26, 2014 4:00 pm"
-                     StockExchange="NYSE" Color="Green"  Symbol="AAPL" MarketCapitalization="n/a" PreviousClose="700.0000"
+                     StockExchange="NYSE" Color="Green" Name="Apple Inc."  Symbol="AAPL" MarketCapitalization="n/a" PreviousClose="700.0000"
                      Open="591.2233" Volume="12312312312" AverageDailyVolume="132123132456" DividendYield="2.20" PeRatio="14.93"
                      EarningsShare="2.21" DailyHigh="777.7777" DailyLow="333.3333" 
                      YearlyHigh="789.9925" YearlyLow="321.1234" VolumeWithUnit="1.23M" AverageDailyVolumeWithUnit="1.33M"
