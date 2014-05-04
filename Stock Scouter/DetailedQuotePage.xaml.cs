@@ -247,7 +247,7 @@ namespace Stock_Scouter
 
         private void NavigateTo_Settings(object sender, EventArgs e)
         {
-            NavigationService.Navigate(new Uri("/SettingsPage.xaml" + CurrentSymbol, UriKind.Relative));
+            NavigationService.Navigate(new Uri("/SettingsPage.xaml", UriKind.Relative));
         }
 
         private void GraphHolder_Tap(object sender, System.Windows.Input.GestureEventArgs e)
