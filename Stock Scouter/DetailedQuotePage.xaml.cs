@@ -23,6 +23,7 @@ namespace Stock_Scouter
         private static RssViewModel rssViewModel = null;
         private static TweetViewModel tweetViewModel = null;
         private static ProgressIndicator progressBar = null;
+        private static StockTwitsAPI stClient = null;
 
         public static string CurrentSymbol
         {
@@ -226,10 +227,31 @@ namespace Stock_Scouter
         {
             if (panoramaIndex == 3)
             {
+                // rss news page
                 progressBar.Value = 0;
                 ProgressBar.IsVisible = true;
                 progressBar.IsIndeterminate = true;
                 RssView.LoadData(ProgressBar);
+            }
+            else if (panoramaIndex == 4)
+            {
+                // tweets page
+                if (stClient == null) stClient = StockTwitsClient.Instance;
+                if (StockTwitsClient.UserId == "")
+                {
+                    // not signned in yet
+                    SignInPromptGrid.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    // signed in
+                    TwitPostGrid.Visibility = Visibility.Visible;
+                    TwitListBox.Visibility = Visibility.Visible;
+                    stClient.GetStreamOfSymbols(new string[] { CurrentSymbol }, (obj, args) =>
+                    {
+                        TestResponse.Text = args.Result;
+                    });
+                }
             }
         }
 
@@ -246,6 +268,12 @@ namespace Stock_Scouter
         private void GraphHolder_Tap(object sender, System.Windows.Input.GestureEventArgs e)
         {
         }
+
+        private void NavigateTo_SignInWithStockTwits(object sender, RoutedEventArgs e)
+        {
+            NavigationService.Navigate(new Uri("/StockTwits_Auth.xaml", UriKind.Relative));
+        }
+
     }
 
     public class RssViewModel : INotifyPropertyChanged

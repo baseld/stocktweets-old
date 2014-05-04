@@ -20,7 +20,7 @@ namespace Stock_Scouter
         private static bool DEFAULT_ENABLE_AUTO_REFRESH = true;
         private static string DEFAULT_PORTFOLIO_NAME = "Watchlist";
 
-        private static IsolatedStorageSettings storageSpace = IsolatedStorageSettings.ApplicationSettings;
+        public static IsolatedStorageSettings storageSpace = IsolatedStorageSettings.ApplicationSettings;
         private static List<Portfolio> portfolioList = null;
         private static ObservableCollection<Quote> quoteList = null;
         private static MainViewModel viewModel = null;

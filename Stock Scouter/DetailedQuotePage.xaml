@@ -281,48 +281,62 @@
             </phone:PanoramaItem>
 
             <phone:PanoramaItem Header="tweets" DataContext="{Binding TweetView}">
-                <StackPanel ScrollViewer.ManipulationMode="Control">
-                    <Grid HorizontalAlignment="Stretch" Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
-                        <TextBox Grid.Row="0" HorizontalAlignment="Stretch" MaxLength="140" Height="120" />
-                        <Button Grid.Row="1" Content="Reset" Width="120" HorizontalAlignment="Right" Margin="0,0,105,0" />
-                        <Button Grid.Row="1" Content="Tweet" Width="120" HorizontalAlignment="Right" Margin="0,0,0,0" />
-                    </Grid>
-                    
-                    <ListBox Name="TweetListBox" Margin="0,0,0,0" ItemsSource="{Binding TweetCollection}" SelectionChanged="NewsListBox_SelectionChanged">
-                        <ListBox.ItemContainerStyle>
-                            <Style TargetType="ListBoxItem">
-                                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                            </Style>
-                        </ListBox.ItemContainerStyle>
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <StackPanel Margin="0,0,0,5" HorizontalAlignment="Stretch">
-                                    <Grid Background="Transparent" VerticalAlignment="Top" Margin="5,5,5,5" HorizontalAlignment="Stretch">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*" />
-                                        </Grid.ColumnDefinitions>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                        </Grid.RowDefinitions>
-                                        <TextBlock Name="TweetAuthor" Grid.Row="0" Text="{Binding Author}" TextWrapping="Wrap" Style="{StaticResource PhoneTextNormalStyle}" Margin="0,0,0,0"/>
-                                        <TextBlock Name="TweetPubDate" Grid.Row="1" Text="{Binding PubDate}" TextWrapping="Wrap" Style="{StaticResource PhoneTextSmallStyle}" Margin="0,0,0,0"/>
-                                        <TextBlock Name="TweetContent" Grid.Row="2" Text="{Binding Content}" Style="{StaticResource PhoneTextSmallStyle}" Margin="0,0,0,0" TextWrapping="Wrap"/>
-                                    </Grid>
-                                </StackPanel>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
-                </StackPanel>
+                <ScrollViewer>
+                    <StackPanel>
+                        <Grid Name="SignInPromptGrid" Background="Transparent" VerticalAlignment="Top" Margin="5,5,5,5" HorizontalAlignment="Stretch" Visibility="Collapsed">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Grid.Row="0" Name="StockTwits_LogInPrompt" TextWrapping="Wrap" HorizontalAlignment="Stretch" TextAlignment="Center" Text="You need to sign in to view and send tweets." />
+                            <Button Grid.Row="1" Content="Sign in with StockTwits" HorizontalAlignment="Stretch" Margin="0,0,0,0" Click="NavigateTo_SignInWithStockTwits" />
+                        </Grid>
+                        <TextBlock Name="TestResponse" TextWrapping="Wrap" HorizontalAlignment="Stretch" />
+                        <Grid Name="TwitPostGrid" HorizontalAlignment="Stretch" Margin="0,0,0,12" Visibility="Collapsed">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <TextBox Grid.Row="0" HorizontalAlignment="Stretch" MaxLength="140" Height="120" />
+                            <Button Grid.Row="1" Content="Reset" Width="120" HorizontalAlignment="Right" Margin="0,0,105,0" />
+                            <Button Grid.Row="1" Content="Tweet" Width="120" HorizontalAlignment="Right" Margin="0,0,0,0" />
+                        </Grid>
+                        
+                        <ListBox Name="TwitListBox" Margin="0,0,0,0" ItemsSource="{Binding TweetCollection}" SelectionChanged="NewsListBox_SelectionChanged">
+                            <ListBox.ItemContainerStyle>
+                                <Style TargetType="ListBoxItem">
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                </Style>
+                            </ListBox.ItemContainerStyle>
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Margin="0,0,0,5" HorizontalAlignment="Stretch">
+                                        <Grid Background="Transparent" VerticalAlignment="Top" Margin="5,5,5,5" HorizontalAlignment="Stretch">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                            </Grid.RowDefinitions>
+                                            <TextBlock Name="TweetAuthor" Grid.Row="0" Text="{Binding Author}" TextWrapping="Wrap" Style="{StaticResource PhoneTextNormalStyle}" Margin="0,0,0,0"/>
+                                            <TextBlock Name="TweetPubDate" Grid.Row="1" Text="{Binding PubDate}" TextWrapping="Wrap" Style="{StaticResource PhoneTextSmallStyle}" Margin="0,0,0,0"/>
+                                            <TextBlock Name="TweetContent" Grid.Row="2" Text="{Binding Content}" Style="{StaticResource PhoneTextSmallStyle}" Margin="0,0,0,0" TextWrapping="Wrap"/>
+                                        </Grid>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </StackPanel>
+                </ScrollViewer>
             </phone:PanoramaItem>
         </phone:Panorama>
     </Grid>

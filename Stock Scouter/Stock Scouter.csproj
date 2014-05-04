@@ -109,6 +109,10 @@
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="StockTwitsAPI.cs" />
+    <Compile Include="StockTwits_Auth.xaml.cs">
+      <DependentUpon>StockTwits_Auth.xaml</DependentUpon>
+    </Compile>
     <Compile Include="YahooAPI.cs" />
     <Compile Include="SettingsPage.xaml.cs">
       <DependentUpon>SettingsPage.xaml</DependentUpon>
@@ -138,6 +142,10 @@
       <SubType>Designer</SubType>
     </DesignData>
     <Page Include="SettingsPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="StockTwits_Auth.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
