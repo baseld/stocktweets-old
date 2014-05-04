@@ -3,6 +3,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
+    xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
     xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -13,25 +14,34 @@
     Foreground="{StaticResource PhoneForegroundBrush}"
     SupportedOrientations="Portrait"  Orientation="Portrait"
     shell:SystemTray.IsVisible="True">
-
+    
     <!--LayoutRoot contains the root grid where all other page content is placed-->
     <Grid x:Name="LayoutRoot">
         <phone:Panorama Name="RootPanorama" Margin="10,0,-10,0" SelectionChanged="Panorama_SelectionChanged">
             <phone:Panorama.Title>
-                <StackPanel Orientation="Horizontal" Margin="0,15,0,0">
-                    <TextBlock Name="QuoteName" Text="Quote Name" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Style="{StaticResource PhoneTextTitle1Style}" />
+                <StackPanel Orientation="Horizontal" Margin="0,15,0,0" DataContext="{Binding CurrentQuote}">
+                    <TextBlock Name="QuoteName" Text="{Binding Name}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Style="{StaticResource PhoneTextTitle1Style}" />
                 </StackPanel>
             </phone:Panorama.Title>
 
             <!--Panorama item one-->
             <phone:PanoramaItem>
                 <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="0,0,10,0">
-                    <StackPanel ScrollViewer.ManipulationMode="Control">
-                        
-                        <TextBlock HorizontalAlignment="Stretch" Name="DetailedSymbol" Text="AAPL (NYSE)" Style="{StaticResource PhoneTextTitle2Style}" TextWrapping="Wrap"/>
+                    <StackPanel ScrollViewer.ManipulationMode="Control" DataContext="{Binding CurrentQuote}">
+                        <Grid Background="Transparent" HorizontalAlignment="Stretch" Margin="0,0,12,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Grid.Column="0" HorizontalAlignment="Stretch" Name="Symbol" Text="{Binding Symbol}" Style="{StaticResource PhoneTextTitle2Style}" TextWrapping="Wrap" Margin="5,0,5,0"/>
+                            <TextBlock Grid.Column="1" HorizontalAlignment="Stretch" Name="StockExchange" Text="{Binding StockExchange, StringFormat='(\{0\})'}" Style="{StaticResource PhoneTextTitle2Style}" Margin="0" TextWrapping="Wrap"/>
+                        </Grid>
                         <Grid HorizontalAlignment="Stretch" Margin="5,10,5,12">
                             <Grid.Background>
-                                <SolidColorBrush Color="White" Opacity="0.3" />
+                                <SolidColorBrush Color="White" Opacity="0.2" />
                             </Grid.Background>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
@@ -41,7 +51,22 @@
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
                             
-                            <TextBlock Name="LastTradePrice" Grid.Column="0" HorizontalAlignment="Stretch" TextAlignment="Center" VerticalAlignment="Center" Text="591.48" TextWrapping="Wrap" Padding="20,0,20,0" Style="{StaticResource PhoneTextLargeStyle}"/>
+                            <Grid Grid.Column="0" HorizontalAlignment="Stretch">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <TextBlock Grid.ColumnSpan="3" Grid.Row="0" HorizontalAlignment="Stretch" TextAlignment="Center" VerticalAlignment="Center" Text="{Binding LastTradePrice, StringFormat='{}{0:C}'}" TextWrapping="Wrap" Padding="20,0,20,0" FontWeight="Bold" Style="{StaticResource PhoneTextLargeStyle}"/>
+                                <TextBlock Grid.Column="0" Grid.Row="1" HorizontalAlignment="Stretch" TextAlignment="Center" VerticalAlignment="Center" Text="{Binding DailyLow, StringFormat='{}{0:C}'}" TextWrapping="NoWrap" TextTrimming="None"/>
+                                <TextBlock Grid.Column="1" Grid.Row="1" HorizontalAlignment="Center" TextAlignment="Center" VerticalAlignment="Center" Text="-" TextWrapping="Wrap"/>
+                                <TextBlock Grid.Column="2" Grid.Row="1" HorizontalAlignment="Stretch" TextAlignment="Center" VerticalAlignment="Center" Text="{Binding DailyHigh, StringFormat='{}{0:C}'}" TextWrapping="NoWrap" TextTrimming="None"/>
+                            </Grid>
+
                             <Grid Grid.Column="1" Background="Transparent" HorizontalAlignment="Stretch" Margin="0,0,12,0">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
@@ -51,17 +76,16 @@
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
-                                <TextBlock Name="Change" Grid.Column="0" HorizontalAlignment="Stretch" TextAlignment="Center" Text="1.39" TextWrapping="Wrap" Padding="5"/>
-                                <TextBlock Name="ChangeInPercent" Grid.Column="1" HorizontalAlignment="Stretch" TextAlignment="Center" Text="+0.24%" TextWrapping="Wrap" Padding="5"/>
-                                <TextBlock Name="LastTradeDate" Grid.Row="1" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" TextAlignment="Center" Text="05/01/2014 4:00 PM" TextWrapping="Wrap" Padding="5" Style="{StaticResource PhoneTextSmallStyle}"/>
+                                <TextBlock Name="Change" Grid.Column="0" HorizontalAlignment="Stretch" TextAlignment="Center" Text="{Binding Change}" Foreground="{Binding Color}" TextWrapping="Wrap" Padding="5"/>
+                                <TextBlock Name="ChangeInPercent" Grid.Column="1" HorizontalAlignment="Stretch" TextAlignment="Center" Text="{Binding ChangeInPercent}" Foreground="{Binding Color}" TextWrapping="Wrap" Padding="5"/>
+                                <TextBlock Name="LastTradeDate" Grid.Row="1" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" TextAlignment="Center" Text="{Binding LastTradeDate}" TextWrapping="Wrap" Padding="5" Style="{StaticResource PhoneTextSmallStyle}"/>
                             </Grid>
-
                         </Grid>
 
                         <TextBlock HorizontalAlignment="Stretch" Text="Summary" Style="{StaticResource PhoneTextTitle3Style}" TextWrapping="Wrap"/>
                         <Grid HorizontalAlignment="Stretch" Margin="5,10,5,12">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="90" />
+                                <ColumnDefinition Width="80" />
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="30" />
                                 <ColumnDefinition Width="90" />
@@ -76,35 +100,66 @@
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
 
                             <TextBlock Grid.Column="0" Grid.Row="0" HorizontalAlignment="Stretch" TextAlignment="Left" Text="PREV CLOSE:" TextWrapping="Wrap" Style="{StaticResource PhoneTextSmallStyle}" Margin="2"/>
-                            <TextBlock Name="PreviousClose" Grid.Column="1" Grid.Row="0" HorizontalAlignment="Stretch" TextAlignment="Right" Text="590.09" TextWrapping="Wrap" Margin="2"/>
+                            <TextBlock Grid.Column="1" Grid.Row="0" HorizontalAlignment="Stretch" TextAlignment="Right" Text="{Binding PreviousClose}" TextWrapping="Wrap" Margin="2"/>
                             <TextBlock Grid.Column="2" Grid.Row="0" Width="30"/>
                             <TextBlock Grid.Column="3" Grid.Row="0" HorizontalAlignment="Stretch" TextAlignment="Left" Text="MARKET CAP:" TextWrapping="Wrap" Style="{StaticResource PhoneTextSmallStyle}" Margin="2"/>
-                            <TextBlock Name="MarketCapitalization" Grid.Column="4" Grid.Row="0" HorizontalAlignment="Stretch" TextAlignment="Right" Text="509.49B" TextWrapping="Wrap" Margin="2"/>
+                            <TextBlock Grid.Column="4" Grid.Row="0" HorizontalAlignment="Stretch" TextAlignment="Right" Text="{Binding MarketCapitalization}" TextWrapping="Wrap" Margin="2"/>
                             <TextBlock Grid.ColumnSpan="5" Grid.Row="1" Height="10"/>
 
                             <TextBlock Grid.Column="0" Grid.Row="2" HorizontalAlignment="Stretch" TextAlignment="Left" Text="OPEN:" TextWrapping="Wrap" Style="{StaticResource PhoneTextSmallStyle}" Margin="2"/>
-                            <TextBlock Name="Open" Grid.Column="1" Grid.Row="2" HorizontalAlignment="Stretch" TextAlignment="Right" Text="592.00" TextWrapping="Wrap" Margin="2"/>
+                            <TextBlock Grid.Column="1" Grid.Row="2" HorizontalAlignment="Stretch" TextAlignment="Right" Text="{Binding Open}" TextWrapping="Wrap" Margin="2"/>
                             <TextBlock Grid.Column="2" Grid.Row="2" Width="30"/>
-                            <TextBlock Grid.Column="3" Grid.Row="2" HorizontalAlignment="Stretch" TextAlignment="Left" Text="VOL/AVG VOL:" TextWrapping="Wrap" Style="{StaticResource PhoneTextSmallStyle}" Margin="2"/>
-                            <TextBlock Name="Vol_AvgVol" Grid.Column="4" Grid.Row="2" HorizontalAlignment="Stretch" TextAlignment="Right" Text="8.7M/10.1M" TextWrapping="Wrap" Margin="2"/>
+                            <TextBlock Grid.Column="3" Grid.Row="2" HorizontalAlignment="Stretch" TextAlignment="Left" Text="DIVIDEND YIELD:" TextWrapping="Wrap" Style="{StaticResource PhoneTextSmallStyle}" Margin="2"/>
+                            <TextBlock Grid.Column="4" Grid.Row="2" HorizontalAlignment="Stretch" TextAlignment="Right" Text="{Binding DividendYield, StringFormat='{}{0}%'}" TextWrapping="Wrap" Margin="2"/>
                             <TextBlock Grid.ColumnSpan="5" Grid.Row="3" Height="10"/>
 
-                            <TextBlock Grid.Column="0" Grid.Row="4" HorizontalAlignment="Stretch" TextAlignment="Left" Text="TODAY:" TextWrapping="Wrap" Style="{StaticResource PhoneTextSmallStyle}" Margin="2"/>
-                            <TextBlock Name="DaysRange" Grid.Column="1" Grid.Row="4" HorizontalAlignment="Stretch" TextAlignment="Right" Text="586.36 - 594.80" TextWrapping="Wrap" Margin="2"/>
+                            <TextBlock Grid.Column="0" Grid.Row="4" HorizontalAlignment="Stretch" TextAlignment="Left" Text="DAY HIGH:" TextWrapping="Wrap" Style="{StaticResource PhoneTextSmallStyle}" Margin="2"/>
+                            <TextBlock Grid.Column="1" Grid.Row="4" HorizontalAlignment="Stretch" TextAlignment="Right" Text="{Binding DailyHigh}" TextWrapping="Wrap" Margin="2"/>
                             <TextBlock Grid.Column="2" Grid.Row="4" Width="30"/>
                             <TextBlock Grid.Column="3" Grid.Row="4" HorizontalAlignment="Stretch" TextAlignment="Left" Text="P/E:" TextWrapping="Wrap" Style="{StaticResource PhoneTextSmallStyle}" Margin="2"/>
-                            <TextBlock Name="PERatio" Grid.Column="4" Grid.Row="4" HorizontalAlignment="Stretch" TextAlignment="Right" Text="14.10" TextWrapping="Wrap" Margin="2"/>
+                            <TextBlock Grid.Column="4" Grid.Row="4" HorizontalAlignment="Stretch" TextAlignment="Right" Text="{Binding PeRatio}" TextWrapping="Wrap" Margin="2"/>
                             <TextBlock Grid.ColumnSpan="5" Grid.Row="5" Height="10"/>
-
-                            <TextBlock Grid.Column="0" Grid.Row="6" HorizontalAlignment="Stretch" TextAlignment="Left" Text="52WK:" TextWrapping="Wrap" Style="{StaticResource PhoneTextSmallStyle}" Margin="2"/>
-                            <TextBlock Name="YearsRange" Grid.Column="1" Grid.Row="6" HorizontalAlignment="Stretch" TextAlignment="Right" Text="388.87 - 595.98" TextWrapping="Wrap" Margin="2"/>
+                            
+                            <TextBlock Grid.Column="0" Grid.Row="6" HorizontalAlignment="Stretch" TextAlignment="Left" Text="DAY LOW:" TextWrapping="Wrap" Style="{StaticResource PhoneTextSmallStyle}" Margin="2"/>
+                            <TextBlock Grid.Column="1" Grid.Row="6" HorizontalAlignment="Stretch" TextAlignment="Right" Text="{Binding DailyLow}" TextWrapping="Wrap" Margin="2"/>
                             <TextBlock Grid.Column="2" Grid.Row="6" Width="30"/>
-                            <TextBlock Grid.Column="3" Grid.Row="6" HorizontalAlignment="Stretch" TextAlignment="Left" Text="DIVIDEND YIELD:" TextWrapping="Wrap" Style="{StaticResource PhoneTextSmallStyle}" Margin="2"/>
-                            <TextBlock Name="DividendYield" Grid.Column="4" Grid.Row="6" HorizontalAlignment="Stretch" TextAlignment="Right" Text="2.20%" TextWrapping="Wrap" Margin="2"/>
+                            <TextBlock Grid.Column="3" Grid.Row="6" HorizontalAlignment="Stretch" TextAlignment="Left" Text="EPS:" TextWrapping="Wrap" Style="{StaticResource PhoneTextSmallStyle}" Margin="2"/>
+                            <TextBlock Grid.Column="4" Grid.Row="6" HorizontalAlignment="Stretch" TextAlignment="Right" Text="{Binding EarningsShare}" TextWrapping="Wrap" Margin="2"/>
                             <TextBlock Grid.ColumnSpan="5" Grid.Row="7" Height="10"/>
+
+                            <TextBlock Grid.Column="0" Grid.Row="8" HorizontalAlignment="Stretch" TextAlignment="Left" Text="52WK HIGH:" TextWrapping="Wrap" Style="{StaticResource PhoneTextSmallStyle}" Margin="2"/>
+                            <TextBlock Grid.Column="1" Grid.Row="8" HorizontalAlignment="Stretch" TextAlignment="Right" Text="{Binding YearlyHigh}" TextWrapping="Wrap" Margin="2"/>
+                            <TextBlock Grid.Column="2" Grid.Row="8" Width="30"/>
+                            <TextBlock Grid.Column="3" Grid.Row="8" HorizontalAlignment="Stretch" TextAlignment="Left" Text="52WK LOW:" TextWrapping="Wrap" Style="{StaticResource PhoneTextSmallStyle}" Margin="2"/>
+                            <TextBlock Grid.Column="4" Grid.Row="8" HorizontalAlignment="Stretch" TextAlignment="Right" Text="{Binding YearlyLow}" TextWrapping="Wrap" Margin="2"/>
+                            <TextBlock Grid.ColumnSpan="5" Grid.Row="9" Height="10"/>
+                        </Grid>
+
+                        <TextBlock HorizontalAlignment="Stretch" Text="Trading" Style="{StaticResource PhoneTextTitle3Style}" TextWrapping="Wrap"/>
+                        <Grid HorizontalAlignment="Stretch" Margin="5,10,5,12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="80" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="30" />
+                                <ColumnDefinition Width="90" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Column="0" Grid.Row="0" HorizontalAlignment="Stretch" TextAlignment="Left" Text="VOL:" TextWrapping="Wrap" Style="{StaticResource PhoneTextSmallStyle}" Margin="2"/>
+                            <TextBlock Grid.Column="1" Grid.Row="0" HorizontalAlignment="Stretch" TextAlignment="Right" Text="{Binding VolumeWithUnit}" TextWrapping="Wrap" Margin="2"/>
+                            <TextBlock Grid.Column="2" Grid.Row="0" Width="30"/>
+                            <TextBlock Grid.Column="3" Grid.Row="0" HorizontalAlignment="Stretch" TextAlignment="Left" Text="AVG VOL:" TextWrapping="Wrap" Style="{StaticResource PhoneTextSmallStyle}" Margin="2"/>
+                            <TextBlock Grid.Column="4" Grid.Row="0" HorizontalAlignment="Stretch" TextAlignment="Right" Text="{Binding AverageDailyVolumeWithUnit}" TextWrapping="Wrap" Margin="2"/>
+                            <TextBlock Grid.ColumnSpan="5" Grid.Row="1" Height="10"/>
                         </Grid>
                     </StackPanel>
                 </ScrollViewer>
@@ -112,11 +167,10 @@
 
             <phone:PanoramaItem Header="Key Statistics">
                 <ScrollViewer>
-                    <Grid HorizontalAlignment="Stretch" Margin="5,12,5,12">
+                    <Grid HorizontalAlignment="Stretch" Margin="5,12,5,12" DataContext="{Binding CurrentQuote}">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="2*" />
                             <ColumnDefinition Width="*"/>
-
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
@@ -149,69 +203,83 @@
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
-
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
 
-                        <TextBlock Grid.Column="0" Grid.Row="0" HorizontalAlignment="Stretch" TextAlignment="Left" Text="Current P/E Ratio" TextWrapping="Wrap" Style="{StaticResource PhoneTextSmallStyle}" Margin="2"/>
-                        <TextBlock Grid.Column="1" Grid.Row="0" HorizontalAlignment="Stretch" TextAlignment="Right" TextWrapping="Wrap" Margin="2"/>
-                        <TextBlock Grid.ColumnSpan="2" Grid.Row="1" Height="10"/>
+                        <TextBlock Grid.ColumnSpan="2" Grid.Row="0" Text="EPS" Style="{StaticResource PhoneTextTitle3Style}" Margin="0,15,0,5" />
 
-                        <TextBlock Grid.Column="0" Grid.Row="2" HorizontalAlignment="Stretch" TextAlignment="Left" Text="Estimated P/E Ratio" TextWrapping="Wrap" Style="{StaticResource PhoneTextSmallStyle}" Margin="2"/>
-                        <TextBlock Grid.Column="1" Grid.Row="2" HorizontalAlignment="Stretch" TextAlignment="Right"  TextWrapping="Wrap" Margin="2"/>
-                        <TextBlock Grid.ColumnSpan="2" Grid.Row="3" Height="10"/>
+                        <TextBlock Grid.Column="0" Grid.Row="1" HorizontalAlignment="Stretch" TextAlignment="Left" Text="EPS" TextWrapping="Wrap" Style="{StaticResource PhoneTextSmallStyle}" Margin="2"/>
+                        <TextBlock Grid.Column="1" Grid.Row="1" HorizontalAlignment="Stretch" TextAlignment="Right" Text="{Binding EarningsShare}" TextWrapping="Wrap" Margin="2"/>
+                        <TextBlock Grid.ColumnSpan="2" Grid.Row="2" Height="10"/>
 
-                        <TextBlock Grid.Column="0" Grid.Row="4" HorizontalAlignment="Stretch" TextAlignment="Left" Text="Relative P/E" TextWrapping="Wrap" Style="{StaticResource PhoneTextSmallStyle}" Margin="2"/>
-                        <TextBlock  Grid.Column="1" Grid.Row="4" HorizontalAlignment="Stretch" TextAlignment="Right" TextWrapping="Wrap" Margin="2"/>
-                        <TextBlock Grid.ColumnSpan="2" Grid.Row="5" Height="10"/>
+                        <TextBlock Grid.Column="0" Grid.Row="3" HorizontalAlignment="Stretch" TextAlignment="Left" Text="Est. EPS Current Yr" TextWrapping="Wrap" Style="{StaticResource PhoneTextSmallStyle}" Margin="2"/>
+                        <TextBlock Grid.Column="1" Grid.Row="3" HorizontalAlignment="Stretch" TextAlignment="Right" Text="{Binding PriceEpsEstimateCurrentYear}" TextWrapping="Wrap" Margin="2"/>
+                        <TextBlock Grid.ColumnSpan="2" Grid.Row="4" Height="10"/>
 
-                        <TextBlock Grid.Column="0" Grid.Row="6" HorizontalAlignment="Stretch" TextAlignment="Left" Text="Earnings Per Share" TextWrapping="Wrap" Style="{StaticResource PhoneTextSmallStyle}" Margin="2"/>
-                        <TextBlock  Grid.Column="1" Grid.Row="6" HorizontalAlignment="Stretch" TextAlignment="Right"  TextWrapping="Wrap" Margin="2"/>
-                        <TextBlock Grid.ColumnSpan="2" Grid.Row="7" Height="10"/>
+                        <TextBlock Grid.Column="0" Grid.Row="5" HorizontalAlignment="Stretch" TextAlignment="Left" Text="Est. EPS Next Yr" TextWrapping="Wrap" Style="{StaticResource PhoneTextSmallStyle}" Margin="2"/>
+                        <TextBlock Grid.Column="1" Grid.Row="5" HorizontalAlignment="Stretch" TextAlignment="Right" Text="{Binding PriceEpsEstimateNextYear}" TextWrapping="Wrap" Margin="2"/>
+                        <TextBlock Grid.ColumnSpan="2" Grid.Row="6" Height="10"/>
 
-                        <TextBlock Grid.Column="0" Grid.Row="8" HorizontalAlignment="Stretch" TextAlignment="Left" Text="Est. EPS" TextWrapping="Wrap" Style="{StaticResource PhoneTextSmallStyle}" Margin="2"/>
-                        <TextBlock  Grid.Column="1" Grid.Row="8" HorizontalAlignment="Stretch" TextAlignment="Right"  TextWrapping="Wrap" Margin="2"/>
+                        <TextBlock Grid.ColumnSpan="2" Grid.Row="7" Text="Price ratios" Style="{StaticResource PhoneTextTitle3Style}" Margin="0,15,0,5" />
+                        <TextBlock Grid.Column="0" Grid.Row="8" HorizontalAlignment="Stretch" TextAlignment="Left" Text="Price / Earning (P/E)" TextWrapping="Wrap" Style="{StaticResource PhoneTextSmallStyle}" Margin="2"/>
+                        <TextBlock Grid.Column="1" Grid.Row="8" HorizontalAlignment="Stretch" TextAlignment="Right" Text="{Binding PeRatio}" TextWrapping="Wrap" Margin="2"/>
                         <TextBlock Grid.ColumnSpan="2" Grid.Row="9" Height="10"/>
 
-                        <TextBlock Grid.Column="0" Grid.Row="10" HorizontalAlignment="Stretch" TextAlignment="Left" Text="Est. PEG Ration" TextWrapping="Wrap" Style="{StaticResource PhoneTextSmallStyle}" Margin="2"/>
-                        <TextBlock  Grid.Column="1" Grid.Row="10" HorizontalAlignment="Stretch" TextAlignment="Right"  TextWrapping="Wrap" Margin="2"/>
+                        <TextBlock Grid.Column="0" Grid.Row="10" HorizontalAlignment="Stretch" TextAlignment="Left" Text="Price / Book (P/B)" TextWrapping="Wrap" Style="{StaticResource PhoneTextSmallStyle}" Margin="2"/>
+                        <TextBlock Grid.Column="1" Grid.Row="10" HorizontalAlignment="Stretch" TextAlignment="Right" Text="{Binding PriceBook}" TextWrapping="Wrap" Margin="2"/>
                         <TextBlock Grid.ColumnSpan="2" Grid.Row="11" Height="10"/>
 
-                        <TextBlock Grid.Column="0" Grid.Row="12" HorizontalAlignment="Stretch" TextAlignment="Left" Text="Market Cap" TextWrapping="Wrap" Style="{StaticResource PhoneTextSmallStyle}" Margin="2"/>
-                        <TextBlock  Grid.Column="1" Grid.Row="12" HorizontalAlignment="Stretch" TextAlignment="Right"  TextWrapping="Wrap" Margin="2"/>
+                        <TextBlock Grid.Column="0" Grid.Row="12" HorizontalAlignment="Stretch" TextAlignment="Left" Text="Price / Sales (P/S)" TextWrapping="Wrap" Style="{StaticResource PhoneTextSmallStyle}" Margin="2"/>
+                        <TextBlock Grid.Column="1" Grid.Row="12" HorizontalAlignment="Stretch" TextAlignment="Right" Text="{Binding PriceSales}" TextWrapping="Wrap" Margin="2"/>
                         <TextBlock Grid.ColumnSpan="2" Grid.Row="13" Height="10"/>
 
-                        <TextBlock Grid.Column="0" Grid.Row="14" HorizontalAlignment="Stretch" TextAlignment="Left" Text="Shares Outstanding" TextWrapping="Wrap" Style="{StaticResource PhoneTextSmallStyle}" Margin="2"/>
-                        <TextBlock  Grid.Column="1" Grid.Row="14" HorizontalAlignment="Stretch" TextAlignment="Right"  TextWrapping="Wrap" Margin="2"/>
+                        <TextBlock Grid.Column="0" Grid.Row="14" HorizontalAlignment="Stretch" TextAlignment="Left" Text="Price /Earning to Growth (PEG)" TextWrapping="Wrap" Style="{StaticResource PhoneTextSmallStyle}" Margin="2"/>
+                        <TextBlock Grid.Column="1" Grid.Row="14" HorizontalAlignment="Stretch" TextAlignment="Right" Text="{Binding PegRatio}" TextWrapping="Wrap" Margin="2"/>
                         <TextBlock Grid.ColumnSpan="2" Grid.Row="15" Height="10"/>
 
-                        <TextBlock Grid.Column="0" Grid.Row="16" HorizontalAlignment="Stretch" TextAlignment="Left" Text="Price/Book" TextWrapping="Wrap" Style="{StaticResource PhoneTextSmallStyle}" Margin="2"/>
-                        <TextBlock  Grid.Column="1" Grid.Row="16" HorizontalAlignment="Stretch" TextAlignment="Right"  TextWrapping="Wrap" Margin="2"/>
-                        <TextBlock Grid.ColumnSpan="2" Grid.Row="17" Height="10"/>
+                        <TextBlock Grid.ColumnSpan="2" Grid.Row="16" Text="Fundamentals" Style="{StaticResource PhoneTextTitle3Style}" Margin="0,15,0,5" />
+                        <TextBlock Grid.Column="0" Grid.Row="17" HorizontalAlignment="Stretch" TextAlignment="Left" Text="Market Cap" TextWrapping="Wrap" Style="{StaticResource PhoneTextSmallStyle}" Margin="2"/>
+                        <TextBlock Grid.Column="1" Grid.Row="17" HorizontalAlignment="Stretch" TextAlignment="Right" Text="{Binding MarketCapitalization}" TextWrapping="Wrap" Margin="2"/>
+                        <TextBlock Grid.ColumnSpan="2" Grid.Row="18" Height="10"/>
 
-                        <TextBlock Grid.Column="0" Grid.Row="18" HorizontalAlignment="Stretch" TextAlignment="Left" Text="Price/Sales" TextWrapping="Wrap" Style="{StaticResource PhoneTextSmallStyle}" Margin="2"/>
-                        <TextBlock  Grid.Column="1" Grid.Row="18" HorizontalAlignment="Stretch" TextAlignment="Right"  TextWrapping="Wrap" Margin="2"/>
-                        <TextBlock Grid.ColumnSpan="2" Grid.Row="19" Height="10"/>
+                        <TextBlock Grid.Column="0" Grid.Row="19" HorizontalAlignment="Stretch" TextAlignment="Left" Text="Dividend Yield" TextWrapping="Wrap" Style="{StaticResource PhoneTextSmallStyle}" Margin="2"/>
+                        <TextBlock Grid.Column="1" Grid.Row="19" HorizontalAlignment="Stretch" TextAlignment="Right" Text="{Binding DividendYield}" TextWrapping="Wrap" Margin="2"/>
+                        <TextBlock Grid.ColumnSpan="2" Grid.Row="20" Height="10"/>
 
-                        <TextBlock Grid.Column="0" Grid.Row="20" HorizontalAlignment="Stretch" TextAlignment="Left" Text="Dividend Indicated Gross Yield" TextWrapping="Wrap" Style="{StaticResource PhoneTextSmallStyle}" Margin="2"/>
-                        <TextBlock  Grid.Column="1" Grid.Row="20" HorizontalAlignment="Stretch" TextAlignment="Right"  TextWrapping="Wrap" Margin="2"/>
-                        <TextBlock Grid.ColumnSpan="2" Grid.Row="21" Height="10"/>
+                        <TextBlock Grid.Column="0" Grid.Row="21" HorizontalAlignment="Stretch" TextAlignment="Left" Text="Dividend / Share" TextWrapping="Wrap" Style="{StaticResource PhoneTextSmallStyle}" Margin="2"/>
+                        <TextBlock  Grid.Column="1" Grid.Row="21" HorizontalAlignment="Stretch" TextAlignment="Right" Text="{Binding DividendShare}" TextWrapping="Wrap" Margin="2"/>
+                        <TextBlock Grid.ColumnSpan="2" Grid.Row="22" Height="10"/>
 
-                        <TextBlock Grid.Column="0" Grid.Row="22" HorizontalAlignment="Stretch" TextAlignment="Left" Text="Last Earnings Announcement" TextWrapping="Wrap" Style="{StaticResource PhoneTextSmallStyle}" Margin="2"/>
-                        <TextBlock  Grid.Column="1" Grid.Row="22" HorizontalAlignment="Stretch" TextAlignment="Right"  TextWrapping="Wrap" Margin="2"/>
-                        <TextBlock Grid.ColumnSpan="2" Grid.Row="23" Height="10"/>
+                        <TextBlock Grid.Column="0" Grid.Row="23" HorizontalAlignment="Stretch" TextAlignment="Left" Text="Ex-Dividend Date" TextWrapping="Wrap" Style="{StaticResource PhoneTextSmallStyle}" Margin="2"/>
+                        <TextBlock  Grid.Column="1" Grid.Row="23" HorizontalAlignment="Stretch" TextAlignment="Right" Text="{Binding ExDividendDate}" TextWrapping="Wrap" Margin="2"/>
+                        <TextBlock Grid.ColumnSpan="2" Grid.Row="24" Height="10"/>
 
-                        <TextBlock Grid.Column="0" Grid.Row="24" HorizontalAlignment="Stretch" TextAlignment="Left" Text="Last Dividend Reported" TextWrapping="Wrap" Style="{StaticResource PhoneTextSmallStyle}" Margin="2"/>
-                        <TextBlock  Grid.Column="1" Grid.Row="24" HorizontalAlignment="Stretch" TextAlignment="Right"  TextWrapping="Wrap" Margin="2"/>
-                        <TextBlock Grid.ColumnSpan="2" Grid.Row="25" Height="10"/>
+                        <TextBlock Grid.Column="0" Grid.Row="25" HorizontalAlignment="Stretch" TextAlignment="Left" Text="Dividend Payment Date" TextWrapping="Wrap" Style="{StaticResource PhoneTextSmallStyle}" Margin="4,0,0,14" Grid.RowSpan="2"/>
+                        <TextBlock  Grid.Column="1" Grid.Row="25" HorizontalAlignment="Stretch" TextAlignment="Right" Text="{Binding DividendPayDate}" TextWrapping="Wrap" Margin="2"/>
+                        <TextBlock Grid.ColumnSpan="2" Grid.Row="26" Height="10"/>
 
-                        <TextBlock Grid.Column="0" Grid.Row="26" HorizontalAlignment="Stretch" TextAlignment="Left" Text="5Y Net Dividend Growth" TextWrapping="Wrap" Style="{StaticResource PhoneTextSmallStyle}" Margin="2"/>
-                        <TextBlock  Grid.Column="1" Grid.Row="26" HorizontalAlignment="Stretch" TextAlignment="Right"  TextWrapping="Wrap" Margin="2"/>
-                        <TextBlock Grid.ColumnSpan="2" Grid.Row="27" Height="10"/>
+                        <TextBlock Grid.Column="0" Grid.Row="27" HorizontalAlignment="Stretch" TextAlignment="Left" Text="EBITDA" TextWrapping="Wrap" Style="{StaticResource PhoneTextSmallStyle}" Margin="2"/>
+                        <TextBlock  Grid.Column="1" Grid.Row="27" HorizontalAlignment="Stretch" TextAlignment="Right" Text="{Binding Ebitda}" TextWrapping="Wrap" Margin="2"/>
+                        <TextBlock Grid.ColumnSpan="2" Grid.Row="28" Height="10"/>
+                        
+                        <TextBlock Grid.ColumnSpan="2" Grid.Row="29" Text="Technicals" Style="{StaticResource PhoneTextTitle3Style}" Margin="0,15,0,5" />
+                        
+                        <TextBlock Grid.Column="0" Grid.Row="30" HorizontalAlignment="Stretch" TextAlignment="Left" Text="1 Yr Price Target" TextWrapping="Wrap" Style="{StaticResource PhoneTextSmallStyle}" Margin="2"/>
+                        <TextBlock  Grid.Column="1" Grid.Row="30" HorizontalAlignment="Stretch" TextAlignment="Right" Text="{Binding OneYearPriceTarget}" TextWrapping="Wrap" Margin="2"/>
+                        <TextBlock Grid.ColumnSpan="2" Grid.Row="31" Height="10"/>
+                        
+                        <TextBlock Grid.Column="0" Grid.Row="32" HorizontalAlignment="Stretch" TextAlignment="Left" Text="50-Day Moving Avg" TextWrapping="Wrap" Style="{StaticResource PhoneTextSmallStyle}" Margin="2"/>
+                        <TextBlock Grid.Column="1" Grid.Row="32" HorizontalAlignment="Stretch" TextAlignment="Right" Text="{Binding FiftydayMovingAverage}" TextWrapping="Wrap" Margin="2"/>
+                        <TextBlock Grid.ColumnSpan="2" Grid.Row="33" Height="10"/>
 
-                        <TextBlock Grid.Column="0" Grid.Row="28" HorizontalAlignment="Stretch" TextAlignment="Left" Text="Moving Average (50-day)" TextWrapping="Wrap" Style="{StaticResource PhoneTextSmallStyle}" Margin="2"/>
-                        <TextBlock Name="fiftyMovingAverage" Grid.Column="1" Grid.Row="28" HorizontalAlignment="Stretch" TextAlignment="Right"  TextWrapping="Wrap" Margin="2"/>
-                        <TextBlock Grid.ColumnSpan="2" Grid.Row="29" Height="10"/>
-
+                        <TextBlock Grid.Column="0" Grid.Row="34" HorizontalAlignment="Stretch" TextAlignment="Left" Text="200-Day Moving Avg" TextWrapping="Wrap" Style="{StaticResource PhoneTextSmallStyle}" Margin="2"/>
+                        <TextBlock Grid.Column="1" Grid.Row="34" HorizontalAlignment="Stretch" TextAlignment="Right" Text="{Binding TwoHunderedDayMovingAverage}" TextWrapping="Wrap" Margin="2"/>
+                        <TextBlock Grid.ColumnSpan="2" Grid.Row="35" Height="10"/>
                     </Grid>
                 </ScrollViewer>
             </phone:PanoramaItem>
@@ -281,73 +349,45 @@
             </phone:PanoramaItem>
 
             <phone:PanoramaItem Header="tweets" DataContext="{Binding TweetView}">
-                <ScrollViewer>
-                    <StackPanel>
-                        <Grid Name="SignInPromptGrid" Background="Transparent" VerticalAlignment="Top" Margin="5,5,5,5" HorizontalAlignment="Stretch" Visibility="Collapsed">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
-                            <TextBlock Grid.Row="0" Name="StockTwits_LogInPrompt" TextWrapping="Wrap" HorizontalAlignment="Stretch" TextAlignment="Center" Text="You need to sign in to view and send tweets." />
-                            <Button Grid.Row="1" Content="Sign in with StockTwits" HorizontalAlignment="Stretch" Margin="0,0,0,0" Click="NavigateTo_SignInWithStockTwits" />
-                        </Grid>
-                        <TextBlock Name="TestResponse" TextWrapping="Wrap" HorizontalAlignment="Stretch" />
-                        <Grid Name="TwitPostGrid" HorizontalAlignment="Stretch" Margin="0,0,0,12" Visibility="Collapsed">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
-                            <TextBox Grid.Row="0" HorizontalAlignment="Stretch" MaxLength="140" Height="120" />
-                            <Button Grid.Row="1" Content="Reset" Width="120" HorizontalAlignment="Right" Margin="0,0,105,0" />
-                            <Button Grid.Row="1" Content="Tweet" Width="120" HorizontalAlignment="Right" Margin="0,0,0,0" />
-                        </Grid>
-                        
-                        <ListBox Name="TwitListBox" Margin="0,0,0,0" ItemsSource="{Binding TweetCollection}" SelectionChanged="NewsListBox_SelectionChanged">
-                            <ListBox.ItemContainerStyle>
-                                <Style TargetType="ListBoxItem">
-                                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                                </Style>
-                            </ListBox.ItemContainerStyle>
-                            <ListBox.ItemTemplate>
-                                <DataTemplate>
-                                    <StackPanel Margin="0,0,0,5" HorizontalAlignment="Stretch">
-                                        <Grid Background="Transparent" VerticalAlignment="Top" Margin="5,5,5,5" HorizontalAlignment="Stretch">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="*" />
-                                            </Grid.ColumnDefinitions>
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="Auto"/>
-                                                <RowDefinition Height="Auto"/>
-                                                <RowDefinition Height="Auto"/>
-                                                <RowDefinition Height="Auto"/>
-                                            </Grid.RowDefinitions>
-                                            <TextBlock Name="TweetAuthor" Grid.Row="0" Text="{Binding Author}" TextWrapping="Wrap" Style="{StaticResource PhoneTextNormalStyle}" Margin="0,0,0,0"/>
-                                            <TextBlock Name="TweetPubDate" Grid.Row="1" Text="{Binding PubDate}" TextWrapping="Wrap" Style="{StaticResource PhoneTextSmallStyle}" Margin="0,0,0,0"/>
-                                            <TextBlock Name="TweetContent" Grid.Row="2" Text="{Binding Content}" Style="{StaticResource PhoneTextSmallStyle}" Margin="0,0,0,0" TextWrapping="Wrap"/>
-                                        </Grid>
-                                    </StackPanel>
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-                        </ListBox>
-                    </StackPanel>
-                </ScrollViewer>
+                <ListBox Name="TwitListBox" Margin="0,0,0,0" ItemsSource="{Binding TweetCollection}">
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="ListBoxItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Margin="0,0,0,10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                <Grid Background="Transparent" VerticalAlignment="Top" Margin="5,5,5,10" HorizontalAlignment="Stretch">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Name="TweetAuthor" Grid.Column="0" Grid.Row="0" Text="{Binding Author}" TextWrapping="Wrap" Style="{StaticResource PhoneTextNormalStyle}" Margin="0,0,0,0"/>
+                                    <TextBlock Name="TweetPubDate" Grid.Column="1" Grid.Row="0" Text="{Binding PubDate}" HorizontalAlignment="Right" TextWrapping="Wrap" Style="{StaticResource PhoneTextSmallStyle}" Margin="0,0,0,0"/>
+                                    <TextBlock Name="TweetContent" Grid.Row="1" Grid.ColumnSpan="2" Text="{Binding Content}" Style="{StaticResource PhoneTextTitle3Style}" Margin="0,0,0,0" TextWrapping="Wrap" />
+                                </Grid>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
             </phone:PanoramaItem>
         </phone:Panorama>
     </Grid>
 
     <phone:PhoneApplicationPage.ApplicationBar>
         <shell:ApplicationBar IsVisible="True" IsMenuEnabled="True">
-            <shell:ApplicationBarIconButton IconUri="/Toolkit.Content/appbar.refresh.png" Text="refresh" Click="CurrentView_Refresh"/>
+            <shell:ApplicationBarIconButton x:Name="AppBarIcon_LogIn" IconUri="/Toolkit.Content/appbar.user.png" Text="me" Click="NavigateTo_SignInWithStockTwits"/>
+            <shell:ApplicationBarIconButton x:Name="AppBarIcon_Tweet" IconUri="/Toolkit.Content/appbar.draw.pencil.png" Text="new tweet" Click="StockTwits_NewTweet"/>
+            <shell:ApplicationBarIconButton x:Name="AppBarIcon_Refresh" IconUri="/Toolkit.Content/appbar.refresh.png" Text="refresh" Click="CurrentView_Refresh"/>
             <shell:ApplicationBar.MenuItems>
                 <shell:ApplicationBarMenuItem Text="Settings" Click="NavigateTo_Settings" />
             </shell:ApplicationBar.MenuItems>
         </shell:ApplicationBar>
     </phone:PhoneApplicationPage.ApplicationBar>
-    
+
 </phone:PhoneApplicationPage>

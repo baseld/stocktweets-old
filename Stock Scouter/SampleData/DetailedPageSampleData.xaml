@@ -1,5 +1,14 @@
 ﻿<local:DetailedQuotePage 
     xmlns:local="clr-namespace:Stock_Scouter">
+    
+    <local:DetailedQuotePage.CurrentQuote>
+        <local:Quote LastTradePrice="591.99" Change="24.4452" ChangeInPercent="+3.33%" LastTradeDate="Apr 26, 2014 4:00 pm"
+                     StockExchange="NYSE" Color="Green"  Symbol="AAPL" MarketCapitalization="n/a" PreviousClose="700.0000"
+                     Open="591.2233" Volume="12312312312" AverageDailyVolume="132123132456" DividendYield="2.20" PeRatio="14.93"
+                     EarningsShare="2.21" DailyHigh="777.7777" DailyLow="333.3333" 
+                     YearlyHigh="789.9925" YearlyLow="321.1234" VolumeWithUnit="1.23M" AverageDailyVolumeWithUnit="1.33M"
+                     PriceEpsEstimateCurrentYear="2.88"  PriceEpsEstimateNextYear="2.93"/>
+    </local:DetailedQuotePage.CurrentQuote>
 
     <local:DetailedQuotePage.RssView>
         <local:RssViewModel>
@@ -8,5 +17,14 @@
             </local:RssViewModel.RssCollection>
         </local:RssViewModel>
     </local:DetailedQuotePage.RssView>
-
+    
+    <local:DetailedQuotePage.TweetView>
+        <local:TweetViewModel>
+            <local:TweetViewModel.TweetCollection>
+                <local:TweetItemViewModel Content="3 Reasons Why Disney Is Worth Watching" Author="test" PubDate="Jan 1, 2014 4:00:00 am" />
+                <local:TweetItemViewModel Content="Do I really love Microsoft $MSFT? Probably." Author="XB (xybu92)" PubDate="Jan 1, 2014 4:00:00 am" />
+            </local:TweetViewModel.TweetCollection>
+        </local:TweetViewModel>
+    </local:DetailedQuotePage.TweetView>
+    
 </local:DetailedQuotePage>

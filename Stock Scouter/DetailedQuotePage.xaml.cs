@@ -12,7 +12,9 @@ using System.Windows.Media;
 using System.Windows.Navigation;
 using System.Xml.Linq;
 using System.Net;
+using Newtonsoft.Json;
 using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 
 namespace Stock_Scouter
 {
@@ -23,7 +25,6 @@ namespace Stock_Scouter
         private static RssViewModel rssViewModel = null;
         private static TweetViewModel tweetViewModel = null;
         private static ProgressIndicator progressBar = null;
-        private static StockTwitsAPI stClient = null;
 
         public static string CurrentSymbol
         {
@@ -93,6 +94,7 @@ namespace Stock_Scouter
         {
             InitializeComponent();
             this.DataContext = this;
+
             SystemTray.SetProgressIndicator(this, ProgressBar);
         }
 
@@ -105,14 +107,6 @@ namespace Stock_Scouter
                 System.Diagnostics.Debug.WriteLine("DetailedQuotedPage: symbol is " + CurrentSymbol);
                 CurrentQuote = App.GetQuote(CurrentSymbol);
 
-                QuoteName.Text = CurrentQuote.Name;
-                DetailedSymbol.Text = CurrentQuote.Symbol + " (" + CurrentQuote.StockExchange + ")";
-                LastTradePrice.Text = CurrentQuote.LastTradePrice.ToString();
-                ChangeInPercent.Text = CurrentQuote.ChangeInPercent.ToString();
-                LastTradeDate.Text = CurrentQuote.LastTradeDate.ToString();
-                PreviousClose.Text = CurrentQuote.PreviousClose.ToString();
-
-                Change.Text = CurrentQuote.Change.ToString();
                 if (CurrentQuote.Change > 0)
                 {
                     Change.Foreground = new SolidColorBrush(Colors.Green);
@@ -122,42 +116,21 @@ namespace Stock_Scouter
                     Change.Foreground = new SolidColorBrush(Colors.Red);
                 }
                 
-                if (CurrentQuote.MarketCapitalization == "")
+                if (StockTwitsClient.User == null)
                 {
-                    MarketCapitalization.Text = "N/A";
                 }
                 else
                 {
-                    MarketCapitalization.Text = CurrentQuote.MarketCapitalization.ToString();
-                }
-
-                Open.Text = CurrentQuote.Open.ToString();
-                decimal volume = CurrentQuote.Volume.Value;
-                volume = volume / 1000000;
-                decimal avgVol = CurrentQuote.AverageDailyVolume.Value;
-                avgVol = avgVol / 1000000;
-                Vol_AvgVol.Text = volume.ToString("#.#") + "M/" + avgVol.ToString("#.#") + "M";
-                DaysRange.Text = CurrentQuote.DailyLow.ToString() + " - " + CurrentQuote.DailyHigh.ToString();
-                if (CurrentQuote.PeRatio == null)
-                {
-                    PERatio.Text = "N/A";
-                }
-                else
-                {
-                    PERatio.Text = CurrentQuote.PeRatio.ToString();
-                }
-                YearsRange.Text = CurrentQuote.YearlyLow.ToString() + " - " + CurrentQuote.YearlyHigh.ToString();
-                if (CurrentQuote.DividendYield == null)
-                {
-                    DividendYield.Text = "N/A";
-                }
-                else
-                {
-                    DividendYield.Text = CurrentQuote.DividendYield.ToString();
+                    // signed in
+                    StockTwitsClient.Instance.AccessToken = StockTwitsClient.User.access_token;
+                    StockTwitsClient.Instance.UserID = StockTwitsClient.User.user_id;
+                    StockTwitsClient.Instance.UserName = StockTwitsClient.User.username;
                 }
 
                 RssView.Symbol = CurrentSymbol;
                 ProgressBar.IsVisible = false;
+
+                RefreshView(RootPanorama.SelectedIndex);
             }
         }
 
@@ -225,33 +198,43 @@ namespace Stock_Scouter
 
         private void RefreshView(int panoramaIndex)
         {
-            if (panoramaIndex == 3)
+            if (panoramaIndex < 2)
+            {
+                WebClient client = new WebClient();
+                client.DownloadStringCompleted += (obj, args) =>
+                {
+                    YahooAPI.UpdateQuotes(args.Result.ToString());
+                    
+                    if (CurrentQuote.Change > 0)
+                    {
+                        Change.Foreground = new SolidColorBrush(Colors.Green);
+                    }
+                    else if (CurrentQuote.Change < 0)
+                    {
+                        Change.Foreground = new SolidColorBrush(Colors.Red);
+                    }
+                };
+                client.DownloadStringAsync(YahooAPI.GetQuotesXmlUrl(new List<string>() { CurrentSymbol }));
+            }
+            if (panoramaIndex == 2)
+            {
+                // graph page
+                UpdateGraph();
+            }
+            else if (panoramaIndex == 3)
             {
                 // rss news page
-                progressBar.Value = 0;
+                ProgressBar.IsIndeterminate = true;
                 ProgressBar.IsVisible = true;
-                progressBar.IsIndeterminate = true;
                 RssView.LoadData(ProgressBar);
             }
             else if (panoramaIndex == 4)
             {
                 // tweets page
-                if (stClient == null) stClient = StockTwitsClient.Instance;
-                if (StockTwitsClient.UserId == "")
-                {
-                    // not signned in yet
-                    SignInPromptGrid.Visibility = Visibility.Visible;
-                }
-                else
-                {
-                    // signed in
-                    TwitPostGrid.Visibility = Visibility.Visible;
-                    TwitListBox.Visibility = Visibility.Visible;
-                    stClient.GetStreamOfSymbols(new string[] { CurrentSymbol }, (obj, args) =>
-                    {
-                        TestResponse.Text = args.Result;
-                    });
-                }
+                ProgressBar.IsIndeterminate = true;
+                ProgressBar.IsVisible = true;
+                TweetView.Symbol = CurrentSymbol;
+                TweetView.LoadData(ProgressBar);
             }
         }
 
@@ -262,16 +245,70 @@ namespace Stock_Scouter
 
         private void NavigateTo_Settings(object sender, EventArgs e)
         {
-
+            NavigationService.Navigate(new Uri("/SettingsPage.xaml" + CurrentSymbol, UriKind.Relative));
         }
 
         private void GraphHolder_Tap(object sender, System.Windows.Input.GestureEventArgs e)
         {
+
         }
 
-        private void NavigateTo_SignInWithStockTwits(object sender, RoutedEventArgs e)
+        private void NavigateTo_SignInWithStockTwits(object sender, EventArgs e)
         {
-            NavigationService.Navigate(new Uri("/StockTwits_Auth.xaml", UriKind.Relative));
+            if (StockTwitsClient.User == null)
+                NavigationService.Navigate(new Uri("/StockTwits_Auth.xaml?lastSymbol=" + CurrentSymbol, UriKind.Relative));
+            else
+            {
+                string message = "Viewing profile function will be added in a later version.";
+                string caption = "TODO";
+                MessageBoxButton buttons = MessageBoxButton.OK;
+                MessageBoxResult result = MessageBox.Show(message, caption, buttons);
+            }
+        }
+
+        private void StockTwits_NewTweet(object sender, EventArgs e)
+        {
+            if (StockTwitsClient.User != null)
+            {
+                var tb = new TextBox();
+                tb.MinHeight = 120;
+                tb.Text = "$" + CurrentSymbol + " ";
+                var box = new CustomMessageBox()
+                {
+                    Caption = "New Tweet",
+                    LeftButtonContent = "Post",
+                    RightButtonContent = "Cancel",
+                    Content = tb,
+                    IsFullScreen = false
+                };
+                box.Dismissed += (s, ev) =>
+                {
+                    if (ev.Result == CustomMessageBoxResult.LeftButton)
+                    {
+                        // a very basic new tweet form
+                        StockTwitsClient.Instance.CreateMessage(tb.Text, delegate(object obj, UploadStringCompletedEventArgs args)
+                        {
+                            System.Diagnostics.Debug.WriteLine(args.Result);
+                            TweetView.LoadData(ProgressBar);
+                        });
+                    }
+                };
+
+                // focus on the text box by default
+                box.Loaded += (s, ev) =>
+                {
+                    tb.Focus();
+                };
+
+                box.Show();
+            }
+            else
+            {
+                string message = "You need to sign in with StockTwits to post tweets.";
+                string caption = "Oops";
+                MessageBoxButton buttons = MessageBoxButton.OK;
+                MessageBoxResult result = MessageBox.Show(message, caption, buttons);
+            }
         }
 
     }
@@ -432,6 +469,12 @@ namespace Stock_Scouter
             set;
         }
 
+        public static ProgressIndicator ProgressBar
+        {
+            get;
+            set;
+        }
+
         public ObservableCollection<TweetItemViewModel> TweetCollection
         {
             get { return tweetCollection; }
@@ -445,39 +488,54 @@ namespace Stock_Scouter
             }
         }
 
-        public void LoadData()
+        private StockTwits_Stream_Cursor _cursor = null;
+        public StockTwits_Stream_Cursor Cursor
         {
-            System.Diagnostics.Debug.WriteLine("Now start to load rss data for symbol " + Symbol);
-            List<string> sym = new List<string>() { Symbol };
-            HttpWrapper.get(YahooAPI.GetRssXmlUrl(sym), null,
-                delegate(Stream str)
-                {
-                    try
-                    {
-                        StreamReader reader = new StreamReader(str);
-                        string response = reader.ReadToEnd();
-                        System.Diagnostics.Debug.WriteLine("stream2str: " + response);
+            get
+            {
+                return this._cursor;
+            }
+            set
+            {
+                _cursor = value;
+                NotifyPropertyChanged("Cursor");
+            }
+        }
 
-                        /*ObservableCollection<RssItemViewModel> tmp = YahooAPI.ParseRssXml(response);
+        public void LoadData(ProgressIndicator p = null)
+        {
+            ProgressBar = p;
+            if (Cursor == null)
+            {
+                StockTwitsClient.Instance.GetStreamOfSymbol(Symbol, ProcessTweetMessages);
+            }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine(Cursor.since);
+                StockTwitsClient.Instance.GetStreamOfSymbol(Symbol, ProcessTweetMessages, Cursor.since);
+            }
+        }
 
-                        Deployment.Current.Dispatcher.BeginInvoke(() =>
-                        {
-                            foreach (RssItemViewModel r in tmp) TweetCollection.Add(r);
-                            this.IsDataLoaded = true;
-                        });
-                         */
-                    }
-                    catch (Exception ex)
-                    {
-                        System.Diagnostics.Debug.WriteLine(ex.Message);
-                        System.Diagnostics.Debug.WriteLine(ex.Source);
-                    }
-                },
-                delegate(String reason)
+        private void ProcessTweetMessages(object obj, DownloadStringCompletedEventArgs args)
+        {
+            try
+            {
+                System.Diagnostics.Debug.WriteLine(args.Result);
+                StockTwits_Stream_Symbol s = JsonConvert.DeserializeObject<StockTwits_Stream_Symbol>(args.Result);
+                Cursor = s.cursor;
+                foreach (StockTwits_Message m in s.messages)
                 {
-                    System.Diagnostics.Debug.WriteLine("Error: " + reason);
+                    TweetCollection.Add(new TweetItemViewModel() { Author = m.user.name + " (" + m.user.username + ")", Content = m.body, PubDate = m.created_at });
                 }
-            );
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex.Message);
+                System.Diagnostics.Debug.WriteLine(ex.Source);
+                System.Diagnostics.Debug.WriteLine(ex.StackTrace);
+            }
+            if (ProgressBar != null) ProgressBar.IsVisible = false;
+            this.IsDataLoaded = true;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

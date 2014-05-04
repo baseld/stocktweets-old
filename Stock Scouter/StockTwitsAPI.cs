@@ -34,17 +34,31 @@ namespace Stock_Scouter
             }
         }
 
-        public static string UserId
+        public static StockTwits_OAuth_Token User
         {
             get
             {
-                if (!App.storageSpace.Contains("StockTwits_UserId"))
-                    App.storageSpace.Add("StockTwits_UserId", "");
-                return (string)App.storageSpace["StockTwits_UserId"];
+                if (!App.storageSpace.Contains("StockTwits_User"))
+                    App.storageSpace.Add("StockTwits_User", null);
+                return (StockTwits_OAuth_Token)App.storageSpace["StockTwits_User"];
             }
             set
             {
-                App.storageSpace["StockTwits_UserId"] = value;
+                App.storageSpace["StockTwits_User"] = value;
+            }
+        }
+
+        public static string Code
+        {
+            get
+            {
+                if (!App.storageSpace.Contains("StockTwits_Code"))
+                    App.storageSpace.Add("StockTwits_Code", "");
+                return (string)App.storageSpace["StockTwits_Code"];
+            }
+            set
+            {
+                App.storageSpace["StockTwits_Code"] = value;
             }
         }
     }
@@ -105,7 +119,7 @@ namespace Stock_Scouter
             set;
         }
 
-        public string UserID
+        public int UserID
         {
             get;
             set;
@@ -150,8 +164,8 @@ namespace Stock_Scouter
             client.Encoding = System.Text.Encoding.UTF8;
             client.Headers[HttpRequestHeader.ContentType] = "application/x-www-form-urlencoded";
             client.Headers[HttpRequestHeader.UserAgent] = API_USER_AGENT;
-            client.UploadStringCompleted += handler;
-            client.UploadStringAsync(new Uri(RequestTokenPath), "POST", Uri.EscapeDataString(POSTData));
+            client.UploadStringCompleted += new UploadStringCompletedEventHandler(handler);
+            client.UploadStringAsync(new Uri(RequestTokenPath), "POST", POSTData);
         }
 
         public void GetProfile(string id, DownloadStringCompletedEventHandler handler)
@@ -175,15 +189,45 @@ namespace Stock_Scouter
             client.DownloadStringAsync(new Uri(streamUri));
         }
 
-        public void GetStreamOfSymbols(string[] symbols, UploadStringCompletedEventHandler handler)
+        /**
+         * http://stocktwits.com/developers/docs/api#streams-symbol-docs
+         */
+        public void GetStreamOfSymbol(string symbol, DownloadStringCompletedEventHandler handler, int sinceId = 0, int maxId = 0, int limit = 30)
+        {
+            StringBuilder queryString = new StringBuilder();
+            if (sinceId > 0) queryString.Append("&since=" + sinceId.ToString());
+            if (maxId > 0) queryString.Append("&max=" + maxId.ToString());
+            if (limit < 30) queryString.Append("&limit=" + limit.ToString());
+
+            StringBuilder queryUri = new StringBuilder(API_BASE_URL_SECURE);
+            queryUri.Append("streams/symbol/" + symbol + ".json");
+            if (queryString.Length > 0){
+                queryString.Remove(0, 1);
+                queryUri.Append("?");
+                queryUri.Append(queryString);
+            }
+
+            System.Diagnostics.Debug.WriteLine("StockTwits API: fetching stream from " + queryUri.ToString());
+
+            WebClient client = new WebClient();
+            client.Encoding = System.Text.Encoding.UTF8;
+            client.Headers[HttpRequestHeader.UserAgent] = API_USER_AGENT;
+            client.DownloadStringCompleted += new DownloadStringCompletedEventHandler(handler);
+            client.DownloadStringAsync(new Uri(queryUri.ToString()));
+        }
+
+        /**
+         * http://stocktwits.com/developers/docs/api#streams-symbols-docs
+         */
+        public void GetStreamOfSymbols(string[] symbols, UploadStringCompletedEventHandler handler, int since = 0, int max = 30)
         {
             string queryUri = "https://api.stocktwits.com/api/2/streams/symbols.json?access_token=" + AccessToken;
             WebClient client = new WebClient();
             client.Encoding = System.Text.Encoding.UTF8;
             client.Headers[HttpRequestHeader.ContentType] = "application/x-www-form-urlencoded";
             client.Headers[HttpRequestHeader.UserAgent] = API_USER_AGENT;
-            client.UploadStringCompleted += handler;
-            client.UploadStringAsync(new Uri(RequestTokenPath), "GET", "symbols=" + String.Join(",", symbols));
+            client.UploadStringCompleted += new UploadStringCompletedEventHandler(handler);
+            client.UploadStringAsync(new Uri(queryUri), "GET", "symbols=" + String.Join(",", symbols));
         }
 
         public void SearchSymbols(string[] symbols, DownloadStringCompletedEventHandler handler)
@@ -239,14 +283,86 @@ namespace Stock_Scouter
                 postData.Append(sentiment);
             }
 
-            string queryUri = "https://api.stocktwits.com/api/2/messages/create.json?access_token=" + AccessToken;
+            string queryUri = API_BASE_URL_SECURE + "messages/create.json?access_token=" + AccessToken;
+            System.Diagnostics.Debug.WriteLine("StockTwits API: posting to " + queryUri);
             WebClient client = new WebClient();
             client.Encoding = System.Text.Encoding.UTF8;
             client.Headers[HttpRequestHeader.ContentType] = "application/x-www-form-urlencoded";
             client.Headers[HttpRequestHeader.UserAgent] = API_USER_AGENT;
-            client.UploadStringCompleted += handler;
-            client.UploadStringAsync(new Uri(RequestTokenPath), "POST", postData.ToString());
+            client.UploadStringCompleted += new UploadStringCompletedEventHandler(handler);
+            client.UploadStringAsync(new Uri(queryUri), "POST", postData.ToString());
         }
-
     }
+
+    /**
+     * The object model of the JSON object returned by fetching token
+     * http://stocktwits.com/developers/docs/api#oauth-token-docs
+     */
+    public class StockTwits_OAuth_Token
+    {
+        public int user_id;
+        public string access_token;
+        public string scope;
+        public string username;
+    }
+
+    public class StockTwits_Response
+    {
+        public int status;
+    }
+
+    public class StockTwits_Symbol
+    {
+        public int id;
+        public string symbol;
+        public string title;
+    }
+
+    public class StockTwits_Source
+    {
+        public int id;
+        public string title;
+        public string url;
+    }
+
+    public class StockTwits_Stream_Cursor
+    {
+        public bool more;
+        public int since;
+        public int? max;
+    }
+
+    public class StockTwits_User
+    {
+        public int id;
+        public string username;
+        public string name;
+        public string avatar_url;
+        public string avatar_url_ssl;
+        public string identity;
+        public string[] classification;
+    }
+
+    public class StockTwits_Message
+    {
+        public int id;
+        public string body;
+        public DateTime created_at;
+        public StockTwits_User user;
+        public StockTwits_Source source;
+        public StockTwits_Symbol[] symbols;
+    }
+
+    /**
+     * Object model of JSON response of Symbol stream
+     * http://stocktwits.com/developers/docs/api#streams-symbol-docs
+     */
+    public class StockTwits_Stream_Symbol
+    {
+        public StockTwits_Response response;
+        public StockTwits_Symbol symbol;
+        public StockTwits_Stream_Cursor cursor;
+        public StockTwits_Message[] messages;
+    }
+
 }

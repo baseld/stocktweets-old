@@ -89,6 +89,9 @@ namespace Stock_Scouter
                 quote.YearlyLow = GetDecimal(q.Element("YearLow").Value);
                 quote.YearlyHigh = GetDecimal(q.Element("YearHigh").Value);
                 quote.MarketCapitalization = q.Element("MarketCapitalization").Value;
+                
+                if (quote.MarketCapitalization == "") quote.MarketCapitalization = "n/a";
+
                 quote.Ebitda = q.Element("EBITDA").Value;
                 quote.ChangeFromYearLow = GetDecimal(q.Element("ChangeFromYearLow").Value);
                 quote.PercentChangeFromYearLow = GetDecimal(q.Element("PercentChangeFromYearLow").Value);
@@ -107,9 +110,10 @@ namespace Stock_Scouter
                 quote.PriceSales = GetDecimal(q.Element("PriceSales").Value);
                 quote.PriceBook = GetDecimal(q.Element("PriceBook").Value);
                 quote.ExDividendDate = GetDateTime(q.Element("ExDividendDate").Value);
-                quote.PeRatio = GetDecimal(q.Element("PERatio").Value);
                 quote.DividendPayDate = GetDateTime(q.Element("DividendPayDate").Value);
                 quote.DividendYield = GetDecimal(q.Element("DividendYield").Value);
+
+                quote.PeRatio = GetDecimal(q.Element("PERatio").Value);
                 quote.PegRatio = GetDecimal(q.Element("PEGRatio").Value);
                 quote.PriceEpsEstimateCurrentYear = GetDecimal(q.Element("PriceEPSEstimateCurrentYear").Value);
                 quote.PriceEpsEstimateNextYear = GetDecimal(q.Element("PriceEPSEstimateNextYear").Value);

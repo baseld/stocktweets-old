@@ -10,9 +10,11 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Navigation;
 using System.Windows.Threading;
+using System.Windows.Data;
 
 namespace Stock_Scouter
 {
+
     public partial class App : Application
     {
 
@@ -441,6 +443,13 @@ namespace Stock_Scouter
             }
         }
 
+        public string VolumeWithUnit
+        {
+            get
+            {
+                return FormatKilo(Convert.ToDouble(Volume));
+            }
+        }
 
         public decimal? Volume
         {
@@ -448,7 +457,11 @@ namespace Stock_Scouter
             set
             {
                 volume = value;
-                if (PropertyChanged != null) PropertyChanged(this, new PropertyChangedEventArgs("Volume"));
+                if (PropertyChanged != null)
+                {
+                    PropertyChanged(this, new PropertyChangedEventArgs("Volume"));
+                    PropertyChanged(this, new PropertyChangedEventArgs("VolumeWithUnit"));
+                }
             }
         }
 
@@ -865,7 +878,6 @@ namespace Stock_Scouter
             }
         }
 
-
         public decimal? Change
         {
             get { return change; }
@@ -912,6 +924,13 @@ namespace Stock_Scouter
             }
         }
 
+        public string AverageDailyVolumeWithUnit
+        {
+            get
+            {
+                return FormatKilo(Convert.ToDouble(AverageDailyVolume));
+            }
+        }
 
         public decimal? AverageDailyVolume
         {
@@ -919,10 +938,13 @@ namespace Stock_Scouter
             set
             {
                 averageDailyVolume = value;
-                if (PropertyChanged != null) PropertyChanged(this, new PropertyChangedEventArgs("AverageDailyVolume"));
+                if (PropertyChanged != null)
+                {
+                    PropertyChanged(this, new PropertyChangedEventArgs("AverageDailyVolume"));
+                    PropertyChanged(this, new PropertyChangedEventArgs("AverageDailyVolumeWithUnit"));
+                }
             }
         }
-
 
         public string Symbol
         {
@@ -941,6 +963,27 @@ namespace Stock_Scouter
                 if (Convert.ToDouble(Change) < 0) return new SolidColorBrush(Colors.Red);
                 return new SolidColorBrush(Colors.Green);
             }
+        }
+
+        private static string FormatKilo(double bytes)
+        {
+            string unit = "";
+            if (bytes > 1000000000)
+            {
+                bytes /= 1000000000;
+                unit = "B";
+            }
+            else if (bytes > 1000000)
+            {
+                bytes /= 1000000;
+                unit = "M";
+            }
+            else if (bytes > 1000)
+            {
+                bytes /= 1000;
+                unit = "K";
+            }
+            return bytes.ToString("f2") + unit;
         }
 
         public Quote()
