@@ -131,7 +131,16 @@ namespace Stock_Scouter
             WebClient client = new WebClient();
             client.DownloadStringCompleted += (obj, args) =>
             {
-                YahooAPI.UpdateQuotes(args.Result.ToString());
+                try
+                {
+                    YahooAPI.UpdateQuotes(args.Result.ToString());
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine(ex.Message);
+                    System.Diagnostics.Debug.WriteLine(ex.Source);
+                    System.Diagnostics.Debug.WriteLine(ex.StackTrace);
+                }
                 if (App.Timer != null) App.Timer.Start();
             };
             client.DownloadStringAsync(YahooAPI.GetQuotesXmlUrl(currentStockList));
@@ -229,21 +238,31 @@ namespace Stock_Scouter
             WebClient client = new WebClient();
             client.DownloadStringCompleted += (obj, args) =>
             {
-                YahooAPI.UpdateQuotes(args.Result);
-                PortfolioViewModel currentView = (PortfolioViewModel)PortfolioPivot.SelectedItem;
-                Portfolio currentPortfolio = App.GetPortfolio(currentView.Title);
-                foreach (string s in syms)
+                try
                 {
-                    Quote quote = App.GetQuote(s);
-                    if (quote == null)
+                    YahooAPI.UpdateQuotes(args.Result);
+                    PortfolioViewModel currentView = (PortfolioViewModel)PortfolioPivot.SelectedItem;
+                    Portfolio currentPortfolio = App.GetPortfolio(currentView.Title);
+                    foreach (string s in syms)
                     {
-                        System.Diagnostics.Debug.WriteLine("Symbol " + s + " was not found in db.");
-                        continue;
+                        Quote quote = App.GetQuote(s);
+                        if (quote == null)
+                        {
+                            System.Diagnostics.Debug.WriteLine("Symbol " + s + " was not found in db.");
+                            continue;
+                        }
+                        if (currentPortfolio.AddQuote(quote))
+                        {
+                            currentView.AddStockToView(quote);
+                        }
                     }
-                    if (currentPortfolio.AddQuote(quote))
-                    {
-                        currentView.AddStockToView(quote);
-                    }
+                }
+                catch (Exception ex)
+                {
+                    // can be caused by network issue
+                    System.Diagnostics.Debug.WriteLine(ex.Message);
+                    System.Diagnostics.Debug.WriteLine(ex.Source);
+                    System.Diagnostics.Debug.WriteLine(ex.StackTrace);
                 }
                 if (App.Timer != null) App.Timer.Start();
                 progressBar.IsVisible = false;

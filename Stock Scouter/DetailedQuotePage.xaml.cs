@@ -358,7 +358,16 @@ namespace Stock_Scouter
             WebClient client = new WebClient();
             client.DownloadStringCompleted += (obj, e) =>
             {
-                RssCollection = YahooAPI.ParseRssXml(e.Result.ToString());
+                try
+                {
+                    RssCollection = YahooAPI.ParseRssXml(e.Result);
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine(ex.Message);
+                    System.Diagnostics.Debug.WriteLine(ex.Source);
+                    System.Diagnostics.Debug.WriteLine(ex.StackTrace);
+                }
                 if (p != null) p.IsVisible = false;
             };
             client.DownloadStringAsync(YahooAPI.GetRssXmlUrl(sym));
@@ -520,8 +529,29 @@ namespace Stock_Scouter
             else
             {
                 System.Diagnostics.Debug.WriteLine(Cursor.since);
-                StockTwitsClient.Instance.GetStreamOfSymbol(Symbol, ProcessTweetMessages, Cursor.since);
+                StockTwitsClient.Instance.GetStreamOfSymbol(Symbol, ProcessNewTweetMessages, Cursor.since);
             }
+        }
+
+        private void ProcessNewTweetMessages(object obj, DownloadStringCompletedEventArgs args)
+        {
+            try
+            {
+                System.Diagnostics.Debug.WriteLine(args.Result);
+                StockTwits_Stream_Symbol s = JsonConvert.DeserializeObject<StockTwits_Stream_Symbol>(args.Result);
+                Cursor = s.cursor;
+                Array.Reverse(s.messages);
+                foreach (StockTwits_Message m in s.messages)
+                    TweetCollection.Insert(0, new TweetItemViewModel() { Author = m.user.name + " (" + m.user.username + ")", Content = m.body, PubDate = m.created_at });
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex.Message);
+                System.Diagnostics.Debug.WriteLine(ex.Source);
+                System.Diagnostics.Debug.WriteLine(ex.StackTrace);
+            }
+            if (ProgressBar != null) ProgressBar.IsVisible = false;
+            this.IsDataLoaded = true;
         }
 
         private void ProcessTweetMessages(object obj, DownloadStringCompletedEventArgs args)

@@ -278,7 +278,7 @@
                         <TextBlock Grid.ColumnSpan="2" Grid.Row="31" Height="10"/>
                         
                         <TextBlock Grid.Column="0" Grid.Row="32" HorizontalAlignment="Stretch" TextAlignment="Left" Text="50-Day Moving Avg" TextWrapping="Wrap" Style="{StaticResource PhoneTextSmallStyle}" Margin="2"/>
-                        <TextBlock Grid.Column="1" Grid.Row="32" HorizontalAlignment="Stretch" TextAlignment="Right" Text="{Binding FiftydayMovingAverage}" TextWrapping="Wrap" Margin="2"/>
+                        <TextBlock Grid.Column="1" Grid.Row="32" HorizontalAlignment="Stretch" TextAlignment="Right" Text="{Binding FiftyDayMovingAverage}" TextWrapping="Wrap" Margin="2"/>
                         <TextBlock Grid.ColumnSpan="2" Grid.Row="33" Height="10"/>
 
                         <TextBlock Grid.Column="0" Grid.Row="34" HorizontalAlignment="Stretch" TextAlignment="Left" Text="200-Day Moving Avg" TextWrapping="Wrap" Style="{StaticResource PhoneTextSmallStyle}" Margin="2"/>
