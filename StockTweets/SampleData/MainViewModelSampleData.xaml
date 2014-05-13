@@ -1,5 +1,5 @@
 ﻿<local:MainViewModel 
-    xmlns:local="clr-namespace:Stock_Scouter">
+    xmlns:local="clr-namespace:StockTweets">
 
     <local:MainViewModel.PageCollection>
         <local:PortfolioViewModel Title="Watchlist">

@@ -5,7 +5,7 @@ using System.Text;
 using System.Net;
 using System.Threading.Tasks;
 
-namespace Stock_Scouter
+namespace StockTweets
 {
     /**
      * StockTwits client-side API Implementation in C#

@@ -1,5 +1,5 @@
 ﻿<local:DetailedQuotePage 
-    xmlns:local="clr-namespace:Stock_Scouter">
+    xmlns:local="clr-namespace:StockTweets">
     
     <local:DetailedQuotePage.CurrentQuote>
         <local:Quote LastTradePrice="591.99" Change="24.4452" ChangeInPercent="+3.33%" LastTradeDate="Apr 26, 2014 4:00 pm"

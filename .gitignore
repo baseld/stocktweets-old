@@ -7,7 +7,7 @@
 *.sln.docstates
 
 # Build results
-Stock Scouter/PerfLogs/
+StockTweets/PerfLogs/
 [Dd]ebug/
 [Dd]ebugPublic/
 [Rr]elease/

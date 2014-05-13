@@ -16,7 +16,7 @@ using Newtonsoft.Json;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 
-namespace Stock_Scouter
+namespace StockTweets
 {
     public partial class DetailedQuotePage : PhoneApplicationPage
     {

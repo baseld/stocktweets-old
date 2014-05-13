@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Deployment xmlns="http://schemas.microsoft.com/windowsphone/2012/deployment" AppPlatformVersion="8.0">
   <DefaultLanguage xmlns="" code="en-US" />
-  <App xmlns="" ProductID="{b56c6da2-682c-40ce-a6f8-d07109c59270}" Title="Stock Scouter" RuntimeType="Silverlight" Version="1.0.0.0" Genre="apps.normal" Author="Xiangyu Bu" Description="Stock Scouter is an app that lets you keep track of stocks with multiple watch lists." Publisher="Stock_Scouter" PublisherID="{0499b3c9-6b35-4c05-8e4d-339cff0d6293}">
+  <App xmlns="" ProductID="{b56c6da2-682c-40ce-a6f8-d07109c59270}" Title="StockTweets" RuntimeType="Silverlight" Version="1.0.0.0" Genre="apps.normal" Author="Xiangyu Bu" Description="StockTweets is an app that lets you keep track of stocks with multiple watch lists." Publisher="StockTweets" PublisherID="{0499b3c9-6b35-4c05-8e4d-339cff0d6293}">
     <IconPath IsRelative="true" IsResource="false">ApplicationIcon.png</IconPath>
     <Capabilities>
       <Capability Name="ID_CAP_IDENTITY_USER" />
@@ -13,7 +13,7 @@
       <DefaultTask Name="_default" NavigationPage="MainPage.xaml" />
     </Tasks>
     <Tokens>
-      <PrimaryToken TokenID="Stock_ScouterToken" TaskName="_default">
+      <PrimaryToken TokenID="StockTweetsToken" TaskName="_default">
         <TemplateFlip>
           <SmallImageURI IsRelative="true" IsResource="false">Background.png</SmallImageURI>
           <Count>0</Count>

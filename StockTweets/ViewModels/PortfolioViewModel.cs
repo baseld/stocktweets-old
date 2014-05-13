@@ -2,7 +2,7 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 
-namespace Stock_Scouter
+namespace StockTweets
 {
     public class PortfolioViewModel : INotifyPropertyChanged
     {

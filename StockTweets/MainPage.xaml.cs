@@ -9,7 +9,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Navigation;
 
-namespace Stock_Scouter
+namespace StockTweets
 {
     public partial class MainPage : PhoneApplicationPage
     {
@@ -155,8 +155,13 @@ namespace Stock_Scouter
         {
             if (App.Timer != null) App.Timer.Stop();
             PortfolioViewModel currentView = (PortfolioViewModel)PortfolioPivot.SelectedItem;
+            int currentIndex = PortfolioPivot.SelectedIndex - 1;
+            if (currentIndex < 0) currentIndex = 0;
+
             App.DeletePortfolio(App.GetPortfolio(currentView.Title));
-            App.ViewModel.LoadData();
+            App.ViewModel.PageCollection.Remove(currentView);
+            PortfolioPivot.SelectedIndex = currentIndex;
+            
             if (App.Timer != null) App.Timer.Start();
         }
 

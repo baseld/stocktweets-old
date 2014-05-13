@@ -10,7 +10,7 @@ using Microsoft.Phone.Shell;
 using Microsoft.Phone.Tasks;
 using Newtonsoft.Json;
 
-namespace Stock_Scouter
+namespace StockTweets
 {
     public partial class StockTwits_Auth : PhoneApplicationPage
     {

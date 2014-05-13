@@ -8,7 +8,7 @@ using System.Windows.Navigation;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
 
-namespace Stock_Scouter
+namespace StockTweets
 {
     public partial class SettingsPage : PhoneApplicationPage
     {

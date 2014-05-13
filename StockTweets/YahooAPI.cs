@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Xml.Linq;
 
-namespace Stock_Scouter
+namespace StockTweets
 {
     /**
      * A Yahoo Finance API data model
