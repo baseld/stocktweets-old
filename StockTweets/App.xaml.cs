@@ -22,35 +22,33 @@ namespace StockTweets
 
         private static int DEFAULT_AUTO_REFRESH_INTERVAL = 5; // in seconds
         private static bool DEFAULT_ENABLE_AUTO_REFRESH = true;
-        private static string DEFAULT_PORTFOLIO_NAME = "Watchlist";
+        private static string DEFAULT_PORTFOLIO_NAME = "Local Watchlist";
 
         public static IsolatedStorageSettings storageSpace = IsolatedStorageSettings.ApplicationSettings;
+        
         private static List<Portfolio> portfolioList = null;
         private static ObservableCollection<Quote> quoteList = null;
-        private static MainViewModel viewModel = null;
+        
         private static DispatcherTimer timer = null;
-
-        /// <summary>
-        /// A static ViewModel used by the views to bind against.
-        /// </summary>
-        /// <returns>The MainViewModel object.</returns>
-        public static MainViewModel ViewModel
-        {
-            get
-            {
-                // Delay creation of the view model until necessary
-                if (viewModel == null)
-                    viewModel = new MainViewModel();
-
-                return viewModel;
-            }
-        }
+        private static StockTwitsClient stClient = null;
 
         public static DispatcherTimer Timer
         {
             get
             {
                 return timer;
+            }
+        }
+
+        public static StockTwitsClient StClient
+        {
+            get
+            {
+                // Delay creation of the view model until necessary
+                if (stClient == null)
+                    stClient = new StockTwitsClient();
+
+                return stClient;
             }
         }
 
@@ -89,20 +87,21 @@ namespace StockTweets
             {
                 if (portfolioList == null)
                 {
-                    if (storageSpace.Contains("PortfolioList"))
+                    string plName;
+                    if (StClient.User != null)
+                        plName = "PortfolioList_" + StClient.User.user_id;
+                    else
+                        plName = "PortfolioList_Local";
+
+                    if (storageSpace.Contains(plName))
                     {
-                        portfolioList = (List<Portfolio>)storageSpace["PortfolioList"];
+                        portfolioList = (List<Portfolio>)storageSpace[plName];
                     }
                     else
                     {
                         portfolioList = new List<Portfolio>();
-                        storageSpace.Add("PortfolioList", portfolioList);
+                        storageSpace.Add(plName, portfolioList);
                     }
-                }
-
-                if (portfolioList.Count == 0)
-                {
-                    portfolioList.Add(new Portfolio() { Name = DEFAULT_PORTFOLIO_NAME, Order = 0 });
                 }
 
                 return portfolioList;
@@ -277,10 +276,7 @@ namespace StockTweets
         private void Application_Activated(object sender, ActivatedEventArgs e)
         {
             // Ensure that application state is restored appropriately
-            if (!App.ViewModel.IsDataLoaded)
-            {
-                App.ViewModel.LoadData();
-            }
+            
         }
 
         // Code to execute when the application is deactivated (sent to background)
@@ -288,7 +284,13 @@ namespace StockTweets
         private void Application_Deactivated(object sender, DeactivatedEventArgs e)
         {
             // Ensure that required application state is persisted here.
-            storageSpace["PortfolioList"] = PortfolioList;
+            string plName;
+            if (StClient.User != null)
+                plName = "PortfolioList_" + StClient.User.user_id;
+            else
+                plName = "PortfolioList_Local";
+
+            storageSpace[plName] = PortfolioList;
             storageSpace["QuoteList"] = QuoteList;
         }
 
@@ -296,7 +298,13 @@ namespace StockTweets
         // This code will not execute when the application is deactivated
         private void Application_Closing(object sender, ClosingEventArgs e)
         {
-            storageSpace["PortfolioList"] = PortfolioList;
+            string plName;
+            if (StClient.User != null)
+                plName = "PortfolioList_" + StClient.User.user_id;
+            else
+                plName = "PortfolioList_Local";
+
+            storageSpace[plName] = PortfolioList;
             storageSpace["QuoteList"] = QuoteList;
         }
 

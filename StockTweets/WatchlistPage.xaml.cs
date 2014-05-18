@@ -11,22 +11,49 @@ using System.Windows.Navigation;
 
 namespace StockTweets
 {
-    public partial class MainPage : PhoneApplicationPage
+    public partial class WatchlistPage : PhoneApplicationPage
     {
         public static EventHandler pageTimerHandler = null;
         private static ProgressIndicator progressBar = null;
+        private static MainViewModel viewModel = null;
+
+        /// <summary>
+        /// A static ViewModel used by the views to bind against.
+        /// </summary>
+        /// <returns>The MainViewModel object.</returns>
+        public static MainViewModel ViewModel
+        {
+            get
+            {
+                // Delay creation of the view model until necessary
+                if (viewModel == null)
+                    viewModel = new MainViewModel();
+
+                return viewModel;
+            }
+        }
 
         // Constructor
-        public MainPage()
+        public WatchlistPage()
         {
             InitializeComponent();
 
             // Set the data context of the listbox control to the sample data
-            DataContext = App.ViewModel;
-            this.Loaded += new RoutedEventHandler(MainPage_Loaded);
+            DataContext = ViewModel;
+            this.Loaded += new RoutedEventHandler(WatchlistPage_Loaded);
             progressBar = new ProgressIndicator();
             progressBar.IsIndeterminate = true;
             SystemTray.SetProgressIndicator(this, progressBar);
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+
+            if (!ViewModel.IsDataLoaded)
+            {
+                ViewModel.LoadData();
+            }
         }
 
         // may be pretty slow
@@ -48,11 +75,11 @@ namespace StockTweets
         }
 
         // Load data for the ViewModel Items
-        private void MainPage_Loaded(object sender, RoutedEventArgs e)
+        private void WatchlistPage_Loaded(object sender, RoutedEventArgs e)
         {
-            if (!App.ViewModel.IsDataLoaded)
+            if (!ViewModel.IsDataLoaded)
             {
-                App.ViewModel.LoadData();
+                ViewModel.LoadData();
                 if (App.Timer != null)
                 {
                     pageTimerHandler = new EventHandler(dispatcherTimer_Tick);
@@ -92,9 +119,9 @@ namespace StockTweets
                         Portfolio p = App.GetPortfolio(tb.Text);
                         App.AddPortfolio(p);
                         // reload portfolio list
-                        App.ViewModel.LoadData();
+                        ViewModel.LoadData();
                         // switch to the newly created portfolio
-                        PortfolioPivot.SelectedIndex = App.ViewModel.PageCollection.Count - 1;
+                        PortfolioPivot.SelectedIndex = ViewModel.PageCollection.Count - 1;
                     }
                     else
                     {
@@ -159,7 +186,7 @@ namespace StockTweets
             if (currentIndex < 0) currentIndex = 0;
 
             App.DeletePortfolio(App.GetPortfolio(currentView.Title));
-            App.ViewModel.PageCollection.Remove(currentView);
+            ViewModel.PageCollection.Remove(currentView);
             PortfolioPivot.SelectedIndex = currentIndex;
             
             if (App.Timer != null) App.Timer.Start();
@@ -188,7 +215,7 @@ namespace StockTweets
                         int currentViewIndex = PortfolioPivot.SelectedIndex;
                         Portfolio currentPortfolio = App.GetPortfolio(currentView.Title);
                         currentPortfolio.Name = tb.Text;
-                        App.ViewModel.LoadData();
+                        ViewModel.LoadData();
                         PortfolioPivot.SelectedIndex = currentViewIndex;
                     }
                     else
@@ -322,6 +349,11 @@ namespace StockTweets
 
         private void PortfolioPivot_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+        }
+
+        private void NavigateTo_Me(object sender, EventArgs e)
+        {
+            NavigationService.Navigate(new Uri("/MePage.xaml", UriKind.Relative));
         }
 
     }

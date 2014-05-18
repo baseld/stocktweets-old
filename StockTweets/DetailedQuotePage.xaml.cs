@@ -98,7 +98,7 @@ namespace StockTweets
             SystemTray.SetProgressIndicator(this, ProgressBar);
         }
 
-        protected override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e)
+        protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
 
@@ -118,15 +118,12 @@ namespace StockTweets
                     Change.Foreground = new SolidColorBrush(Colors.Red);
                 }
                 
-                if (StockTwitsClient.User == null)
-                {
-                }
-                else
+                if (App.StClient.User != null)
                 {
                     // signed in
-                    StockTwitsClient.Instance.AccessToken = StockTwitsClient.User.access_token;
-                    StockTwitsClient.Instance.UserID = StockTwitsClient.User.user_id;
-                    StockTwitsClient.Instance.UserName = StockTwitsClient.User.username;
+                    App.StClient.AccessToken = App.StClient.User.access_token;
+                    App.StClient.UserID = App.StClient.User.user_id;
+                    App.StClient.UserName = App.StClient.User.username;
                 }
 
                 RssView.Symbol = CurrentSymbol;
@@ -257,7 +254,7 @@ namespace StockTweets
 
         private void NavigateTo_SignInWithStockTwits(object sender, EventArgs e)
         {
-            if (StockTwitsClient.User == null)
+            if (App.StClient.User == null)
                 NavigationService.Navigate(new Uri("/StockTwits_Auth.xaml?lastSymbol=" + CurrentSymbol, UriKind.Relative));
             else
             {
@@ -270,7 +267,7 @@ namespace StockTweets
 
         private void StockTwits_NewTweet(object sender, EventArgs e)
         {
-            if (StockTwitsClient.User != null)
+            if (App.StClient.User != null)
             {
                 var tb = new TextBox();
                 tb.MinHeight = 120;
@@ -288,7 +285,7 @@ namespace StockTweets
                     if (ev.Result == CustomMessageBoxResult.LeftButton)
                     {
                         // a very basic new tweet form
-                        StockTwitsClient.Instance.CreateMessage(tb.Text, delegate(object obj, UploadStringCompletedEventArgs args)
+                        App.StClient.CreateMessage(tb.Text, delegate(object obj, UploadStringCompletedEventArgs args)
                         {
                             System.Diagnostics.Debug.WriteLine(args.Result);
                             TweetView.LoadData(ProgressBar);
@@ -524,12 +521,12 @@ namespace StockTweets
             ProgressBar = p;
             if (Cursor == null)
             {
-                StockTwitsClient.Instance.GetStreamOfSymbol(Symbol, ProcessTweetMessages);
+                App.StClient.GetStreamOfSymbol(Symbol, ProcessTweetMessages);
             }
             else
             {
                 System.Diagnostics.Debug.WriteLine(Cursor.since);
-                StockTwitsClient.Instance.GetStreamOfSymbol(Symbol, ProcessNewTweetMessages, Cursor.since);
+                App.StClient.GetStreamOfSymbol(Symbol, ProcessNewTweetMessages, Cursor.since);
             }
         }
 

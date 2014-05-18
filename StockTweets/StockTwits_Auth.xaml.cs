@@ -15,23 +15,37 @@ namespace StockTweets
     public partial class StockTwits_Auth : PhoneApplicationPage
     {
 
+        private static string returnPage = null;
+        private ProgressIndicator indicator;
+
         public StockTwits_Auth()
         {
             InitializeComponent();
+
+            SystemTray.SetOpacity(this, 0);
+
+            indicator = new ProgressIndicator();
+            indicator.IsVisible = false;
+            indicator.IsIndeterminate = true;
+
+            SystemTray.SetProgressIndicator(this, indicator);
         }
 
         protected override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
 
+            NavigationContext.QueryString.TryGetValue("returnPage", out returnPage);
+
             WebPage.Navigating += WebPage_Navigating;
             
             WebPage.LoadCompleted += WebPage_LoadCompleted;
-            WebPage.Navigate(new Uri(StockTwitsClient.Instance.AuthorizeUri));
+            WebPage.Navigate(new Uri(App.StClient.AuthorizeUri));
         }
 
         void WebPage_LoadCompleted(object sender, NavigationEventArgs e)
         {
+            indicator.IsVisible = false;
             if (WebPage.Source == null) return;
 
             if (WebPage.Source.ToString().Contains("/oauth/authorize?"))
@@ -44,6 +58,7 @@ namespace StockTweets
 
         void WebPage_Navigating(object sender, NavigatingEventArgs e)
         {
+            indicator.IsVisible = true;
             if (e.Uri == null) return;
 
             System.Diagnostics.Debug.WriteLine("Navigating to " + e.Uri);
@@ -55,19 +70,18 @@ namespace StockTweets
                 string code = url.Substring(index + 6);
                 System.Diagnostics.Debug.WriteLine(code);
                 WebPage.NavigateToString("Authorization success. Now fetching access token...");
-                StockTwitsClient.Instance.GetAccessToken(code, delegate(object obj, UploadStringCompletedEventArgs args)
+                App.StClient.GetAccessToken(code, delegate(object obj, UploadStringCompletedEventArgs args)
                 {
                     System.Diagnostics.Debug.WriteLine(args.Result);
                     StockTwits_OAuth_Token r = JsonConvert.DeserializeObject<StockTwits_OAuth_Token>(args.Result);
-                    StockTwitsClient.Code = code;
-                    StockTwitsClient.User = r;
-                    if (StockTwitsClient.Instance != null)
+                    App.StClient.Code = code;
+                    App.StClient.User = r;
+                    if (returnPage != null)
                     {
-                        StockTwitsClient.Instance.AccessToken = r.access_token;
-                        StockTwitsClient.Instance.UserID = r.user_id;
-                        StockTwitsClient.Instance.UserName = r.username;
-                    }
-                    this.NavigationService.GoBack();
+                        Uri u = new Uri(returnPage, UriKind.Relative);
+                        returnPage = "";
+                        NavigationService.Navigate(u);
+                    } else NavigationService.GoBack();
                 });
             }
         }

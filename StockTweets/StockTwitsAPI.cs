@@ -15,26 +15,18 @@ namespace StockTweets
      * 
      */
 
-    class StockTwitsClient
+    public class StockTwitsClient : StockTwitsAPI
     {
         public static readonly string CLIENT_CONSUMER_KEY = "f3a84eda935dbf94";
         public static readonly string CLIENT_CONSUMER_SECRET = "9f92b9f770fa285abefe4109c82ee514bb362d88";
-        private static StockTwitsAPI _client = null;
 
-        public static StockTwitsAPI Instance
+        public StockTwitsClient()
+            : base(CLIENT_CONSUMER_KEY, CLIENT_CONSUMER_SECRET, "http://stockapp.sige.us/api/callback.php")
         {
-            get
-            {
-                if (_client == null)
-                {
-                    _client = new StockTwitsAPI(CLIENT_CONSUMER_KEY, CLIENT_CONSUMER_SECRET, "http://stockapp.sige.us/api/callback.php");
-                    _client.ResponseType = "code";
-                }
-                return _client;
-            }
+            this.ResponseType = "code";
         }
 
-        public static StockTwits_OAuth_Token User
+        public StockTwits_OAuth_Token User
         {
             get
             {
@@ -45,10 +37,13 @@ namespace StockTweets
             set
             {
                 App.storageSpace["StockTwits_User"] = value;
+                this.AccessToken = value.access_token;
+                this.UserName = value.username;
+                this.UserID = value.user_id;
             }
         }
 
-        public static string Code
+        public string Code
         {
             get
             {
@@ -63,7 +58,7 @@ namespace StockTweets
         }
     }
 
-    class StockTwitsAPI
+    public class StockTwitsAPI
     {
         protected static readonly bool API_DEBUG_MODE = false;
         protected static readonly string API_BASE_URL = "https://api.stocktwits.com/api/2/";
@@ -230,6 +225,20 @@ namespace StockTweets
             client.UploadStringAsync(new Uri(queryUri), "GET", "symbols=" + String.Join(",", symbols));
         }
 
+        /**
+         * http://stocktwits.com/developers/docs/api#streams-watchlist-docs
+         */
+        public void GetStreamOfWatchlist(int watchlist_id, DownloadStringCompletedEventHandler handler, int since = 0, int max = 30)
+        {
+            Uri query = new Uri("https://api.stocktwits.com/api/2/streams/watchlist/" + watchlist_id.ToString() + ".json?access_token=" + AccessToken);
+            
+            WebClient client = new WebClient();
+            client.Encoding = System.Text.Encoding.UTF8;
+            client.Headers[HttpRequestHeader.UserAgent] = API_USER_AGENT;
+            client.DownloadStringCompleted += new DownloadStringCompletedEventHandler(handler);
+            client.DownloadStringAsync(query);
+        }
+
         public void SearchSymbols(string[] symbols, DownloadStringCompletedEventHandler handler)
         {
             string queryUri = API_BASE_URL_SECURE + "search/symbols.json?access_token=" + AccessToken + "&q=" + String.Join(",", symbols);
@@ -292,6 +301,21 @@ namespace StockTweets
             client.UploadStringCompleted += new UploadStringCompletedEventHandler(handler);
             client.UploadStringAsync(new Uri(queryUri), "POST", postData.ToString());
         }
+
+        public void Watchlist_Create()
+        {
+
+        }
+
+        public void Watchlist_List()
+        {
+
+        }
+
+        public void Watchlist_Update()
+        {
+
+        }
     }
 
     /**
@@ -316,6 +340,14 @@ namespace StockTweets
         public int id;
         public string symbol;
         public string title;
+    }
+
+    public class StockTwits_Watchlist
+    {
+        public int id;
+        public string name;
+        public DateTime updated_at;
+        public DateTime created_at;
     }
 
     public class StockTwits_Source
@@ -361,6 +393,14 @@ namespace StockTweets
     {
         public StockTwits_Response response;
         public StockTwits_Symbol symbol;
+        public StockTwits_Stream_Cursor cursor;
+        public StockTwits_Message[] messages;
+    }
+
+    public class StockTwits_Stream_Watchlist
+    {
+        public StockTwits_Response response;
+        public StockTwits_Watchlist watchlist;
         public StockTwits_Stream_Cursor cursor;
         public StockTwits_Message[] messages;
     }

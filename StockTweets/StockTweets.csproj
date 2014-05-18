@@ -106,13 +106,16 @@
       <DependentUpon>DetailedQuotePage.xaml</DependentUpon>
     </Compile>
     <Compile Include="LocalizedStrings.cs" />
-    <Compile Include="MainPage.xaml.cs">
-      <DependentUpon>MainPage.xaml</DependentUpon>
+    <Compile Include="WatchlistPage.xaml.cs">
+      <DependentUpon>WatchlistPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Resources\AppResources.Designer.cs" />
     <Compile Include="StockTwitsAPI.cs" />
     <Compile Include="StockTwits_Auth.xaml.cs">
       <DependentUpon>StockTwits_Auth.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserPanel.xaml.cs">
+      <DependentUpon>UserPanel.xaml</DependentUpon>
     </Compile>
     <Compile Include="YahooAPI.cs" />
     <Compile Include="SettingsPage.xaml.cs">
@@ -131,7 +134,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="MainPage.xaml">
+    <Page Include="WatchlistPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -150,12 +153,18 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="UserPanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config">
       <SubType>Designer</SubType>
     </None>
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Properties\AppManifest.xml">
       <SubType>Designer</SubType>
     </None>
